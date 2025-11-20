@@ -4,14 +4,14 @@
 
 - We hypothesized that neural activity would be more "stable" during trials in which the mouse made the correct decision
 - As an initial assessment, we compare the autocorrelation timescales of neurons during correct vs. incorrect trials in a single session
-- We did not see evidence for a systematic shift in timescales during correct vs. incorrect trials. Some individual neurons showed a difference in timescales; however, not all of the recorded neurons may be even involved in the decision making process
+- We saw evidence for a very small shift in timescales during correct vs. incorrect trials, which warrants further investigation
 
 ## To reproduce
 
 ```
 python -m venv .venv # create a virtual environment
 source .venv/bin/activate # activate environment
-pip install -r requirements.txt # use lockfile to instantiate environment (note that this depends on a local dev install of decisive-times-utils)
+pip install -r requirements.txt # use lockfile to instantiate environment
 python compare_timescales.py # run!
 ```
 
