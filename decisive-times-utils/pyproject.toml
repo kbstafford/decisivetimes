@@ -1,0 +1,23 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61.0", "wheel>=0.37.1"]
+
+
+[project]
+name = "decisive-times-utils"
+version = "0.0.1"
+description = "Shared utilities for the Decisive Times ISP team"
+readme = "README.md"
+requires-python = ">=3.11,<4.0"
+authors = [
+    {name = "Vikramaditya Bisani", email = "vb4838@srmist.edu.in"},
+    {name = "Süheyl Berat Gülenç", email = "suheylglnc1@gmail.com"},
+    {name = "Jason Manley", email = "jasonmanley@me.com"},
+    {name = "Penelope", email = "yangzhiyi777@gmail.com"},
+    {name = "Kayla Staffordd", email = "kayla.staffordd@gmail.com"},
+]
+
+dependencies = [
+    "numpy>=2.2",
+    "scipy>=1.15",
+]

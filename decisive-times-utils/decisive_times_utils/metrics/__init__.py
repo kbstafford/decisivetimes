@@ -1,0 +1,1 @@
+from .intrinsic_timescale import compute_autocorr_timescale
