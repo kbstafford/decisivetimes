@@ -1,6 +1,5 @@
 import numpy as np
 from dataclasses import dataclass
-from typing import Tuple
 from scipy.optimize import curve_fit
 
 @dataclass
