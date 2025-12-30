@@ -1,4 +1,3 @@
-# Save this as ibl_connect.py and run it with: python ibl_connect.py
 from one.api import ONE
 
 one = ONE(base_url='https://openalyx.internationalbrainlab.org')
