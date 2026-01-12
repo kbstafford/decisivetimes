@@ -950,7 +950,7 @@ if __name__ == "__main__":
     print(f'{len(sessions)} sessions with widefield data found')
 
     pipeline = IBLTimescalePipeline(one_api=one)
-    results = pipeline.run(eid=sessions[7])
+    results = pipeline.run(eid=sessions[12])
 
     # Access results
     print("\n\nAccessing results:")
