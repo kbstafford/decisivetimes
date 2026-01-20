@@ -15,9 +15,18 @@ def load_unbiased_trials(min_trials=5, max_sessions=50):
 
     dfs = []
     total_trials = 0
+    subject_cache = {}
 
     for eid in tqdm(eids, desc="Sessions"):
         try:
+            if eid not in subject_cache:
+                details = one.get_details(eid)
+                subject_cache[eid] = details.get("subject", None)
+            subject = subject_cache[eid]
+
+            if subject is None:
+                continue
+
             trials = one.load_object(eid, 'trials')
             neutral = (trials.probabilityLeft == 0.5)
             correct = (trials.feedbackType == 1)
@@ -27,7 +36,8 @@ def load_unbiased_trials(min_trials=5, max_sessions=50):
                 continue
 
             df = pd.DataFrame({
-                "eid": eid,
+                "eid": str(eid),
+                "subject": str(subject),
                 "response_times": trials.response_times[mask],
                 "choice": trials.choice[mask],
                 "stimOn_times": trials.stimOn_times[mask],

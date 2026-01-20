@@ -1,26 +1,46 @@
-import pandas as pd
 import numpy as np
-from pyddm import Model, Fittable
-from pyddm.models import Drift, NoiseConstant, BoundConstant, OverlayNonDecision, ICPointSourceCenter
-from pyddm.functions import fit_adjust_model, display_model
-from pyddm import Sample
-
+import pandas as pd
+import matplotlib.pyplot as plt
+import hssm
+import arviz as az
 
 df = pd.read_parquet("../../data/unbiased_trials.parquet")
-print(df.head())
+print(df.columns)
 print(df.shape)
 
+def prepare_trials(df: pd.DataFrame) -> pd.DataFrame:
+    d = df.copy()
+    d["signed_contrast"] = d["contrastRight"].fillna(0) - d["contrastLeft"].fillna(0)
+    d["response"] = (d["choice"]).astype(int)
+    d["rt"] = (d["feedback_times"] - d["stimOn_times"]).astype(float)
+    d = d[(d["rt"] > 0.1) & (d["rt"] < 10)].copy() # filters out outliers
 
-df = df.copy()
-df['signed_contrast'] = df['contrastRight'].fillna(0) - df['contrastLeft'].fillna(0)
-df['rt'] = df['response_times']
-df['response'] = (df['choice'] == 1).astype(int)
-df = df[(df['rt'] > 0.1) & (df['rt'] < 5)]
+    keep = ["rt", "response", "signed_contrast", "prev_choice", "prev_reward", "block_bias"]
+    for c in ["subject", "eid"]:
+        if c in d.columns:
+            keep.append(c)
 
-samp = Sample(
-    rts=df["rt"].values,
-    choices=df["response"].values,
-    conditions={"signed_contrast": df["signed_contrast"].values},
+    # sort within session for history terms
+    d = d.sort_values(["eid", "stimOn_times"]).copy()
+    d["prev_choice"] = d.groupby("eid")["response"].shift(1).fillna(0.5)
+    d["prev_reward"] = (d.groupby("eid")["feedbackType"].shift(1) == 1).astype(float).fillna(0.0)
+
+    return d[["eid", "subject", "rt", "response", "signed_contrast", "prev_choice", "prev_reward"]]
+
+hssm_df = prepare_trials(df)
+
+model = hssm.HSSM(
+    data=hssm_df,
+    model="ddm",
+    include=[
+        {
+            "name": "v",
+            "formula": "v ~ 1 + signed_contrast + prev_choice + (1|subject)"
+        }
+    ]
 )
+print(model)
 
-# not finished (jan 15 2026)
+
+
+
