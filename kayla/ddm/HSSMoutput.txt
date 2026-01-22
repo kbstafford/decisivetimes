@@ -1,0 +1,92 @@
+C:\Users\kayla\HSSM\.venv\Scripts\python.exe C:\Users\kayla\Documents\decisivetimes\kayla\ddm\decision_strength_ddm.py 
+C:\Users\kayla\HSSM\.venv\Lib\site-packages\arviz\__init__.py:39: FutureWarning: 
+ArviZ is undergoing a major refactor to improve flexibility and extensibility while maintaining a user-friendly interface.
+Some upcoming changes may be backward incompatible.
+For details and migration guidance, visit: https://python.arviz.org/en/latest/user_guide/migration_guide.html
+  warn(
+Index(['eid', 'subject', 'response_times', 'choice', 'stimOn_times',
+       'contrastLeft', 'contrastRight', 'feedback_times', 'feedbackType'],
+      dtype='object')
+(1067, 9)
+n subjects: 5
+subject
+FD_36    168
+FD_28    184
+FD_14    186
+FD_24    247
+FD_21    268
+dtype: int64
+min trials per subject: 168
+Index(['eid', 'subject', 'rt', 'response', 'signed_contrast', 'abs_contrast',
+       'evidence_bin', 'prev_choice', 'prev_reward'],
+      dtype='object')
+C:\Users\kayla\Documents\decisivetimes\kayla\ddm\decision_strength_ddm.py:63: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  counts = hssm_df.groupby("subject").size().sort_values()
+                                    eid subject  ...  prev_choice  prev_reward
+0  088f44ce-926e-4a3a-808d-3f1e1a595c6f   FD_21  ...          0.0          0.0
+1  088f44ce-926e-4a3a-808d-3f1e1a595c6f   FD_21  ...          1.0          1.0
+2  088f44ce-926e-4a3a-808d-3f1e1a595c6f   FD_21  ...          1.0          1.0
+3  088f44ce-926e-4a3a-808d-3f1e1a595c6f   FD_21  ...         -1.0          1.0
+4  088f44ce-926e-4a3a-808d-3f1e1a595c6f   FD_21  ...          1.0          1.0
+
+[5 rows x 9 columns]
+Model initialized successfully.
+Hierarchical Sequential Sampling Model
+Model: ddm
+
+Response variable: rt,response
+Likelihood: analytical
+Observations: 1053
+
+Parameters:
+
+v:
+    Formula: v ~ 1 + signed_contrast + prev_choice * evidence_bin + (1|subject)
+    Priors:
+        v_Intercept ~ Normal(mu: 2.0, sigma: 3.0)
+        v_signed_contrast ~ Normal(mu: 0.0, sigma: 0.25)
+        v_prev_choice ~ Normal(mu: 0.0, sigma: 0.25)
+        v_evidence_bin ~ Normal(mu: 0.0, sigma: 0.25)
+        v_prev_choice:evidence_bin ~ Normal(mu: 0.0, sigma: 0.25)
+        v_1|subject ~ Normal(mu: 0.0, sigma: Weibull(alpha: 1.5, beta: 0.3))
+    Link: identity
+    Explicit bounds: (-inf, inf)
+
+a:
+    Prior: HalfNormal(sigma: 2.0)
+    Explicit bounds: (0.0, inf)
+
+z:
+    Prior: Uniform(lower: 0.0, upper: 1.0)
+    Explicit bounds: (0.0, 1.0)
+
+t:
+    Prior: HalfNormal(sigma: 2.0)
+    Explicit bounds: (0.0, inf)
+
+
+Lapse probability: 0.05
+Lapse distribution: Uniform(lower: 0.0, upper: 20.0)
+Using default initvals. 
+
+Initializing NUTS using adapt_diag...
+Multiprocess sampling (4 chains in 4 jobs)
+NUTS: [a, t, z, v_Intercept, v_signed_contrast, v_prev_choice, v_evidence_bin, v_prev_choice:evidence_bin, v_1|subject_sigma, v_1|subject_offset]
+                                                                               
+                              Step      Grad      Sampli…                      
+  Progre…   Draws   Diverg…   size      evals     Speed     Elapsed   Remain…  
+ ───────────────────────────────────────────────────────────────────────────── 
+  -------   3000    0         0.043     127       1.48      0:33:52   0:00:00  
+                                                  draws/s                      
+  -------   3000    0         0.042     63        1.44      0:34:48   0:00:00  
+                                                  draws/s                      
+  -------   3000    0         0.042     63        1.48      0:33:50   0:00:00  
+                                                  draws/s                      
+  -------   3000    0         0.039     127       1.43      0:34:59   0:00:00  
+                                                  draws/s                      
+                                                                               
+Sampling 4 chains for 1_500 tune and 1_500 draw iterations (6_000 + 6_000 draws total) took 2164 seconds.
+                    mean     sd  hdi_2.5%  ...  ess_bulk  ess_tail  r_hat
+v_signed_contrast -2.968  0.123      -3.2  ...    5341.0    4475.0    1.0
+
+[1 rows x 9 columns]

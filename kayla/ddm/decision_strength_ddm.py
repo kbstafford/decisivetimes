@@ -12,7 +12,8 @@ def prepare_trials(df: pd.DataFrame) -> pd.DataFrame:
     d = df.copy()
     d["signed_contrast"] = d["contrastRight"].fillna(0) - d["contrastLeft"].fillna(0)
 
-    d["response"] = (d["choice"]).astype(int)
+    d["response"] = d["choice"].astype(int)
+    d = d[d["response"].isin([-1, 1])].copy()
 
     d["rt"] = (d["feedback_times"] - d["stimOn_times"]).astype(float)
     d = d[(d["rt"] > 0.1) & (d["rt"] < 10)].copy() # filters out outliers
@@ -24,11 +25,30 @@ def prepare_trials(df: pd.DataFrame) -> pd.DataFrame:
 
     # sort within session for history terms
     d = d.sort_values(["eid", "stimOn_times"]).copy()
-    d["prev_choice"] = d.groupby("eid")["response"].shift(1).fillna(0.5)
+
+    d["prev_choice"] = d.groupby("eid")["response"].shift(1).fillna(0.0)
+
     d["prev_reward"] = (d.groupby("eid")["feedbackType"].shift(1) == 1).astype(float).fillna(0.0)
 
-    return d[["eid", "subject", "rt", "response", "signed_contrast", "prev_choice", "prev_reward"]]
+    d["abs_contrast"] = d["signed_contrast"].abs()
 
+    # map to bins that match your task
+    def evidence_bin(x):
+        if x == 0:
+            return "0"
+        elif x <= 0.0625:
+            return "6.25"
+        elif x <= 0.125:
+            return "12.5"
+        elif x <= 0.25:
+            return "25"
+        else:
+            return "50_100"
+
+    d["evidence_bin"] = d["abs_contrast"].apply(evidence_bin).astype("category")
+
+    return d[["eid", "subject", "rt", "response", "signed_contrast",
+              "abs_contrast", "evidence_bin", "prev_choice", "prev_reward"]]
 
 if __name__ == "__main__":
     df = pd.read_parquet("../../data/unbiased_trials.parquet")
@@ -44,6 +64,12 @@ if __name__ == "__main__":
     print(counts)
     print("min trials per subject:", counts.min())
 
+    hssm_df["evidence_bin"] = hssm_df["evidence_bin"].astype("category")
+    hssm_df["evidence_bin"] = hssm_df["evidence_bin"].cat.set_categories(
+        ["50_100", "25", "12.5", "6.25", "0"],
+        ordered=True
+    )
+
     # Verify the columns are there
     print(hssm_df.columns)
     print(hssm_df.head())
@@ -54,19 +80,21 @@ if __name__ == "__main__":
         include=[
             {
                 "name": "v",
-                "formula": "v ~ 1 + signed_contrast + prev_choice + (1|subject)"
+                "formula": "v ~ 1 + signed_contrast + prev_choice * evidence_bin + (1|subject)"
+
             }
         ]
     )
+
     print(model)
 
     idata = model.sample(
-        sampler="pymc",
+        sampler="blackjax",
         chains=4,
         cores=4,
-        draws=1000,
-        tune=1000,
-        target_accept=0.95,
+        draws=1500,
+        tune=1500,
+        target_accept=1,
         idata_kwargs={"log_likelihood": False},
         progressbar=True,
     )
@@ -76,14 +104,25 @@ if __name__ == "__main__":
         "v_Intercept", "v_signed_contrast", "v_prev_choice",
         "v_1|subject_sigma"
     ])
-    plt.tight_layout()
-    plt.show()
-    plt.savefig("hddm.png")
 
-  """  # Plot posterior predictive
-    model.sample_posterior_predictive()
-    plt.savefig("posterior_predictive.png")
-    plt.show()"""
+
+    plt.tight_layout()
+    plt.savefig("hddm1.png")
+    plt.show()
+
+    az.plot_posterior(idata, var_names=["v_signed_contrast"], hdi_prob=0.95)
+    plt.title("Posterior for contrast effect on drift (v_signed_contrast)")
+    plt.show()
+    print(az.summary(idata, var_names=["v_signed_contrast"], hdi_prob=0.95))
+
+    az.plot_forest(
+        idata,
+        var_names=["v_prev_choice", "v_prev_choice:evidence_bin"],
+        combined=True,
+        hdi_prob=0.95
+    )
+    plt.title("History effect by evidence bin (interaction terms)")
+    plt.show()
 
 
 
