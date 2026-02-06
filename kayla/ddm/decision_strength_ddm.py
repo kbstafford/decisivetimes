@@ -3,11 +3,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import hssm
 import arviz as az
-import pytensor
 import jax
 import os
-import torch
 
+os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'  # Better memory management
+print(f"JAX devices: {jax.devices()}")
+print(f"JAX backend: {jax.default_backend()}")
 def prepare_trials(df: pd.DataFrame) -> pd.DataFrame:
     d = df.copy()
     d["signed_contrast"] = d["contrastRight"].fillna(0) - d["contrastLeft"].fillna(0)
@@ -89,12 +90,12 @@ if __name__ == "__main__":
     print(model)
 
     idata = model.sample(
-        sampler="blackjax",
-        chains=4,
+        sampler="nuts_numpyro",
+        chains=1,
         cores=4,
         draws=1500,
         tune=1500,
-        target_accept=1,
+        target_accept=0.95,
         idata_kwargs={"log_likelihood": False},
         progressbar=True,
     )
@@ -112,6 +113,7 @@ if __name__ == "__main__":
 
     az.plot_posterior(idata, var_names=["v_signed_contrast"], hdi_prob=0.95)
     plt.title("Posterior for contrast effect on drift (v_signed_contrast)")
+    plt.savefig("contrast_effect.png", bbox_inches="tight", dpi=300)
     plt.show()
     print(az.summary(idata, var_names=["v_signed_contrast"], hdi_prob=0.95))
 
@@ -122,6 +124,7 @@ if __name__ == "__main__":
         hdi_prob=0.95
     )
     plt.title("History effect by evidence bin (interaction terms)")
+    plt.savefig("contrast_effect_drift.png", bbox_inches="tight", dpi=300)
     plt.show()
 
 
