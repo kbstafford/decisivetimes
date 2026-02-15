@@ -1,0 +1,198 @@
+# =============================================================================
+# Timescale Mapping Workflow Configuration Contract
+# =============================================================================
+# All preprocessing, τ estimation, QC, and aggregation settings must be
+# specified here. No hidden script constants allowed.
+
+# -----------------------------------------------------------------------------
+# Dataset Selection
+# -----------------------------------------------------------------------------
+dataset:
+  # Subject/session filtering
+  subjects:
+    include: []                    # List of subject IDs to include (empty = all)
+    exclude: []                    # List of subject IDs to exclude
+  
+  sessions:
+    include: []                    # List of session eids to include (empty = all)
+    exclude: []                    # List of session eids to exclude
+    date_range:
+      start: null                  # ISO date string (e.g., "2023-01-01") or null
+      end: null                    # ISO date string or null
+  
+  regions:
+    include: []                    # Brain regions to include (empty = all)
+    exclude: []                    # Brain regions to exclude
+    atlas: "allen_ccf"             # Atlas reference: "allen_ccf", "beryl", "cosmos"
+    hierarchy_level: null          # Aggregate to hierarchy level (null = use raw)
+
+  probes:
+    include: []                    # Probe names to include (empty = all)
+    exclude: []                    # Probe names to exclude
+
+# -----------------------------------------------------------------------------
+# Spike Preprocessing
+# -----------------------------------------------------------------------------
+preprocessing:
+  # Time binning
+  binning:
+    bin_size_ms: 10                # Spike count bin width in milliseconds
+    method: "count"                # "count", "rate" (spikes/sec), "binary"
+  
+  # Temporal filtering
+  time_window:
+    align_to: "stimulus_onset"     # Event to align spikes: "stimulus_onset", "movement", "trial_start"
+    pre_event_ms: -500             # Time before alignment event (negative)
+    post_event_ms: 2000            # Time after alignment event (positive)
+    use_full_session: false        # If true, ignore alignment and use full recording
+  
+  # Trial selection
+  trials:
+    include_correct_only: false    # Only include correct trials
+    include_conditions: []         # Trial conditions to include (empty = all)
+    exclude_conditions: []         # Trial conditions to exclude
+    min_trials: 10                 # Minimum trials required per unit
+  
+  # Spike filtering
+  spike_filters:
+    remove_artifacts: true         # Remove spikes during artifact periods
+    artifact_threshold_sd: 5.0     # Z-score threshold for artifact detection
+    detrend: false                 # Remove slow drift from spike counts
+    detrend_method: "linear"       # "linear", "polynomial", "highpass"
+    detrend_poly_order: 2          # Order if polynomial detrending
+
+# -----------------------------------------------------------------------------
+# Timescale (τ) Estimation
+# -----------------------------------------------------------------------------
+tau_estimation:
+  method: "autocorrelation"        # "autocorrelation", "decay_fit", "spectral"
+  
+  # Autocorrelation settings
+  autocorrelation:
+    max_lag_ms: 500                # Maximum lag for autocorrelation
+    min_lag_ms: 10                 # Minimum lag (exclude lag-0 artifacts)
+    normalization: "biased"        # "biased", "unbiased", "none"
+  
+  # Exponential decay fitting
+  decay_fit:
+    model: "single_exp"            # "single_exp", "double_exp", "stretched_exp"
+    fit_method: "least_squares"    # "least_squares", "mle", "bayesian"
+    bounds:
+      tau_min_ms: 5                # Minimum τ bound
+      tau_max_ms: 1000             # Maximum τ bound
+      amplitude_min: 0.0           # Minimum amplitude
+      amplitude_max: 1.0           # Maximum amplitude
+    initial_guess:
+      tau_ms: 50                   # Initial τ guess
+      amplitude: 0.5               # Initial amplitude guess
+  
+  # Spectral method settings
+  spectral:
+    method: "welch"                # "welch", "multitaper", "periodogram"
+    nperseg: 256                   # Samples per segment (Welch)
+    noverlap: null                 # Overlap (null = nperseg // 2)
+    freq_range_hz: [0.5, 50]       # Frequency range for fitting
+  
+  # Bootstrap confidence intervals
+  bootstrap:
+    enabled: true
+    n_iterations: 1000             # Number of bootstrap samples
+    confidence_level: 0.95         # CI level (0.95 = 95%)
+    method: "block"                # "block", "stationary", "circular"
+    block_size_bins: null          # Block size (null = auto-determine)
+
+# -----------------------------------------------------------------------------
+# Quality Control Thresholds
+# -----------------------------------------------------------------------------
+qc:
+  # Spike count thresholds
+  spike_count:
+    min_total_spikes: 100          # Minimum spikes across all bins
+    min_spikes_per_trial: 5        # Minimum average spikes per trial
+    min_firing_rate_hz: 0.5        # Minimum mean firing rate
+    max_firing_rate_hz: 200        # Maximum mean firing rate (artifact filter)
+  
+  # Stationarity checks
+  stationarity:
+    enabled: true
+    test: "adf"                    # "adf" (Augmented Dickey-Fuller), "kpss", "both"
+    significance_level: 0.05       # p-value threshold
+    allow_weak_stationarity: true  # Accept if weakly stationary
+  
+  # Fit quality thresholds
+  fit_quality:
+    min_r_squared: 0.3             # Minimum R² for exponential fit
+    max_rmse: 0.2                  # Maximum RMSE (normalized)
+    max_tau_relative_error: 0.5    # Max bootstrap SE / τ ratio
+  
+  # Autocorrelation quality
+  autocorr_quality:
+    min_peak_correlation: 0.1      # Minimum autocorr at first lag
+    max_negative_lags_frac: 0.3    # Max fraction of negative autocorr values
+  
+  # ISI (inter-spike interval) checks
+  isi:
+    min_isi_ms: 1.0                # Refractory period violation threshold
+    max_violation_rate: 0.01       # Max fraction of ISI violations (1%)
+  
+  # Unit isolation quality (if available)
+  isolation:
+    min_isolation_score: 0.5       # Minimum isolation metric
+    max_contamination: 0.1         # Maximum contamination estimate
+    metric_source: "phy"           # "phy", "kilosort", "custom"
+
+# -----------------------------------------------------------------------------
+# Aggregation Settings
+# -----------------------------------------------------------------------------
+aggregation:
+  # Regional aggregation
+  regional:
+    method: "median"               # "mean", "median", "weighted_mean"
+    weight_by: null                # null, "n_spikes", "fit_quality", "isolation"
+    min_units_per_region: 5        # Minimum units to compute regional τ
+    bootstrap_regional: true       # Bootstrap regional estimates
+    bootstrap_n: 1000              # Bootstrap iterations for regional
+  
+  # Subject-level aggregation
+  subject:
+    method: "median"               # "mean", "median", "mixed_effects"
+    combine_sessions: true         # Combine across sessions per subject
+  
+  # Population statistics
+  population:
+    compute_hierarchy: true        # Compute τ at each hierarchy level
+    compare_regions: true          # Compute pairwise region comparisons
+    correction_method: "fdr_bh"    # Multiple comparison: "bonferroni", "fdr_bh", "none"
+
+# -----------------------------------------------------------------------------
+# Output Settings
+# -----------------------------------------------------------------------------
+output:
+  # File paths (relative to project root)
+  paths:
+    unit_level: "results/unit_timescales.parquet"
+    regional: "results/regional_timescales.parquet"
+    qc_report: "results/qc_report.json"
+    figures: "figures/"
+  
+  # What to save
+  save:
+    autocorrelation_curves: true   # Save full autocorr for each unit
+    fit_diagnostics: true          # Save fit residuals, etc.
+    bootstrap_samples: false       # Save all bootstrap τ estimates
+    intermediate_files: false      # Save preprocessing intermediates
+  
+  # Compression
+  parquet:
+    compression: "snappy"          # "snappy", "gzip", "zstd", "none"
+    row_group_size: 10000          # Rows per row group
+
+# -----------------------------------------------------------------------------
+# Reproducibility
+# -----------------------------------------------------------------------------
+reproducibility:
+  random_seed: 42                  # Global random seed
+  n_jobs: -1                       # Parallel jobs (-1 = all cores)
+  verbose: 1                       # Logging level (0=silent, 1=info, 2=debug)
+  log_file: "logs/timescale_run.log"
+  save_config_snapshot: true       # Save copy of config with results

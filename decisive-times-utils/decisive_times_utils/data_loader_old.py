@@ -59,8 +59,11 @@ def load_unbiased_trials(min_trials=5, max_sessions=50):
     return pd.concat(dfs)
 
 
-
-ROOT = Path(__file__).resolve().parents[2]   # from decisive_times_utils/... up to decisivetimes/
+if "__file__" in globals():
+    ROOT = Path(__file__).resolve().parents[2]  # from decisive_times_utils/... up to decisivetimes/
+else:
+    ROOT = Path.cwd().resolve()
+    
 DATA_DIR = ROOT / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 OUTFILE = DATA_DIR / "unbiased_trials.parquet"
