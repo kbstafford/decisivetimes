@@ -7,7 +7,7 @@ IBL Brainwide Map data before loading for timescale analysis.
 
 Features:
 - Browse subjects, sessions, and probes via ONE API
-- Filter by brain region, lab, date range
+- Filter by brain region (IBL's 223 canonical regions), lab, date range
 - Preview spike rasters and firing rates
 - Export selection to config or load directly
 
@@ -21,7 +21,7 @@ Usage:
 import sys
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Set, Tuple
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -33,14 +33,13 @@ from PyQt6.QtWidgets import (
     QGroupBox, QLabel, QLineEdit, QComboBox, QPushButton, QCheckBox,
     QSpinBox, QDoubleSpinBox, QProgressBar, QStatusBar, QTabWidget,
     QTextEdit, QFileDialog, QMessageBox, QHeaderView, QAbstractItemView,
-    QListWidget, QListWidgetItem
+    QListWidget, QListWidgetItem, QDialog, QDialogButtonBox, QGridLayout
 )
-from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
+from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QFont, QColor, QAction
 
 import pyqtgraph as pg
 
-# IBL imports - wrapped for graceful failure
 try:
     from one.api import ONE
     from iblatlas.atlas import AllenAtlas
@@ -53,12 +52,120 @@ except ImportError:
 
 
 # =============================================================================
+# IBL Canonical 223 Brain Regions (Beryl mapping)
+# =============================================================================
+
+IBL_CANONICAL_REGIONS = {
+    "Isocortex - Visual": [
+        "VISa", "VISam", "VISl", "VISp", "VISpl", "VISpm", "VISli", "VISrl", "VISpor",
+    ],
+    "Isocortex - Somatosensory": [
+        "SSp-bfd", "SSp-ll", "SSp-m", "SSp-n", "SSp-tr", "SSp-ul", "SSp-un", "SSs",
+    ],
+    "Isocortex - Motor": [
+        "MOp", "MOs",
+    ],
+    "Isocortex - Prefrontal": [
+        "FRP", "PL", "ILA", "ORBl", "ORBm", "ORBvl", "ACAd", "ACAv",
+    ],
+    "Isocortex - Retrosplenial": [
+        "RSPagl", "RSPd", "RSPv",
+    ],
+    "Isocortex - Auditory/Temporal": [
+        "AUDd", "AUDp", "AUDpo", "AUDv", "TEa", "VISC", "GU", "ECT", "PERI",
+    ],
+    "Isocortex - Parietal/Association": [
+        "PTLp", "AId", "AIp", "AIv",
+    ],
+    "Olfactory Areas": [
+        "AOB", "AON", "TT", "DP", "PIR", "NLOT", "COA", "PAA", "TR",
+    ],
+    "Hippocampal Formation": [
+        "CA1", "CA2", "CA3", "DG", "FC", "IG", "ENTl", "ENTm", "PAR", "POST", "PRE", "SUB", "ProS",
+    ],
+    "Cortical Subplate / Amygdala": [
+        "CLA", "EP", "LA", "BLA", "BMA", "PA",
+    ],
+    "Striatum": [
+        "CP", "ACB", "FS", "OT", "LSr", "LSc", "LSv", "SF", "SH",
+    ],
+    "Pallidum": [
+        "GPe", "GPi", "SI", "MA", "NDB", "TRS", "BST", "BAC",
+    ],
+    "Thalamus - Sensory": [
+        "VAL", "VM", "VPL", "VPLpc", "VPM", "VPMpc", "PoT", "SPF", "SPFm", "SPFp", "SPA",
+        "PP", "MGd", "MGm", "MGv", "LGd", "LGv", "LP", "PO", "POL", "SGN",
+    ],
+    "Thalamus - Limbic/Association": [
+        "AD", "AM", "AV", "IAD", "IAM", "LD", "MD", "MDc", "MDl", "MDm",
+        "IMD", "SMT", "PR", "PVT", "PT", "RE", "RH", "CM", "PCN", "CL", "PF", "PIL",
+    ],
+    "Thalamus - Other": [
+        "RT", "IGL", "IntG", "SubG", "EPI", "MH", "LH",
+    ],
+    "Hypothalamus": [
+        "SO", "ASO", "PVH", "PVHd", "ARH", "ADP", "AVP", "AVPV", "DMH", "MEPO",
+        "MPO", "OV", "PD", "PS", "PVa", "PVi", "PVpo", "SBPV", "SCH", "SFO", "VMPO",
+        "AHN", "MBO", "MM", "SUM", "TM", "LM", "LPO", "PMd", "PMv", "VMH", "PH", "LHA", "STN", "ZI",
+    ],
+    "Midbrain - Basal Ganglia": [
+        "SNr", "SNc", "VTA", "RR",
+    ],
+    "Midbrain - Superior/Inferior Colliculus": [
+        "SCm", "SCs", "SCig", "SCiw", "SCsg", "SCzo",
+        "ICc", "ICd", "ICe",
+    ],
+    "Midbrain - Other": [
+        "MRN", "NB", "SAG", "PBG", "MEV", "APN", "NOT", "NPC", "OP", "PPT", "RPF",
+        "CUN", "RN", "III", "IV", "VTN", "PAG", "PRT", "EW", "DR", "IF", "IPN", "RL",
+    ],
+    "Pons": [
+        "NLL", "PSV", "PB", "KF", "SOC", "POR", "DTN", "LDT", "PCG", "PG", "PRNc", "PRNr",
+        "SG", "SUT", "TRN", "V", "CS", "LC", "NI",
+    ],
+    "Medulla": [
+        "AP", "CN", "DCN", "ECU", "CU", "GR", "NTB", "NTS", "DMX", "SPVI", "SPVC",
+        "SPVO", "IO", "LRN", "MDRN", "PARN", "PRP", "VNC",
+        "XII", "AMB", "RO", "RPA", "RM", "NR", "VI", "VII",
+    ],
+    "Cerebellum - Vermis": [
+        "CENT", "CUL", "DEC", "FOTU", "PYR", "UVU", "NOD",
+    ],
+    "Cerebellum - Hemisphere": [
+        "PRM", "COPY", "PFL", "FL", "SIM", "AN",
+    ],
+    "Cerebellum - Nuclei": [
+        "IP", "FN", "DN",
+    ],
+}
+
+def get_ibl_canonical_regions_with_names() -> List[Tuple[str, str, str]]:
+    """Get canonical regions with full names and categories."""
+    try:
+        br = BrainRegions()
+        results = []
+        for category, acronyms in IBL_CANONICAL_REGIONS.items():
+            for acronym in acronyms:
+                try:
+                    idx = br.acronym2index([acronym])[0]
+                    if len(idx) > 0 and idx[0] >= 0:
+                        name = br.name[idx[0]]
+                    else:
+                        name = acronym
+                except Exception:
+                    name = acronym
+                results.append((acronym, name, category))
+        return results
+    except Exception:
+        return [(a, a, cat) for cat, acrs in IBL_CANONICAL_REGIONS.items() for a in acrs]
+
+
+# =============================================================================
 # Data Classes
 # =============================================================================
 
 @dataclass
 class SessionInfo:
-    """Container for session metadata."""
     eid: str
     subject: str
     date: str
@@ -68,21 +175,8 @@ class SessionInfo:
     probes: List[str] = field(default_factory=list)
     pids: List[str] = field(default_factory=list)
 
-
 @dataclass
-class ProbeInfo:
-    """Container for probe metadata."""
-    pid: str
-    eid: str
-    probe_name: str
-    n_units: int
-    n_good_units: int
-    regions: List[str] = field(default_factory=list)
-
-
-@dataclass 
 class UnitInfo:
-    """Container for unit metadata."""
     cluster_id: int
     pid: str
     acronym: str
@@ -92,99 +186,215 @@ class UnitInfo:
     amp_median: float
     depth_um: float
 
-@dataclass
-class DatasetCatalog:
-    eid: str
-    datasets: List[str]
-    by_collection: Dict[str, List[str]]
 
-    @classmethod
-    def from_one(cls, one: "ONE", eid: str) -> "DatasetCatalog":
-        ds = one.list_datasets(eid)  # list of dataset paths (strings)
-        by_col: Dict[str, List[str]] = {}
-        for p in ds:
-            # crude but works: collection is everything up to last '/'
-            col = "/".join(p.split("/")[:-1])
-            by_col.setdefault(col, []).append(p)
-        return cls(eid=eid, datasets=ds, by_collection=by_col)
+# =============================================================================
+# Region Browser Dialog
+# =============================================================================
 
-    def has_object(self, obj: str, collection: Optional[str] = None) -> bool:
-        # obj like 'trials', 'spikes', 'clusters', 'wheel'
-        if collection:
-            prefix = f"{collection}/{obj}."
-            return any(d.startswith(prefix) for d in self.datasets)
-        # anywhere
-        return any(f"/{obj}." in d or d.endswith(f"{obj}.pqt") for d in self.datasets)
+class RegionBrowserDialog(QDialog):
+    """Dialog for browsing and selecting from IBL's canonical regions."""
+    def __init__(self, parent=None, current_selection: str = ""):
+        super().__init__(parent)
+        self.setWindowTitle("IBL Canonical Brain Regions")
+        self.setMinimumSize(700, 600)
+        self.selected_regions: List[str] = []
+        if current_selection:
+            self.selected_regions = [r.strip() for r in current_selection.split(",") if r.strip()]
+        self.init_ui()
+        self.populate_regions()
 
-    def collections_containing(self, obj: str) -> List[str]:
-        cols = []
-        for col, paths in self.by_collection.items():
-            if any(f"/{obj}." in p for p in paths):
-                cols.append(col)
-        return cols
+    def init_ui(self):
+        layout = QVBoxLayout(self)
 
-    def guess_probe_collection(self, probe_name: str) -> Optional[str]:
-        # typical: 'alf/probe00'
-        c = f"alf/{probe_name}"
-        return c if c in self.by_collection else None
+        search_layout = QHBoxLayout()
+        search_layout.addWidget(QLabel("Search:"))
+        self.search_edit = QLineEdit()
+        self.search_edit.setPlaceholderText("Type to filter (e.g., CA, VIS, motor)...")
+        self.search_edit.textChanged.connect(self.filter_regions)
+        search_layout.addWidget(self.search_edit)
+        layout.addLayout(search_layout)
+
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+
+        self.region_tree = QTreeWidget()
+        self.region_tree.setHeaderLabels(["Region", "Full Name"])
+        self.region_tree.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        self.region_tree.itemDoubleClicked.connect(self.add_selected_to_list)
+        self.region_tree.setColumnWidth(0, 130)
+        splitter.addWidget(self.region_tree)
+
+        selection_widget = QWidget()
+        selection_layout = QVBoxLayout(selection_widget)
+
+        selection_layout.addWidget(QLabel("Selected Regions:"))
+        self.selection_list = QListWidget()
+        self.selection_list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        selection_layout.addWidget(self.selection_list)
+
+        for region in self.selected_regions:
+            self.selection_list.addItem(region)
+
+        btn_layout = QHBoxLayout()
+        add_btn = QPushButton("Add →")
+        add_btn.clicked.connect(self.add_selected_to_list)
+        btn_layout.addWidget(add_btn)
+
+        remove_btn = QPushButton("← Remove")
+        remove_btn.clicked.connect(self.remove_selected)
+        btn_layout.addWidget(remove_btn)
+
+        clear_btn = QPushButton("Clear All")
+        clear_btn.clicked.connect(self.clear_selection)
+        btn_layout.addWidget(clear_btn)
+        selection_layout.addLayout(btn_layout)
+
+        quick_layout = QGridLayout()
+        quick_regions = [
+            ("Visual Cortex", ["VISp", "VISl", "VISa", "VISam", "VISpm"]),
+            ("Motor", ["MOp", "MOs"]),
+            ("Prefrontal", ["PL", "ILA", "ORBl", "ORBm", "ACAd", "ACAv"]),
+            ("Hippocampus", ["CA1", "CA2", "CA3", "DG", "SUB"]),
+        ]
+        for i, (name, regions) in enumerate(quick_regions):
+            btn = QPushButton(name)
+            btn.setToolTip(", ".join(regions))
+            btn.clicked.connect(lambda checked, r=regions: self.add_regions(r))
+            quick_layout.addWidget(btn, i // 2, i % 2)
+
+        selection_layout.addWidget(QLabel("Quick Select:"))
+        selection_layout.addLayout(quick_layout)
+
+        splitter.addWidget(selection_widget)
+        splitter.setSizes([420, 280])
+        layout.addWidget(splitter)
+
+        self.count_label = QLabel("0 regions selected")
+        layout.addWidget(self.count_label)
+
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
+        )
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+        self.update_count()
+
+    def populate_regions(self):
+        self.region_tree.clear()
+        regions_data = get_ibl_canonical_regions_with_names()
+
+        by_cat: Dict[str, List[Tuple[str, str]]] = {}
+        for acronym, name, category in regions_data:
+            by_cat.setdefault(category, []).append((acronym, name))
+
+        for category, regions in by_cat.items():
+            category_item = QTreeWidgetItem([category, f"({len(regions)} regions)"])
+            category_item.setFlags(category_item.flags() & ~Qt.ItemFlag.ItemIsSelectable)
+            font = category_item.font(0)
+            font.setBold(True)
+            category_item.setFont(0, font)
+
+            for acronym, name in regions:
+                child = QTreeWidgetItem([acronym, name])
+                child.setData(0, Qt.ItemDataRole.UserRole, acronym)
+                category_item.addChild(child)
+
+            self.region_tree.addTopLevelItem(category_item)
+
+        self.region_tree.expandAll()
+
+    def filter_regions(self, text: str):
+        text = text.strip().lower()
+        for i in range(self.region_tree.topLevelItemCount()):
+            cat = self.region_tree.topLevelItem(i)
+            visible = 0
+            for j in range(cat.childCount()):
+                item = cat.child(j)
+                acronym = item.text(0).lower()
+                name = item.text(1).lower()
+                ok = (not text) or (text in acronym) or (text in name)
+                item.setHidden(not ok)
+                visible += int(ok)
+            cat.setHidden(visible == 0)
+
+    def add_selected_to_list(self):
+        for item in self.region_tree.selectedItems():
+            acronym = item.data(0, Qt.ItemDataRole.UserRole)
+            if acronym and acronym not in self.selected_regions:
+                self.selected_regions.append(acronym)
+                self.selection_list.addItem(acronym)
+        self.update_count()
+
+    def add_regions(self, regions: List[str]):
+        for r in regions:
+            if r not in self.selected_regions:
+                self.selected_regions.append(r)
+                self.selection_list.addItem(r)
+        self.update_count()
+
+    def remove_selected(self):
+        for item in self.selection_list.selectedItems():
+            self.selected_regions.remove(item.text())
+            self.selection_list.takeItem(self.selection_list.row(item))
+        self.update_count()
+
+    def clear_selection(self):
+        self.selected_regions.clear()
+        self.selection_list.clear()
+        self.update_count()
+
+    def update_count(self):
+        n = len(self.selected_regions)
+        self.count_label.setText(f"{n} region{'s' if n != 1 else ''} selected")
+
+    def get_selection(self) -> str:
+        return ", ".join(self.selected_regions)
+
 
 # =============================================================================
 # Worker Threads
 # =============================================================================
 
-class ONEConnectionWorker(QThread):
-    """Background thread for ONE API connection."""
-    finished = pyqtSignal(bool, str, object)  # success, message, one_instance
-    
-    def __init__(self, base_url: str = "https://openalyx.internationalbrainlab.org", 
-                 mode: str = "auto"):
-        super().__init__()
-        self.base_url = base_url
-        self.mode = mode
-        self.one = None
-    
-    def run(self):
-        try:
-            # Use mode='local' first to avoid interactive prompts
-            # If that fails, we'll need user to authenticate separately
-            self.one = ONE(
-                base_url=self.base_url,
-                mode=self.mode,
-                silent=True,  # Suppress interactive prompts
-            )
-            # Test connection with a simple query
-            _ = self.one.search(subject='test_fake_subject_12345', query_type='remote')
-            self.finished.emit(True, "Connected to ONE API", self.one)
-        except Exception as e:
-            error_msg = str(e)
-            if "authenticate" in error_msg.lower() or "password" in error_msg.lower():
-                self.finished.emit(False, 
-                    "Authentication required. Run 'one.setup()' in terminal first.", None)
-            else:
-                self.finished.emit(False, f"Connection failed: {error_msg}", None)
-
-
 class SessionLoadWorker(QThread):
-    """Background thread for loading session list."""
     progress = pyqtSignal(int, str)
     finished = pyqtSignal(list)
     error = pyqtSignal(str)
-    
+
     def __init__(self, one: 'ONE', filters: Dict[str, Any]):
         super().__init__()
         self.one = one
         self.filters = filters
+        self.br = BrainRegions() if HAS_IBL else None
 
-    def _probe_hits_region(self, eid: str, probe_name: str, region_acronym: str) -> bool:
-        """
-        Fast check: does this probe contain ANY channel whose atlas ID is a descendant of region_acronym?
-        Loads only small channel location arrays (not spikes).
-        """
-        # Expand region → descendant IDs (including itself)
-        target_id = int(self.br.acronym2id([region_acronym])[0])
-        desc_ids = set(self.br.descendants([target_id]).tolist())
+    def _expand_regions(self, acronyms: List[str], include_descendants: bool) -> Set[int]:
+        if not self.br or not acronyms:
+            return set()
+        acronyms = [a.strip() for a in acronyms if a and str(a).strip()]
+        if not acronyms:
+            return set()
 
-        # Preferred: brainLocationIds (tiny int array)
+        try:
+            ids = self.br.acronym2id(acronyms)
+            ids = np.atleast_1d(ids)
+            ids = ids[~np.isnan(ids)].astype(int)
+
+            if not include_descendants:
+                return set(ids.tolist())
+
+            all_ids: Set[int] = set()
+            for region_id in ids:
+                desc = self.br.descendants(np.array([region_id]))
+                all_ids.update(desc.astype(int).tolist())
+            return all_ids
+        except Exception as e:
+            print(f"Warning: Region expansion failed: {e}")
+            return set()
+
+    def _probe_hits_region(self, eid: str, probe_name: str, target_ids: Set[int]) -> bool:
+        if not target_ids:
+            return True
+
         try:
             ids = self.one.load_dataset(
                 eid,
@@ -193,395 +403,258 @@ class SessionLoadWorker(QThread):
             )
             ids = np.asarray(ids)
             ids = ids[~np.isnan(ids)].astype(int)
-            return any(i in desc_ids for i in ids)
+            return any(i in target_ids for i in ids)
         except Exception:
             pass
 
-        # Fallback: acronyms directly (also small if present)
         try:
             acr = self.one.load_dataset(
                 eid,
                 "channels.acronym.npy",
                 collection=f"alf/{probe_name}"
             )
-            acr = set(map(str, np.asarray(acr)))
-            desc_acr = set(self.br.id2acronym(np.array(list(desc_ids), dtype=int)))
-            return len(acr & desc_acr) > 0
+            acr = np.asarray(acr)
+            acr = [str(a) for a in acr if a and str(a).strip()]
+            if acr and self.br:
+                channel_ids = self.br.acronym2id(acr)
+                channel_ids = channel_ids[~np.isnan(channel_ids)].astype(int)
+                return any(i in target_ids for i in channel_ids)
         except Exception:
-            return False
+            pass
 
+        return False
 
     def run(self):
         try:
             self.progress.emit(10, "Querying sessions...")
 
             query_params = {
-                'task_protocol': 'ephysChoiceWorld',
-                'project': 'brainwide',
+                "task_protocol": "ephysChoiceWorld",
+                "project": "brainwide",
             }
-            if self.filters.get('lab'):
-                query_params['lab'] = self.filters['lab']
-            if self.filters.get('subject'):
-                query_params['subject'] = self.filters['subject']
 
-            region = self.filters.get('region')  # NEW
-            region = region.strip() if isinstance(region, str) else None
+            if self.filters.get("lab"):
+                query_params["lab"] = self.filters["lab"]
+            if self.filters.get("subject"):
+                query_params["subject"] = self.filters["subject"]
+
+            region_str = self.filters.get("region", "") or ""
+            region_list = [r.strip() for r in region_str.split(",") if r.strip()]
+            include_descendants = bool(self.filters.get("include_descendants", True))
+            target_ids = self._expand_regions(region_list, include_descendants) if region_list else set()
 
             eids = self.one.search(**query_params)
-            self.progress.emit(30, f"Found {len(eids)} sessions")
+            self.progress.emit(30, f"Found {len(eids)} sessions, filtering by region...")
 
-            sessions = []
-            max_sessions = 100  # keep your cap
+            sessions: List[SessionInfo] = []
+            max_sessions = 200
+            checked = 0
 
-            for i, eid in enumerate(eids[:max_sessions]):
+            for eid in eids:
+                if len(sessions) >= max_sessions:
+                    break
+
                 try:
                     sess_info = self.one.get_details(eid)
+                    insertions = self.one.alyx.rest("insertions", "list", session=eid)
+                    probes = [ins.get("name", "unknown") for ins in insertions]
+                    pids = [ins.get("id", None) for ins in insertions]
 
-                    insertions = self.one.alyx.rest('insertions', 'list', session=eid)
-                    probes = [ins.get('name', 'unknown') for ins in insertions]
-                    pids = [ins.get('id', None) for ins in insertions]
-
-                    # --- NEW: region-based session filter (channels only) ---
-                    if region:
-                        # allow comma-separated (e.g., "CA3,CA1")
-                        region_list = [r.strip() for r in region.split(",") if r.strip()]
-                        has_region = False
-
+                    if target_ids:
+                        ok = False
                         for probe_name in probes:
-                            if probe_name == "unknown":
-                                continue
-                            # match if probe hits ANY requested region
-                            if any(self._probe_hits_region(eid, probe_name, r) for r in region_list):
-                                has_region = True
+                            if probe_name != "unknown" and self._probe_hits_region(eid, probe_name, target_ids):
+                                ok = True
                                 break
-
-                        if not has_region:
-                            # skip session entirely
+                        if not ok:
+                            checked += 1
                             continue
-                    # --------------------------------------------------------
 
-                    # Trial count & perf (optional; this is heavier than channels)
                     try:
-                        trials = self.one.load_object(eid, 'trials', collection='alf')
-                        n_trials = len(trials.get('choice', []))
-                        correct = trials.get('feedbackType', [])
-                        performance = np.mean(correct == 1) if len(correct) > 0 else 0
+                        trials = self.one.load_object(eid, "trials", collection="alf")
+                        n_trials = len(trials.get("choice", []))
+                        correct = trials.get("feedbackType", [])
+                        performance = float(np.mean(np.asarray(correct) == 1)) if len(correct) > 0 else 0.0
                     except Exception:
-                        n_trials = 0
-                        performance = 0
+                        n_trials, performance = 0, 0.0
 
                     sessions.append(SessionInfo(
                         eid=eid,
-                        subject=sess_info.get('subject', 'unknown'),
-                        date=str(sess_info.get('start_time', ''))[:10],
-                        lab=sess_info.get('lab', 'unknown'),
-                        n_trials=n_trials,
-                        performance=performance,
+                        subject=sess_info.get("subject", "unknown"),
+                        date=str(sess_info.get("start_time", ""))[:10],
+                        lab=sess_info.get("lab", "unknown"),
+                        n_trials=int(n_trials),
+                        performance=float(performance),
                         probes=probes,
                         pids=pids,
                     ))
                 except Exception:
-                    continue
+                    pass
 
+                checked += 1
                 self.progress.emit(
-                    30 + int(60 * i / max(1, min(len(eids), max_sessions))),
-                    f"Loading session {i+1}/{min(len(eids), max_sessions)}"
+                    30 + int(60 * checked / max(1, min(len(eids), max_sessions * 2))),
+                    f"Checked {checked} sessions, found {len(sessions)} with target regions"
                 )
 
             self.progress.emit(100, f"Loaded {len(sessions)} sessions")
             self.finished.emit(sessions)
 
         except Exception as e:
-            self.error.emit(str(e))
+            import traceback
+            self.error.emit(f"{str(e)}\n\n{traceback.format_exc()}")
 
 
 class UnitsLoadWorker(QThread):
-    """Background thread for loading units from a probe."""
     progress = pyqtSignal(int, str)
-    finished = pyqtSignal(list, object)  # units, spike_times
+    finished = pyqtSignal(list, object)
     error = pyqtSignal(str)
-    
+
     def __init__(self, one: 'ONE', pid: str, eid: str, probe_name: str = None):
         super().__init__()
         self.one = one
         self.pid = pid
         self.eid = eid
-        self.probe_name = probe_name  # e.g., "probe00"
-    
+        self.probe_name = probe_name
+
     def run(self):
         try:
-            # Determine collection path
-            collection = f'alf/{self.probe_name}' if self.probe_name else None
-            
+            collection = f"alf/{self.probe_name}" if self.probe_name else None
             self.progress.emit(10, f"Finding spike data in {collection or 'default'}...")
 
-            # First, list available datasets to understand the structure
             try:
                 datasets = self.one.list_datasets(self.eid)
-                spike_datasets = [d for d in datasets if 'spike' in d.lower()]
-                self.progress.emit(15, f"Found {len(spike_datasets)} spike-related datasets")
-            except:
-                spike_datasets = []
+            except Exception:
+                datasets = []
 
-            self.progress.emit(20, "Loading spikes...")
-
-            # Try multiple approaches to load spikes
             spikes = None
             load_errors = []
 
-            # Approach 1: Standard with collection
             if spikes is None and collection:
                 try:
-                    spikes = self.one.load_object(self.eid, 'spikes', collection=collection)
+                    spikes = self.one.load_object(self.eid, "spikes", collection=collection)
                 except Exception as e:
                     load_errors.append(f"collection={collection}: {e}")
 
-            # Approach 2: Without collection
             if spikes is None:
                 try:
-                    spikes = self.one.load_object(self.eid, 'spikes')
+                    spikes = self.one.load_object(self.eid, "spikes")
                 except Exception as e:
                     load_errors.append(f"no collection: {e}")
 
-            # Approach 3: With _ibl_ namespace
-            if spikes is None and collection:
-                try:
-                    spikes = self.one.load_object(self.eid, 'spikes',
-                                                   collection=collection,
-                                                   namespace='ibl')
-                except Exception as e:
-                    load_errors.append(f"namespace=ibl: {e}")
-
-            # Approach 4: Load individual files directly
             if spikes is None:
-                try:
-                    self.progress.emit(25, "Trying direct file loading...")
-                    spike_times_file = [d for d in datasets if 'spikes.times' in d and self.probe_name in d]
-                    spike_clusters_file = [d for d in datasets if 'spikes.clusters' in d and self.probe_name in d]
-
-                    if spike_times_file and spike_clusters_file:
-                        spike_times = self.one.load_dataset(self.eid, spike_times_file[0])
-                        spike_clusters = self.one.load_dataset(self.eid, spike_clusters_file[0])
-                        spikes = {'times': spike_times, 'clusters': spike_clusters}
-
-                        # Try to load amps too
-                        spike_amps_file = [d for d in datasets if 'spikes.amps' in d and self.probe_name in d]
-                        if spike_amps_file:
-                            spikes['amps'] = self.one.load_dataset(self.eid, spike_amps_file[0])
-                except Exception as e:
-                    load_errors.append(f"direct loading: {e}")
-
-            if spikes is None:
-                error_details = "\n".join(load_errors)
-                self.error.emit(f"Failed to load spikes: spikes\n\nTried approaches:\n{error_details}")
+                error_details = "\n".join(load_errors) if load_errors else "(no details)"
+                self.error.emit(f"Failed to load spikes\n\nTried approaches:\n{error_details}")
                 return
 
-            self.progress.emit(50, "Loading clusters...")
+            self.progress.emit(50, "Loading clusters/channels...")
 
-            # Load clusters with similar fallback approach
-            clusters = None
+            clusters = {}
+            channels = {}
 
             if collection:
                 try:
-                    clusters = self.one.load_object(self.eid, 'clusters', collection=collection)
-                except:
-                    pass
-
-            if clusters is None:
-                try:
-                    clusters = self.one.load_object(self.eid, 'clusters')
-                except:
-                    pass
-
-            if clusters is None:
-                try:
-                    # Load individual cluster files
-                    cluster_files = [d for d in datasets if 'clusters.' in d and self.probe_name in d]
-                    if cluster_files:
-                        clusters = {}
-                        for cf in cluster_files:
-                            attr = cf.split('clusters.')[-1].split('.')[0]
-                            try:
-                                clusters[attr] = self.one.load_dataset(self.eid, cf)
-                            except:
-                                pass
-                except:
+                    clusters = self.one.load_object(self.eid, "clusters", collection=collection) or {}
+                except Exception:
                     clusters = {}
-
-            if clusters is None:
-                clusters = {}
-
-            self.progress.emit(70, "Loading channels...")
-
-            # Load channels
-            channels = None
-
-            if collection:
                 try:
-                    channels = self.one.load_object(self.eid, 'channels', collection=collection)
-                except:
-                    pass
-
-            if channels is None:
+                    channels = self.one.load_object(self.eid, "channels", collection=collection) or {}
+                except Exception:
+                    channels = {}
+            else:
                 try:
-                    channels = self.one.load_object(self.eid, 'channels')
-                except:
-                    pass
-
-            if channels is None:
+                    clusters = self.one.load_object(self.eid, "clusters") or {}
+                except Exception:
+                    clusters = {}
                 try:
-                    channel_files = [d for d in datasets if 'channels.' in d and self.probe_name in d]
-                    if channel_files:
-                        channels = {}
-                        for cf in channel_files:
-                            attr = cf.split('channels.')[-1].split('.')[0]
-                            try:
-                                channels[attr] = self.one.load_dataset(self.eid, cf)
-                            except:
-                                pass
-                except:
+                    channels = self.one.load_object(self.eid, "channels") or {}
+                except Exception:
                     channels = {}
 
-            if channels is None:
-                channels = {}
+            self.progress.emit(70, "Processing units...")
 
-            self.progress.emit(85, "Processing units...")
-
-            units = []
-            spike_times = spikes.get('times', np.array([]))
-            spike_clusters = spikes.get('clusters', np.array([]))
-            spike_amps = spikes.get('amps', None)
-
-            # Get unique cluster IDs from spikes
+            spike_times = np.asarray(spikes.get("times", np.array([])))
+            spike_clusters = np.asarray(spikes.get("clusters", np.array([])))
             unique_clusters = np.unique(spike_clusters)
-            n_clusters = len(unique_clusters)
 
-            # IBL cluster attributes (all indexed by cluster_id)
-            cluster_amps = clusters.get('amps', None)           # Average amplitude (V) (double)
-            cluster_depths = clusters.get('depths', None)       # Depth in µm (double)
-            cluster_channels = clusters.get('channels', None)   # Peak channel index (int)
-            cluster_metrics = clusters.get('metrics', None)     # QC metrics (DataFrame/csv)
-            cluster_peak_to_trough = clusters.get('peakToTrough', None)  # Waveform duration (ms)
-            cluster_uuids = clusters.get('uuids', None)  # Cluster identifier (int128)
+            cluster_amps = clusters.get("amps", None)
+            cluster_depths = clusters.get("depths", None)
+            cluster_channels = clusters.get("channels", None)
+            cluster_metrics = clusters.get("metrics", None)
 
-            # Channel attributes for brain regions
             br = BrainRegions()
             ccf_ids = channels.get("brainLocationIds_ccf_2017", None)
-            if ccf_ids is not None:
-                channel_acronyms = br.id2acronym(ccf_ids).astype(str)
-            else:
-                channel_acronyms = None
+            channel_acronyms = br.id2acronym(ccf_ids).astype(str) if ccf_ids is not None else None
 
-            # If metrics is a DataFrame, index it
             metrics_df = None
-            metrics_cols = []
             if cluster_metrics is not None:
                 if isinstance(cluster_metrics, pd.DataFrame):
                     metrics_df = cluster_metrics
-                    metrics_cols = metrics_df.columns.tolist()
-                elif hasattr(cluster_metrics, 'to_frame'):
+                elif hasattr(cluster_metrics, "to_frame"):
                     metrics_df = cluster_metrics.to_frame()
-                    metrics_cols = metrics_df.columns.tolist()
 
-            # Log what we found for debugging
-            label_col = None
-            for col in ['label', 'ks2_label', 'bitwise_label']:
-                if col in metrics_cols:
-                    label_col = col
-                    break
+            units: List[UnitInfo] = []
 
-            self.progress.emit(87, f"Found metrics cols: {len(metrics_cols)}, label col: {label_col}")
-
-            for i, cluster_id in enumerate(unique_clusters):
+            for cluster_id in unique_clusters:
                 cluster_id = int(cluster_id)
 
-                # Count spikes and compute firing rate
-                spike_mask = spike_clusters == cluster_id
-                n_spikes = int(np.sum(spike_mask))
-                cluster_spike_times = spike_times[spike_mask]
+                mask = (spike_clusters == cluster_id)
+                n_spikes = int(np.sum(mask))
+                t = spike_times[mask]
 
-                if len(cluster_spike_times) > 1:
-                    duration = cluster_spike_times[-1] - cluster_spike_times[0]
-                    firing_rate = n_spikes / duration if duration > 0 else 0
+                if len(t) > 1:
+                    duration = float(t[-1] - t[0])
+                    firing_rate = float(n_spikes / duration) if duration > 0 else 0.0
                 else:
-                    firing_rate = 0
+                    firing_rate = 0.0
 
-                # Get depth (µm)
-                depth = 0
-                if cluster_depths is not None and cluster_id < len(cluster_depths):
-                    depth = float(cluster_depths[cluster_id])
+                depth = float(cluster_depths[cluster_id]) if (cluster_depths is not None and cluster_id < len(cluster_depths)) else 0.0
+                amp_median = float(cluster_amps[cluster_id]) * 1e6 if (cluster_amps is not None and cluster_id < len(cluster_amps)) else 0.0
+                peak_channel = int(cluster_channels[cluster_id]) if (cluster_channels is not None and cluster_id < len(cluster_channels)) else 0
 
-                # Get amplitude (convert V to µV)
-                amp_median = 0
-                if cluster_amps is not None and cluster_id < len(cluster_amps):
-                    amp_median = float(cluster_amps[cluster_id]) * 1e6  # V to µV
-
-                # Get peak channel
-                peak_channel = 0
-                if cluster_channels is not None and cluster_id < len(cluster_channels):
-                    peak_channel = int(cluster_channels[cluster_id])
-
-                # Get brain region from channel
-                acronym = 'unknown'
-                if channel_acronyms is not None and peak_channel < len(channel_acronyms):
+                acronym = "unknown"
+                if channel_acronyms is not None and 0 <= peak_channel < len(channel_acronyms):
                     acronym = str(channel_acronyms[peak_channel])
 
-                # Get label and other metrics from metrics DataFrame
-                # IBL label: 1.0 = all 3 QC pass, 0.666 = 2/3, 0.333 = 1/3, 0 = none
                 label = 0
-                label_raw = 0.0  # Keep raw value for potential filtering
                 if metrics_df is not None:
                     try:
-                        if 'cluster_id' in metrics_df.columns:
-                            row = metrics_df[metrics_df['cluster_id'] == cluster_id]
+                        if "cluster_id" in metrics_df.columns:
+                            row = metrics_df[metrics_df["cluster_id"] == cluster_id]
+                            row = row.iloc[0] if len(row) else None
                         else:
-                            row = metrics_df.iloc[[cluster_id]] if cluster_id < len(metrics_df) else None
+                            row = metrics_df.iloc[cluster_id] if cluster_id < len(metrics_df) else None
 
-                        if row is not None and len(row) > 0:
-                            row = row.iloc[0]
+                        if row is not None:
+                            if "label" in row.index and pd.notna(row["label"]):
+                                v = row["label"]
+                                if isinstance(v, str):
+                                    label = 1 if v.lower().strip() == "good" else 0
+                                else:
+                                    label = 1 if float(v) >= 1.0 else 0
+                            elif "ks2_label" in row.index and pd.notna(row["ks2_label"]):
+                                label = 1 if str(row["ks2_label"]).lower().strip() == "good" else 0
+                            elif "bitwise_label" in row.index and pd.notna(row["bitwise_label"]):
+                                label = 1 if int(row["bitwise_label"]) == 1 else 0
 
-                            # Try different label column names used by IBL
-                            # Priority: label > ks2_label > bitwise_label
-                            if 'label' in row.index and pd.notna(row['label']):
-                                val = row['label']
-                                if isinstance(val, (int, float, np.integer, np.floating)):
-                                    label_raw = float(val)
-                                    # IBL: label == 1.0 means all 3 QC metrics pass
-                                    # We consider >= 1.0 as "good" (label=1)
-                                    label = 1 if label_raw >= 1.0 else 0
-                                elif isinstance(val, str):
-                                    label = 1 if val.lower() == 'good' else 0
-                                    label_raw = 1.0 if label == 1 else 0.0
-                            elif 'ks2_label' in row.index and pd.notna(row['ks2_label']):
-                                # ks2_label is typically 'good' or 'mua' string
-                                ks_label = str(row['ks2_label']).lower().strip()
-                                label = 1 if ks_label == 'good' else 0
-                                label_raw = 1.0 if label == 1 else 0.0
-                            elif 'bitwise_label' in row.index and pd.notna(row['bitwise_label']):
-                                # bitwise_label: 1 = good
-                                label = 1 if int(row['bitwise_label']) == 1 else 0
-                                label_raw = 1.0 if label == 1 else 0.0
-
-                            # Override firing_rate if available in metrics
-                            if 'firing_rate' in row.index and pd.notna(row['firing_rate']):
-                                firing_rate = float(row['firing_rate'])
-                    except Exception as e:
-                        # If metrics lookup fails, keep default label=0
+                            if "firing_rate" in row.index and pd.notna(row["firing_rate"]):
+                                firing_rate = float(row["firing_rate"])
+                    except Exception:
                         pass
 
                 units.append(UnitInfo(
                     cluster_id=cluster_id,
                     pid=self.pid,
                     acronym=acronym,
-                    firing_rate=float(firing_rate),
+                    firing_rate=firing_rate,
                     n_spikes=n_spikes,
                     label=label,
-                    amp_median=float(amp_median),
-                    depth_um=float(depth),
+                    amp_median=amp_median,
+                    depth_um=depth,
                 ))
 
             self.progress.emit(100, f"Loaded {len(units)} units")
-            self.finished.emit(units, {'times': spike_times, 'clusters': spike_clusters})
+            self.finished.emit(units, {"times": spike_times, "clusters": spike_clusters})
 
         except Exception as e:
             import traceback
@@ -593,137 +666,74 @@ class UnitsLoadWorker(QThread):
 # =============================================================================
 
 class IBLDataLoaderGUI(QMainWindow):
-    """Main application window."""
-
     def __init__(self):
         super().__init__()
-        self.br = BrainRegions()  # load once
-        self.one: Optional['ONE'] = None
+        self.br = BrainRegions() if HAS_IBL else None
+        self.one: Optional["ONE"] = None
         self.sessions: List[SessionInfo] = []
         self.current_units: List[UnitInfo] = []
         self.current_spikes: Optional[Dict] = None
         self.selected_units: List[int] = []
 
         self.init_ui()
-        self.setup_connections()
-
-        # Don't auto-connect - wait for user to click Connect
         self.status_bar.showMessage("Ready - Select mode and click 'Connect'")
 
     def init_ui(self):
-        """Initialize the user interface."""
         self.setWindowTitle("IBL Timescale Data Loader")
         self.setGeometry(100, 100, 1400, 900)
 
-        # Central widget
         central = QWidget()
         self.setCentralWidget(central)
         layout = QHBoxLayout(central)
 
-        # Main splitter
         splitter = QSplitter(Qt.Orientation.Horizontal)
         layout.addWidget(splitter)
 
-        # Left panel: Selection
-        left_panel = self.create_selection_panel()
-        splitter.addWidget(left_panel)
-
-        # Right panel: Preview
-        right_panel = self.create_preview_panel()
-        splitter.addWidget(right_panel)
-
+        splitter.addWidget(self.create_selection_panel())
+        splitter.addWidget(self.create_preview_panel())
         splitter.setSizes([500, 900])
 
-        # Status bar
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
+
         self.progress_bar = QProgressBar()
         self.progress_bar.setMaximumWidth(200)
         self.progress_bar.hide()
         self.status_bar.addPermanentWidget(self.progress_bar)
 
-        # Menu bar
         self.create_menu_bar()
 
-    def show_available_regions_dialog(self):
-        if not self.current_units:
-            QMessageBox.information(self, "No units loaded", "Load a probe first to see available regions.")
-            return
-
-        regions = sorted({u.acronym for u in self.current_units if u.acronym and u.acronym != "unknown"})
-
-        dlg = QDialog(self)
-        dlg.setWindowTitle("Available Regions in This Probe")
-        dlg.setMinimumSize(420, 500)
-
-        v = QVBoxLayout(dlg)
-
-        search = QLineEdit()
-        search.setPlaceholderText("Search (e.g., CA, ENT, ORB)...")
-        v.addWidget(search)
-
-        lst = QListWidget()
-        lst.addItems(regions)
-        v.addWidget(lst)
-
-        btn_row = QHBoxLayout()
-        use_btn = QPushButton("Use selected")
-        close_btn = QPushButton("Close")
-        btn_row.addWidget(use_btn)
-        btn_row.addWidget(close_btn)
-        v.addLayout(btn_row)
-
-        def apply_filter():
-            items = lst.selectedItems()
-            if items:
-                chosen = [it.text() for it in items]
-                self.region_edit.setText(", ".join(chosen))
-            dlg.accept()
-
-        def filter_list(text):
-            text = text.strip().upper()
-            lst.clear()
-            if not text:
-                lst.addItems(regions)
-            else:
-                lst.addItems([r for r in regions if text in r.upper()])
-
-        use_btn.clicked.connect(apply_filter)
-        close_btn.clicked.connect(dlg.reject)
-        lst.itemDoubleClicked.connect(lambda _: apply_filter())
-        search.textChanged.connect(filter_list)
-
-        dlg.exec()
-
     def create_menu_bar(self):
-        """Create the menu bar."""
         menubar = self.menuBar()
-
-        # File menu
         file_menu = menubar.addMenu("File")
 
-        export_action = QAction("Export Selection to Parquet", self)
-        export_action.triggered.connect(self.export_to_parquet)
-        file_menu.addAction(export_action)
+        export_parquet_action = QAction("Export Selection to Parquet", self)
+        export_parquet_action.triggered.connect(self.export_to_parquet)
+        file_menu.addAction(export_parquet_action)
 
-        export_action = QAction("Export Selection to YAML", self)
-        export_action.triggered.connect(self.export_to_yaml)
-        file_menu.addAction(export_action)
+        export_yaml_action = QAction("Export Selection to YAML", self)
+        export_yaml_action.triggered.connect(self.export_to_yaml)
+        file_menu.addAction(export_yaml_action)
 
         file_menu.addSeparator()
-
         exit_action = QAction("Exit", self)
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
 
-        # Help menu
         help_menu = menubar.addMenu("Help")
+        regions_action = QAction("View Canonical Regions", self)
+        regions_action.triggered.connect(self.show_region_browser)
+        help_menu.addAction(regions_action)
+
         about_action = QAction("About", self)
         about_action.triggered.connect(self.show_about)
         help_menu.addAction(about_action)
 
+    # -------------------------------------------------------------------------
+    # KEY CHANGE: Lab dropdown is now dynamic (any lab), not hardcoded
+    # -------------------------------------------------------------------------
+
     def create_selection_panel(self) -> QWidget:
-        """Create the left selection panel."""
         panel = QWidget()
         layout = QVBoxLayout(panel)
 
@@ -758,7 +768,6 @@ class IBLDataLoaderGUI(QMainWindow):
         mode_row.addStretch()
         conn_layout.addLayout(mode_row)
 
-        # Auth help label
         auth_label = QLabel(
             "<small>💡 If 'auto' hangs, run in terminal first: "
             "<code>python -c \"from one.api import ONE; ONE.setup()\"</code></small>"
@@ -773,16 +782,15 @@ class IBLDataLoaderGUI(QMainWindow):
         filter_group = QGroupBox("Filters")
         filter_layout = QVBoxLayout(filter_group)
 
-        # Lab filter
         lab_row = QHBoxLayout()
         lab_row.addWidget(QLabel("Lab:"))
         self.lab_combo = QComboBox()
-        self.lab_combo.addItems(["All", "hoferlab", "churchlandlab", "cortexlab",
-                                  "danlab", "maiabordalab", "wittenlab", "zaborlab"])
+        # start empty; we fill after connecting
+        self.lab_combo.addItems(["All (connect to load labs)"])
+        self.lab_combo.setEnabled(False)
         lab_row.addWidget(self.lab_combo)
         filter_layout.addLayout(lab_row)
 
-        # Subject filter
         subj_row = QHBoxLayout()
         subj_row.addWidget(QLabel("Subject:"))
         self.subject_edit = QLineEdit()
@@ -790,20 +798,28 @@ class IBLDataLoaderGUI(QMainWindow):
         subj_row.addWidget(self.subject_edit)
         filter_layout.addLayout(subj_row)
 
-        # Region filter
         region_row = QHBoxLayout()
         region_row.addWidget(QLabel("Region:"))
         self.region_edit = QLineEdit()
-        self.region_edit.setPlaceholderText("e.g., VISp, CA1 (comma-separated)")
+        self.region_edit.setPlaceholderText("e.g., CA1, VISp (comma-separated)")
+        self.region_edit.setToolTip("Enter IBL canonical region acronyms")
         region_row.addWidget(self.region_edit)
+
+        self.browse_regions_btn = QPushButton("Browse...")
+        self.browse_regions_btn.setMaximumWidth(90)
+        self.browse_regions_btn.clicked.connect(self.show_region_browser)
+        self.browse_regions_btn.setToolTip("Browse canonical brain regions")
+        region_row.addWidget(self.browse_regions_btn)
         filter_layout.addLayout(region_row)
 
-        # Good units only
+        self.include_descendants_check = QCheckBox("Include child regions (e.g., VIS → VISp, VISl, ...)")
+        self.include_descendants_check.setChecked(True)
+        filter_layout.addWidget(self.include_descendants_check)
+
         self.good_only_check = QCheckBox("Good units only (label=1)")
         self.good_only_check.setChecked(True)
         filter_layout.addWidget(self.good_only_check)
 
-        # Load button
         self.load_sessions_btn = QPushButton("Load Sessions")
         self.load_sessions_btn.clicked.connect(self.load_sessions)
         self.load_sessions_btn.setEnabled(False)
@@ -811,75 +827,59 @@ class IBLDataLoaderGUI(QMainWindow):
 
         layout.addWidget(filter_group)
 
-        # Sessions table
         sessions_group = QGroupBox("Sessions")
         sessions_layout = QVBoxLayout(sessions_group)
 
         self.sessions_table = QTableWidget()
         self.sessions_table.setColumnCount(6)
-        self.sessions_table.setHorizontalHeaderLabels(
-            ["Subject", "Date", "Lab", "Trials", "Perf", "Probes"]
-        )
+        self.sessions_table.setHorizontalHeaderLabels(["Subject", "Date", "Lab", "Trials", "Perf", "Probes"])
         self.sessions_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.sessions_table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.sessions_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.sessions_table.itemSelectionChanged.connect(self.on_session_selected)
         sessions_layout.addWidget(self.sessions_table)
-
         layout.addWidget(sessions_group)
 
-        # Probes list
         probes_group = QGroupBox("Probes")
         probes_layout = QVBoxLayout(probes_group)
-
         self.probes_list = QListWidget()
         self.probes_list.itemSelectionChanged.connect(self.on_probe_selected)
         probes_layout.addWidget(self.probes_list)
-
         layout.addWidget(probes_group)
 
         return panel
 
     def create_preview_panel(self) -> QWidget:
-        """Create the right preview panel."""
         panel = QWidget()
         layout = QVBoxLayout(panel)
 
-        # Tabs for different views
         tabs = QTabWidget()
         layout.addWidget(tabs)
 
-        # Units table tab
+        # Units table
         units_widget = QWidget()
         units_layout = QVBoxLayout(units_widget)
-
         self.units_table = QTableWidget()
         self.units_table.setColumnCount(7)
-        self.units_table.setHorizontalHeaderLabels(
-            ["ID", "Region", "FR (Hz)", "Spikes", "Label", "Amp (µV)", "Depth (µm)"]
-        )
+        self.units_table.setHorizontalHeaderLabels(["ID", "Region", "FR (Hz)", "Spikes", "Label", "Amp (µV)", "Depth (µm)"])
         self.units_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.units_table.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.units_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.units_table.itemSelectionChanged.connect(self.on_units_selected)
         units_layout.addWidget(self.units_table)
 
-        # Unit count label
         self.unit_count_label = QLabel("No units loaded")
         units_layout.addWidget(self.unit_count_label)
-
         tabs.addTab(units_widget, "Units Table")
 
-        # Raster plot tab
+        # Raster
         raster_widget = QWidget()
         raster_layout = QVBoxLayout(raster_widget)
-
         self.raster_plot = pg.PlotWidget(title="Spike Raster")
-        self.raster_plot.setLabel('left', 'Unit')
-        self.raster_plot.setLabel('bottom', 'Time (s)')
+        self.raster_plot.setLabel("left", "Unit")
+        self.raster_plot.setLabel("bottom", "Time (s)")
         raster_layout.addWidget(self.raster_plot)
 
-        # Raster controls
         raster_controls = QHBoxLayout()
         raster_controls.addWidget(QLabel("Time range (s):"))
         self.raster_start = QDoubleSpinBox()
@@ -896,34 +896,28 @@ class IBLDataLoaderGUI(QMainWindow):
         self.update_raster_btn.clicked.connect(self.update_raster_plot)
         raster_controls.addWidget(self.update_raster_btn)
         raster_controls.addStretch()
-
         raster_layout.addLayout(raster_controls)
         tabs.addTab(raster_widget, "Spike Raster")
 
-        # Firing rate histogram tab
+        # FR dist
         fr_widget = QWidget()
         fr_layout = QVBoxLayout(fr_widget)
-
         self.fr_plot = pg.PlotWidget(title="Firing Rate Distribution")
-        self.fr_plot.setLabel('left', 'Count')
-        self.fr_plot.setLabel('bottom', 'Firing Rate (Hz)')
+        self.fr_plot.setLabel("left", "Count")
+        self.fr_plot.setLabel("bottom", "Firing Rate (Hz)")
         fr_layout.addWidget(self.fr_plot)
-
         tabs.addTab(fr_widget, "FR Distribution")
 
-        # Region summary tab
+        # Region summary
         region_widget = QWidget()
         region_layout = QVBoxLayout(region_widget)
-
         self.region_table = QTableWidget()
         self.region_table.setColumnCount(4)
         self.region_table.setHorizontalHeaderLabels(["Region", "Total", "Good", "Mean FR"])
         self.region_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         region_layout.addWidget(self.region_table)
-
         tabs.addTab(region_widget, "Region Summary")
 
-        # Bottom: Selection summary and export
         bottom_group = QGroupBox("Selection Summary")
         bottom_layout = QVBoxLayout(bottom_group)
 
@@ -933,15 +927,12 @@ class IBLDataLoaderGUI(QMainWindow):
         bottom_layout.addWidget(self.selection_summary)
 
         export_row = QHBoxLayout()
-
         self.export_data_btn = QPushButton("Export Data to Parquet")
         self.export_data_btn.clicked.connect(self.export_to_parquet)
-        self.export_data_btn.setToolTip("Save loaded units to a Parquet file")
         export_row.addWidget(self.export_data_btn)
 
         self.export_yaml_btn = QPushButton("Export Config (YAML)")
         self.export_yaml_btn.clicked.connect(self.export_to_yaml)
-        self.export_yaml_btn.setToolTip("Save selection criteria to a YAML config file")
         export_row.addWidget(self.export_yaml_btn)
 
         self.copy_selection_btn = QPushButton("Copy Selection")
@@ -950,59 +941,99 @@ class IBLDataLoaderGUI(QMainWindow):
 
         export_row.addStretch()
         bottom_layout.addLayout(export_row)
-
         layout.addWidget(bottom_group)
 
         return panel
 
-    def setup_connections(self):
-        """Setup signal connections."""
-        pass
+    # -------------------------------------------------------------------------
+    # Dynamic lab loading
+    # -------------------------------------------------------------------------
 
-    # =========================================================================
+    def populate_labs(self):
+        """
+        Populate lab dropdown with *all* labs available from Alyx.
+        Called after successful ONE connection.
+        """
+        if self.one is None:
+            return
+
+        self.lab_combo.blockSignals(True)
+        self.lab_combo.clear()
+
+        labs: List[str] = []
+        try:
+            # Alyx 'labs' endpoint returns a list of lab objects (usually with 'name')
+            lab_objs = self.one.alyx.rest("labs", "list")
+            for obj in lab_objs:
+                name = obj.get("name", None)
+                if name:
+                    labs.append(str(name))
+        except Exception:
+            labs = []
+
+        labs = sorted(set(labs), key=lambda s: s.lower())
+
+        # Always include "All"
+        self.lab_combo.addItem("All")
+        if labs:
+            self.lab_combo.addItems(labs)
+            self.lab_combo.setEnabled(True)
+        else:
+            # still usable; user can type a lab name in code if needed, but UI shows fallback
+            self.lab_combo.addItem("(could not load labs)")
+            self.lab_combo.setEnabled(True)
+
+        self.lab_combo.blockSignals(False)
+
+    # -------------------------------------------------------------------------
+    # Region browser
+    # -------------------------------------------------------------------------
+
+    def show_region_browser(self):
+        dialog = RegionBrowserDialog(self, self.region_edit.text())
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            self.region_edit.setText(dialog.get_selection())
+
+    # -------------------------------------------------------------------------
     # Actions
-    # =========================================================================
+    # -------------------------------------------------------------------------
 
     def connect_to_one(self):
-        """Connect to ONE API."""
         if not HAS_IBL:
             QMessageBox.critical(self, "Error",
-                "IBL packages not installed.\n\nInstall with:\n  pip install ONE-api iblatlas")
+                                 "IBL packages not installed.\n\nInstall with:\n  pip install ONE-api iblatlas")
             return
 
         self.connect_btn.setEnabled(False)
         self.conn_status.setText("🟡 Connecting...")
         self.status_bar.showMessage("Connecting to ONE API...")
-        QApplication.processEvents()  # Force UI update
+        QApplication.processEvents()
 
         mode = self.mode_combo.currentText()
 
         try:
-            self.one = ONE(
-                base_url=self.url_edit.text(),
-                mode=mode,
-            )
+            self.one = ONE(base_url=self.url_edit.text(), mode=mode)
             self.conn_status.setText("🟢 Connected")
             self.load_sessions_btn.setEnabled(True)
             self.status_bar.showMessage(f"Connected to ONE API (mode={mode})")
 
+            # NEW: load labs dynamically
+            self.populate_labs()
+
         except Exception as e:
             self.conn_status.setText("🔴 Failed")
-            error_msg = str(e)
-            self.status_bar.showMessage(f"Connection failed: {error_msg}")
-
-            QMessageBox.warning(self, "Connection Failed",
-                f"Could not connect to ONE API.\n\n"
-                f"Error: {error_msg}\n\n"
+            self.status_bar.showMessage(f"Connection failed: {e}")
+            QMessageBox.warning(
+                self, "Connection Failed",
+                f"Could not connect to ONE API.\n\nError: {e}\n\n"
                 f"If authentication is needed, run in terminal:\n"
-                f"  python -c \"from one.api import ONE; ONE.setup()\"\n\n"
-                f"Or try 'local' mode if you have cached data.")
-
+                f"  python -c \"from one.api import ONE; ONE.setup()\"\n"
+                f"Or try 'local' mode if you have cached data."
+            )
         finally:
             self.connect_btn.setEnabled(True)
 
     def load_sessions(self):
-        """Load sessions from ONE API."""
         if self.one is None:
             return
 
@@ -1010,10 +1041,14 @@ class IBLDataLoaderGUI(QMainWindow):
         self.progress_bar.show()
         self.progress_bar.setValue(0)
 
+        lab_val = self.lab_combo.currentText()
+        lab_filter = None if (lab_val == "All" or lab_val.startswith("(")) else lab_val
+
         filters = {
-            'lab': self.lab_combo.currentText() if self.lab_combo.currentText() != "All" else None,
-            'subject': self.subject_edit.text() or None,
-            'region': self.region_edit.text().strip() or None,
+            "lab": lab_filter,
+            "subject": self.subject_edit.text().strip() or None,
+            "region": self.region_edit.text().strip() or None,
+            "include_descendants": self.include_descendants_check.isChecked(),
         }
 
         self.session_worker = SessionLoadWorker(self.one, filters)
@@ -1023,12 +1058,10 @@ class IBLDataLoaderGUI(QMainWindow):
         self.session_worker.start()
 
     def on_load_progress(self, value: int, message: str):
-        """Update progress bar."""
         self.progress_bar.setValue(value)
         self.status_bar.showMessage(message)
 
     def on_sessions_loaded(self, sessions: List[SessionInfo]):
-        """Populate sessions table."""
         self.sessions = sessions
         self.sessions_table.setRowCount(len(sessions))
 
@@ -1045,39 +1078,31 @@ class IBLDataLoaderGUI(QMainWindow):
         self.status_bar.showMessage(f"Loaded {len(sessions)} sessions")
 
     def on_load_error(self, error: str):
-        """Handle load error."""
         self.load_sessions_btn.setEnabled(True)
         self.progress_bar.hide()
         self.status_bar.showMessage(f"Error: {error}")
         QMessageBox.warning(self, "Load Error", error)
 
     def on_session_selected(self):
-        """Handle session selection."""
         rows = self.sessions_table.selectionModel().selectedRows()
         if not rows:
             return
 
-        row = rows[0].row()
-        session = self.sessions[row]
-
-        # Populate probes list
+        sess = self.sessions[rows[0].row()]
         self.probes_list.clear()
-        for probe, pid in zip(session.probes, session.pids):
-            item = QListWidgetItem(f"{probe} ({pid[:8]}...)")
-            item.setData(Qt.ItemDataRole.UserRole, (pid, session.eid, probe))  # Added probe name
+        for probe, pid in zip(sess.probes, sess.pids):
+            item = QListWidgetItem(f"{probe} ({str(pid)[:8]}...)")
+            item.setData(Qt.ItemDataRole.UserRole, (pid, sess.eid, probe))
             self.probes_list.addItem(item)
 
         self.update_selection_summary()
 
     def on_probe_selected(self):
-        """Handle probe selection - load units."""
         items = self.probes_list.selectedItems()
         if not items or self.one is None:
             return
 
-        data = items[0].data(Qt.ItemDataRole.UserRole)
-        pid, eid = data[0], data[1]
-        probe_name = data[2] if len(data) > 2 else None
+        pid, eid, probe_name = items[0].data(Qt.ItemDataRole.UserRole)
 
         self.progress_bar.show()
         self.progress_bar.setValue(0)
@@ -1088,56 +1113,63 @@ class IBLDataLoaderGUI(QMainWindow):
         self.units_worker.error.connect(self.on_load_error)
         self.units_worker.start()
 
-    def expand_regions(self, acronyms):
-        """
-        Expand parent regions (e.g. OFC, VIS, HPF) into all Allen CCF descendants.
-        """
-        acronyms = [a.strip().upper() for a in acronyms if a and str(a).strip()]
-        ids = self.br.acronym2id(acronyms)
-        child_ids = self.br.descendants(ids)
-        return set(self.br.id2acronym(child_ids))
+    def expand_regions(self, acronyms: List[str]) -> Set[str]:
+        if not self.br or not acronyms:
+            return set(a.upper() for a in acronyms)
+
+        acronyms = [a.strip() for a in acronyms if a and str(a).strip()]
+        if not acronyms:
+            return set()
+
+        try:
+            ids = self.br.acronym2id(acronyms)
+            ids = np.atleast_1d(ids)
+            ids = ids[~np.isnan(ids)].astype(int)
+
+            all_ids: Set[int] = set()
+            for region_id in ids:
+                desc = self.br.descendants(np.array([region_id]))
+                all_ids.update(desc.astype(int).tolist())
+
+            all_acronyms = set(self.br.id2acronym(np.array(list(all_ids), dtype=int)))
+            return {str(a).upper() for a in all_acronyms}
+        except Exception:
+            return set(a.upper() for a in acronyms)
 
     def on_units_loaded(self, units: List[UnitInfo], spikes: Dict):
-        """Populate units table."""
         self.current_units = units
         self.current_spikes = spikes
 
-        # Apply region filter (with parent expansion)
-        region_filter = [r.strip().upper() for r in self.region_edit.text().split(',') if r.strip()]
-
+        region_filter = [r.strip() for r in self.region_edit.text().split(",") if r.strip()]
         if region_filter:
-            expanded_regions = self.expand_regions(region_filter)
-            units = [u for u in units if u.acronym.upper() in expanded_regions]
+            if self.include_descendants_check.isChecked():
+                expanded = self.expand_regions(region_filter)
+            else:
+                expanded = set(r.upper() for r in region_filter)
+            units = [u for u in units if u.acronym.upper() in expanded]
 
-        # Apply good units filter
-        if self.good_only_check.isChecked():
-            display_units = [u for u in units if u.label == 1]
-        else:
-            display_units = units
+        display_units = [u for u in units if u.label == 1] if self.good_only_check.isChecked() else units
 
         self.units_table.setRowCount(len(display_units))
+        for i, u in enumerate(display_units):
+            self.units_table.setItem(i, 0, QTableWidgetItem(str(u.cluster_id)))
+            self.units_table.setItem(i, 1, QTableWidgetItem(u.acronym))
+            self.units_table.setItem(i, 2, QTableWidgetItem(f"{u.firing_rate:.2f}"))
+            self.units_table.setItem(i, 3, QTableWidgetItem(str(u.n_spikes)))
 
-        for i, unit in enumerate(display_units):
-            self.units_table.setItem(i, 0, QTableWidgetItem(str(unit.cluster_id)))
-            self.units_table.setItem(i, 1, QTableWidgetItem(unit.acronym))
-            self.units_table.setItem(i, 2, QTableWidgetItem(f"{unit.firing_rate:.2f}"))
-            self.units_table.setItem(i, 3, QTableWidgetItem(str(unit.n_spikes)))
-
-            label_item = QTableWidgetItem(str(unit.label))
-            if unit.label == 1:
+            label_item = QTableWidgetItem(str(u.label))
+            if u.label == 1:
                 label_item.setBackground(QColor(200, 255, 200))
             self.units_table.setItem(i, 4, label_item)
 
-            self.units_table.setItem(i, 5, QTableWidgetItem(f"{unit.amp_median:.1f}"))
-            self.units_table.setItem(i, 6, QTableWidgetItem(f"{unit.depth_um:.0f}"))
+            self.units_table.setItem(i, 5, QTableWidgetItem(f"{u.amp_median:.1f}"))
+            self.units_table.setItem(i, 6, QTableWidgetItem(f"{u.depth_um:.0f}"))
 
-        # Update count label
         n_good = sum(1 for u in self.current_units if u.label == 1)
         self.unit_count_label.setText(
             f"Total: {len(self.current_units)} | Good: {n_good} | Displayed: {len(display_units)}"
         )
 
-        # Update plots
         self.update_fr_histogram()
         self.update_region_summary()
         self.update_raster_plot()
@@ -1146,51 +1178,38 @@ class IBLDataLoaderGUI(QMainWindow):
         self.update_selection_summary()
 
     def on_units_selected(self):
-        """Handle unit selection."""
         rows = self.units_table.selectionModel().selectedRows()
         self.selected_units = [int(self.units_table.item(r.row(), 0).text()) for r in rows]
         self.update_selection_summary()
         self.update_raster_plot()
 
     def update_raster_plot(self):
-        """Update spike raster plot."""
         self.raster_plot.clear()
-
         if self.current_spikes is None:
             return
 
-        # Get time range
-        t_start = self.raster_start.value()
-        t_end = self.raster_end.value()
+        t_start = float(self.raster_start.value())
+        t_end = float(self.raster_end.value())
 
-        # Get units to plot
-        if self.selected_units:
-            units_to_plot = self.selected_units[:20]  # Limit to 20
-        else:
-            units_to_plot = [u.cluster_id for u in self.current_units[:20]]
+        units_to_plot = self.selected_units[:20] if self.selected_units else [u.cluster_id for u in self.current_units[:20]]
 
-        spike_times = self.current_spikes.get('times', np.array([]))
-        spike_clusters = self.current_spikes.get('clusters', np.array([]))
+        spike_times = np.asarray(self.current_spikes.get("times", np.array([])))
+        spike_clusters = np.asarray(self.current_spikes.get("clusters", np.array([])))
 
         for i, cluster_id in enumerate(units_to_plot):
             mask = (spike_clusters == cluster_id) & (spike_times >= t_start) & (spike_times <= t_end)
             times = spike_times[mask]
-
             if len(times) > 0:
-                # Downsample if too many spikes
                 if len(times) > 1000:
-                    times = times[::len(times)//1000]
-
+                    step = max(1, len(times) // 1000)
+                    times = times[::step]
                 y = np.ones_like(times) * i
-                self.raster_plot.plot(times, y, pen=None, symbol='|',
-                                      symbolSize=5, symbolBrush='b')
+                self.raster_plot.plot(times, y, pen=None, symbol="|", symbolSize=5, symbolBrush="b")
 
         self.raster_plot.setYRange(-0.5, len(units_to_plot) - 0.5)
 
     def update_fr_histogram(self):
-        """Update firing rate histogram."""
         self.fr_plot.clear()
-
         if not self.current_units:
             return
 
@@ -1198,66 +1217,45 @@ class IBLDataLoaderGUI(QMainWindow):
         if not frs:
             return
 
-        # Log-scale histogram
         log_frs = np.log10(np.array(frs) + 0.1)
         hist, bins = np.histogram(log_frs, bins=30)
+        centers = (bins[:-1] + bins[1:]) / 2
+        width = bins[1] - bins[0]
 
-        # Use bin centers for bar plot
-        bin_centers = (bins[:-1] + bins[1:]) / 2
-        bin_width = bins[1] - bins[0]
-
-        # Create bar graph
-        bargraph = pg.BarGraphItem(x=bin_centers, height=hist, width=bin_width * 0.9,
-                                   brush=(100, 100, 200, 150))
-        self.fr_plot.addItem(bargraph)
-
-        # Set labels (x-axis is in log10 units)
-        self.fr_plot.setLabel('bottom', 'Firing Rate (log10 Hz)')
-        self.fr_plot.setLabel('left', 'Count')
+        self.fr_plot.addItem(pg.BarGraphItem(x=centers, height=hist, width=width * 0.9, brush=(100, 100, 200, 150)))
+        self.fr_plot.setLabel("bottom", "Firing Rate (log10 Hz)")
+        self.fr_plot.setLabel("left", "Count")
 
     def update_region_summary(self):
-        """Update region summary table."""
         if not self.current_units:
             return
 
-        # Group by region
-        regions = {}
-        for unit in self.current_units:
-            if unit.acronym not in regions:
-                regions[unit.acronym] = {'total': 0, 'good': 0, 'frs': []}
-            regions[unit.acronym]['total'] += 1
-            if unit.label >= 0.66:
-                regions[unit.acronym]['good'] += 1
-            regions[unit.acronym]['frs'].append(unit.firing_rate)
+        regions: Dict[str, Dict[str, Any]] = {}
+        for u in self.current_units:
+            regions.setdefault(u.acronym, {"total": 0, "good": 0, "frs": []})
+            regions[u.acronym]["total"] += 1
+            regions[u.acronym]["good"] += int(u.label >= 1)
+            regions[u.acronym]["frs"].append(u.firing_rate)
 
         self.region_table.setRowCount(len(regions))
-
         for i, (region, data) in enumerate(sorted(regions.items())):
             self.region_table.setItem(i, 0, QTableWidgetItem(region))
-            self.region_table.setItem(i, 1, QTableWidgetItem(str(data['total'])))
-            self.region_table.setItem(i, 2, QTableWidgetItem(str(data['good'])))
-            mean_fr = np.mean(data['frs']) if data['frs'] else 0
+            self.region_table.setItem(i, 1, QTableWidgetItem(str(data["total"])))
+            self.region_table.setItem(i, 2, QTableWidgetItem(str(data["good"])))
+            mean_fr = float(np.mean(data["frs"])) if data["frs"] else 0.0
             self.region_table.setItem(i, 3, QTableWidgetItem(f"{mean_fr:.2f}"))
 
     def update_selection_summary(self):
-        """Update selection summary text."""
         lines = []
-
-        # Session info
         rows = self.sessions_table.selectionModel().selectedRows()
         if rows:
             sess = self.sessions[rows[0].row()]
-            eid_str = str(sess.eid)
-            lines.append(f"Session: {sess.subject} / {sess.date} ({eid_str[:8]}...)")
+            lines.append(f"Session: {sess.subject} / {sess.date} ({str(sess.eid)[:8]}...)")
 
-        # Probe info
         items = self.probes_list.selectedItems()
         if items:
-            data = items[0].data(Qt.ItemDataRole.UserRole)
-            pid = data[0]
             lines.append(f"Probe: {items[0].text()}")
 
-        # Units info
         if self.current_units:
             n_good = sum(1 for u in self.current_units if u.label == 1)
             lines.append(f"Units: {len(self.current_units)} total, {n_good} good")
@@ -1268,8 +1266,6 @@ class IBLDataLoaderGUI(QMainWindow):
         self.selection_summary.setText("\n".join(lines))
 
     def export_to_yaml(self):
-        """Export current selection to YAML config."""
-        # Get current selection
         rows = self.sessions_table.selectionModel().selectedRows()
         if not rows:
             QMessageBox.warning(self, "No Selection", "Please select a session first.")
@@ -1277,7 +1273,12 @@ class IBLDataLoaderGUI(QMainWindow):
 
         sess = self.sessions[rows[0].row()]
 
-        # Build YAML content
+        regions_list = [r.strip() for r in self.region_edit.text().split(",") if r.strip()]
+        regions_yaml = ", ".join(f"\"{r}\"" for r in regions_list) if regions_list else "# all regions"
+
+        lab_val = self.lab_combo.currentText()
+        lab_filter = None if (lab_val == "All" or lab_val.startswith("(")) else lab_val
+
         yaml_content = f"""# IBL Timescale Config - Generated {datetime.now().isoformat()}
 # Session: {sess.subject} / {sess.date}
 
@@ -1290,8 +1291,11 @@ dataset:
     include: ["{sess.subject}"]
   sessions:
     include: ["{sess.eid}"]
+  labs:
+    include: [{f'"{lab_filter}"' if lab_filter else "# all labs"}]
   regions:
-    include: [{', '.join(f'"{r}"' for r in self.region_edit.text().split(',') if r.strip()) or '# all regions'}]
+    include: [{regions_yaml}]
+    include_descendants: {str(self.include_descendants_check.isChecked()).lower()}
 
 unit_selection:
   label: {1 if self.good_only_check.isChecked() else 'null'}
@@ -1305,122 +1309,83 @@ preprocessing:
     post_event_ms: 1500
 """
 
-        # Save dialog
-        path, _ = QFileDialog.getSaveFileName(
-            self, "Export Config", "ibl_timescale_config.yaml", "YAML Files (*.yaml *.yml)"
-        )
-
+        path, _ = QFileDialog.getSaveFileName(self, "Export Config", "ibl_timescale_config.yaml", "YAML Files (*.yaml *.yml)")
         if path:
-            with open(path, 'w') as f:
+            with open(path, "w") as f:
                 f.write(yaml_content)
             self.status_bar.showMessage(f"Exported config to {path}")
 
     def copy_selection(self):
-        """Copy selection info to clipboard."""
-        text = self.selection_summary.toPlainText()
-        QApplication.clipboard().setText(text)
+        QApplication.clipboard().setText(self.selection_summary.toPlainText())
         self.status_bar.showMessage("Selection copied to clipboard")
 
     def export_to_parquet(self):
-        """Export loaded units data to Parquet file."""
         if not self.current_units:
             QMessageBox.warning(self, "No Data", "Please load units from a probe first.")
             return
-
-        # Get session info
         rows = self.sessions_table.selectionModel().selectedRows()
         if not rows:
             QMessageBox.warning(self, "No Session", "Please select a session.")
             return
 
         sess = self.sessions[rows[0].row()]
-
-        # Get probe info
         probe_items = self.probes_list.selectedItems()
         probe_data = probe_items[0].data(Qt.ItemDataRole.UserRole) if probe_items else (None, None, None)
         pid = probe_data[0] if probe_data else "unknown"
         probe_name = probe_data[2] if len(probe_data) > 2 else "probe00"
 
-        # Default filename and location
         default_dir = Path("./data")
         default_dir.mkdir(exist_ok=True)
-        default_filename = f"{sess.subject}_{sess.date}_{probe_name}_units.parquet"
-        default_path = default_dir / default_filename
+        default_path = default_dir / f"{sess.subject}_{sess.date}_{probe_name}_units.parquet"
 
-        # Save dialog
-        path, _ = QFileDialog.getSaveFileName(
-            self,
-            "Export Units to Parquet",
-            str(default_path),
-            "Parquet Files (*.parquet);;All Files (*)"
-        )
-
+        path, _ = QFileDialog.getSaveFileName(self, "Export Units to Parquet", str(default_path),
+                                              "Parquet Files (*.parquet);;All Files (*)")
         if not path:
             return
 
         try:
-            # Build DataFrame from current units
             data = []
-            for unit in self.current_units:
+            for u in self.current_units:
                 data.append({
-                    # Identifiers - convert UUIDs to strings
                     "subject": str(sess.subject),
                     "eid": str(sess.eid),
                     "pid": str(pid),
-                    "cluster_id": int(unit.cluster_id),
-
-                    # Brain region
-                    "acronym": str(unit.acronym),
-
-                    # Session info
+                    "cluster_id": int(u.cluster_id),
+                    "acronym": str(u.acronym),
                     "lab": str(sess.lab),
                     "session_date": str(sess.date),
                     "probe_name": str(probe_name) if probe_name else "unknown",
-
-                    # Metrics
-                    "label": int(unit.label),
-                    "n_spikes": int(unit.n_spikes),
-                    "firing_rate_hz": float(unit.firing_rate),
-                    "amp_median_uV": float(unit.amp_median),
-                    "depth_um": float(unit.depth_um),
-
-                    # Placeholder for timescale (to be computed later)
+                    "label": int(u.label),
+                    "n_spikes": int(u.n_spikes),
+                    "firing_rate_hz": float(u.firing_rate),
+                    "amp_median_uV": float(u.amp_median),
+                    "depth_um": float(u.depth_um),
                     "tau_ms": None,
                     "qc_status": "pending",
-
-                    # Metadata
                     "processing_timestamp": datetime.now().isoformat(),
                 })
 
             df = pd.DataFrame(data)
-
-            # Ensure directory exists
             Path(path).parent.mkdir(parents=True, exist_ok=True)
-
-            # Save to parquet
             df.to_parquet(path, index=False)
 
             n_good = sum(1 for u in self.current_units if u.label == 1)
-            self.status_bar.showMessage(
-                f"Exported {len(self.current_units)} units ({n_good} good) to {path}"
-            )
-
+            self.status_bar.showMessage(f"Exported {len(self.current_units)} units ({n_good} good) to {path}")
             QMessageBox.information(self, "Export Successful",
-                f"Saved {len(self.current_units)} units to:\n{path}\n\n"
-                f"Good units: {n_good}\n"
-                f"Regions: {len(set(u.acronym for u in self.current_units))}")
+                                    f"Saved {len(self.current_units)} units to:\n{path}\n\nGood units: {n_good}")
 
         except Exception as e:
             QMessageBox.critical(self, "Export Failed", f"Error saving file:\n{str(e)}")
             self.status_bar.showMessage(f"Export failed: {e}")
 
     def show_about(self):
-        """Show about dialog."""
+        n_regions = sum(len(v) for v in IBL_CANONICAL_REGIONS.values())
         QMessageBox.about(self, "About IBL Data Loader",
-            "IBL Timescale Data Loader\n\n"
-            "Interactive tool for selecting and previewing\n"
-            "IBL Brainwide Map data for timescale analysis.\n\n"
-            "Version 1.0")
+                          f"IBL Timescale Data Loader\n\n"
+                          f"Interactive tool for selecting and previewing\n"
+                          f"IBL Brainwide Map data for timescale analysis.\n\n"
+                          f"Includes {n_regions} canonical regions.\n\n"
+                          f"Version 1.2")
 
 
 # =============================================================================
@@ -1429,18 +1394,10 @@ preprocessing:
 
 def main():
     app = QApplication(sys.argv)
-    app.setStyle('Fusion')
-
-    # Set dark theme (optional)
-    # palette = app.palette()
-    # palette.setColor(palette.ColorRole.Window, QColor(53, 53, 53))
-    # app.setPalette(palette)
-
+    app.setStyle("Fusion")
     window = IBLDataLoaderGUI()
     window.show()
-
     sys.exit(app.exec())
-
 
 if __name__ == "__main__":
     main()
