@@ -41,6 +41,9 @@ except ImportError:
     warnings.warn("sklearn or joblib not available. Install with: pip install scikit-learn joblib")
 
 # Public IBL OpenAlyx credentials (shared by entire IBL community)
+# These are INTENTIONALLY hardcoded public credentials documented at:
+# https://int-brain-lab.github.io/ONE/one_installation.html
+# Password 'international' is the publicly documented community access password
 OPENALYX_URL = 'https://openalyx.internationalbrainlab.org'
 OPENALYX_PASSWORD = 'international'
 
@@ -238,6 +241,9 @@ def load_session_spikes(cache_dir: Path, eid: str, probe: str = 'probe00') -> Op
     logger.info(f"Loading spikes for session {eid}, probe {probe}")
     
     # Find session directory
+    # Note: Using broad pattern to handle different cache structures (ONE v1 vs v2)
+    # and multiple data revisions. Pattern matches:
+    # cache_dir/**/eid/**/alf/probe/[revision]/spikes.times.npy
     session_pattern = f"**/{eid}/**/alf/{probe}/**/spikes.times.npy"
     matches = list(cache_dir.rglob(session_pattern))
     
@@ -501,11 +507,16 @@ def process_subsample(
     # Subsample trials (stratified by label)
     unique_labels = np.unique(trial_labels)
     trial_indices = []
-    trials_per_label = n_subsample_trials // len(unique_labels)
     
-    for label in unique_labels:
+    # Distribute trials across labels, handling remainder
+    base_trials_per_label = n_subsample_trials // len(unique_labels)
+    remainder = n_subsample_trials % len(unique_labels)
+    
+    for idx, label in enumerate(unique_labels):
         label_trials = np.where(trial_labels == label)[0]
-        sampled = np.random.choice(label_trials, size=min(trials_per_label, len(label_trials)), replace=False)
+        # Give extra trial to first 'remainder' labels to use all requested trials
+        n_trials_this_label = base_trials_per_label + (1 if idx < remainder else 0)
+        sampled = np.random.choice(label_trials, size=min(n_trials_this_label, len(label_trials)), replace=False)
         trial_indices.extend(sampled)
     
     trial_indices = np.array(trial_indices)
