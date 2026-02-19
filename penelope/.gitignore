@@ -1,0 +1,33 @@
+# User-specific configuration
+config.yaml
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data files (can be large)
+*.npy
+*.npz
+data/
+cache/
+
+# OS files
+.DS_Store
+Thumbs.db

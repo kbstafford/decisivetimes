@@ -1,0 +1,30 @@
+# Copy this file to config.yaml and edit for your setup.
+# config.yaml is gitignored so your local settings won't be committed.
+
+# Where to store downloaded IBL data.
+# On Colab: /content/drive/MyDrive/IBL_Project/Cache
+# On local: ~/ibl_data or any path you prefer
+cache_dir: ~/ibl_data
+
+# Session EIDs to analyze.
+# Add or remove eids as needed for your analysis.
+eids:
+  - '5569f363-0934-464e-9a5b-77c8e67791a1'
+  - '1191f865-b10a-45c8-9c48-24a980fd9402'
+  - '360eac0c-7d2d-4cc1-9dcf-79fc7afc56e7'
+  - '8207abc6-6b23-4762-92b4-82e05bed5143'
+  - '0f77ca5d-73c2-45bd-aa4c-4c5ed275dbde'
+  - '5455a21c-1be7-4cae-ae8e-8853a8d5f55e'
+
+# Analysis parameters
+analysis:
+  bin_size: 0.05
+  window_sec: [-0.2, 0.8]
+  decoder_window_bins: 3
+  n_folds: 5
+  n_iterations: 30
+  n_subsample_neurons: 20
+  n_subsample_trials: 300
+  min_neurons: 10
+  min_trials: 200
+  n_jobs: 2
