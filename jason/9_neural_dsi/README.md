@@ -1,6 +1,6 @@
 # #9: Exploring a neural decision strength index
 
-TODO
+The approach described in #9 for a neural decision strength index is less relevant now, but this provides an example of how to fit simple logistic regression decoders that can predict left/right decisions with high accuracy.
 
 ## To reproduce
 
