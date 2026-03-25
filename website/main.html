@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Timescales — good_isttc</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0d0f;
+  --bg2: #13161a;
+  --bg3: #1c2026;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #e8e6e0;
+  --muted: #6b6f77;
+  --accent: #4d9de0;
+  --accent2: #e07a4d;
+  --accent3: #4de08a;
+  --accent4: #c47de0;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(11,13,15,0.93); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0; padding: 0 2rem; height: 52px;
+}
+.nav-brand { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: 0.04em; margin-right: 2rem; white-space: nowrap; }
+.nav-links { display: flex; gap: 0; overflow-x: auto; flex: 1; }
+.nav-links a { font-size: 12px; color: var(--muted); text-decoration: none; padding: 0 14px; height: 52px; display: flex; align-items: center; border-bottom: 2px solid transparent; white-space: nowrap; transition: color 0.15s, border-color 0.15s; }
+.nav-links a:hover, .nav-links a.active { color: var(--text); border-bottom-color: var(--accent); }
+.nav-badge { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+.hero { padding: 5rem 2rem 3rem; max-width: 900px; margin: 0 auto; border-bottom: 1px solid var(--border); }
+.hero-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 1rem; }
+.hero h1 { font-size: clamp(26px, 5vw, 46px); font-weight: 300; line-height: 1.2; margin-bottom: 1rem; }
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero p { color: var(--muted); font-size: 14px; max-width: 540px; }
+
+.metrics-bar { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--border); }
+.metric-cell { padding: 2rem; border-right: 1px solid var(--border); }
+.metric-cell:last-child { border-right: none; }
+.metric-num { font-family: var(--mono); font-size: 26px; font-weight: 400; color: var(--text); letter-spacing: -0.02em; }
+.metric-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.section { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; border-bottom: 1px solid var(--border); }
+.section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+.section-num { font-family: var(--mono); font-size: 11px; color: var(--accent); flex-shrink: 0; }
+.section-title { font-size: 18px; font-weight: 400; }
+.section-desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+.chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 14px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.legend-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.chart-wrap { position: relative; width: 100%; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+.insight { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 1rem 1.25rem; margin-top: 1rem; font-size: 12px; color: var(--muted); font-family: var(--mono); line-height: 1.6; }
+.insight strong { color: var(--accent2); font-weight: 500; }
+
+footer { padding: 2rem; text-align: center; font-family: var(--mono); font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.section { animation: fadeUp 0.45s ease both; }
+
+@media (max-width: 700px) {
+  .metrics-bar { grid-template-columns: repeat(2, 1fr); }
+  .metric-cell { border-right: none; border-bottom: 1px solid var(--border); }
+  .two-col { grid-template-columns: 1fr; }
+  nav { padding: 0 1rem; }
+  .section { padding: 2rem 1rem; }
+  .hero { padding: 3rem 1rem 2rem; }
+  .nav-badge { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">good_isttc</span>
+  <div class="nav-links">
+    <a href="#hero-sec">Overview</a>
+    <a href="#timescale-region">τ × Region</a>
+    <a href="#timescale-fr">τ × Firing Rate</a>
+    <a href="#timescale-lv">τ × Local Var.</a>
+    <a href="#histogram">τ Distribution</a>
+    <a href="#n-timescales">N Timescales</a>
+    <a href="#region-overview">Region Summary</a>
+  </div>
+  <span class="nav-badge">n = 23,660 units</span>
+</nav>
+
+<div class="hero" id="hero-sec">
+  <div class="hero-label">Neural Timescale Analysis · good_isttc</div>
+  <h1>Intrinsic timescales<br>across <em>brain regions</em></h1>
+  <p>Spontaneous spiking activity from 154 sessions. Autocorrelation decay fitted with 1–4 exponential components. All units passed quality filter (r² &gt; 0.5, CI excludes zero, ACF decline 50–200 ms).</p>
+</div>
+
+<div class="metrics-bar">
+  <div class="metric-cell"><div class="metric-num">23,660</div><div class="metric-lbl">Total units</div></div>
+  <div class="metric-cell"><div class="metric-num">4.3 Hz</div><div class="metric-lbl">Median firing rate</div></div>
+  <div class="metric-cell"><div class="metric-num">300 ms</div><div class="metric-lbl">Median τ effective</div></div>
+  <div class="metric-cell"><div class="metric-num">199</div><div class="metric-lbl">Unique brain regions</div></div>
+</div>
+
+<!-- 01: Timescale × Region -->
+<div class="section" id="timescale-region">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <div>
+      <div class="section-title">Timescale × Brain Region</div>
+      <div class="section-desc">Median effective timescale (τ) for the 15 most-sampled regions, sorted descending.</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>τ &gt; 500 ms</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#efc24d"></span>200–500 ms</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>τ &lt; 200 ms</span>
+    </div>
+    <div class="chart-wrap" style="height:400px;"><canvas id="regionTauChart"></canvas></div>
+  </div>
+  <div class="insight">
+    <strong>Key finding:</strong> PRNr (926 ms), MRN (727 ms) and SSs (705 ms) show the longest timescales — consistent with brainstem/motor regions maintaining sustained activity states. Hippocampal and cortical regions (CA1, CA3, PAR) show the shortest timescales (&lt;100 ms), suggesting rapid information turnover.
+  </div>
+</div>
+
+<!-- 02: Timescale × Firing Rate -->
+<div class="section" id="timescale-fr">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <div>
+      <div class="section-title">Timescale × Firing Rate</div>
+      <div class="section-desc">Median τ effective per firing rate bin, with unit count overlay.</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#4de08a"></span>Median τ (left axis)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#1c4a2e"></span>Unit count (right axis)</span>
+    </div>
+    <div class="chart-wrap" style="height:320px;"><canvas id="frTauChart"></canvas></div>
+  </div>
+  <div class="insight">
+    <strong>Pattern:</strong> Very low firing rate units (0–1 Hz) show shorter τ (~183 ms). The peak timescale occurs in the 20–50 Hz bin (432 ms). Mid-rate units (2–10 Hz) form the bulk of the population (10,650 units).
+  </div>
+</div>
+
+<!-- 03: Timescale × Local Variance -->
+<div class="section" id="timescale-lv">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <div>
+      <div class="section-title">Timescale × Local Variance (LV)</div>
+      <div class="section-desc">LV measures inter-spike interval regularity. LV ≈ 1 is Poisson-like; LV &lt; 1 is more regular; LV &gt; 1 is more bursty.</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#c47de0"></span>Median τ effective (ms)</span>
+    </div>
+    <div class="chart-wrap" style="height:320px;"><canvas id="lvTauChart"></canvas></div>
+  </div>
+  <div class="insight">
+    <strong>Strong negative relationship:</strong> Regular spiking (LV &lt; 0.5) is associated with very long τ (~844 ms). High variability (LV &gt; 2.0) corresponds to extremely short τ (~9 ms). Spiking regularity is a strong predictor of intrinsic timescale.
+  </div>
+</div>
+
+<!-- 04 + 05: Histogram + N Timescales -->
+<div class="section" id="histogram">
+  <div class="section-header">
+    <span class="section-num">04 — 05</span>
+    <div>
+      <div class="section-title">τ Distribution &amp; N Timescales</div>
+      <div class="section-desc">Left: histogram of τ effective across all 23,660 units. Right: number of exponential components needed to fit the ACF.</div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="chart-card">
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Unit count per τ bin</span>
+      </div>
+      <div class="chart-wrap" style="height:280px;"><canvas id="tauHistChart"></canvas></div>
+      <div class="insight" style="margin-top:12px;"><strong>Right-skewed:</strong> Majority of units cluster below 500 ms (bin peak: 9,817 units in 0–200 ms). Long tail extends to ~6,000 ms.</div>
+    </div>
+    <div class="chart-card" id="n-timescales">
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>n_timescales distribution</span>
+      </div>
+      <div class="chart-wrap" style="height:280px;"><canvas id="nTimescalesChart"></canvas></div>
+      <div class="insight" style="margin-top:12px;"><strong>59%</strong> of units best fit with 2 timescales. Only 22 units (0.09%) required 4 components.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 06: Region overview -->
+<div class="section" id="region-overview">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <div>
+      <div class="section-title">Region Overview — Unit Counts &amp; Firing Rates</div>
+      <div class="section-desc">Top 15 regions by unit count (left) and median vs mean firing rate comparison (right).</div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="chart-card">
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Unit count</span>
+      </div>
+      <div class="chart-wrap" style="height:400px;"><canvas id="regionCountChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#4de08a"></span>Median FR (Hz)</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#1c4a2e"></span>Mean FR (Hz)</span>
+      </div>
+      <div class="chart-wrap" style="height:400px;"><canvas id="regionFRChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<footer>good_isttc · spontaneous activity · n = 23,660 units · 154 sessions · 199 brain regions · epoch: passivePeriods.spontaneousActivity</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const GRID = 'rgba(255,255,255,0.05)';
+const TICK = { color: '#555', font: { family: "'DM Mono', monospace", size: 11 } };
+const TOOLTIP = { backgroundColor: '#1c2026', titleColor: '#e8e6e0', bodyColor: '#888', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleFont: { family: "'DM Mono', monospace", size: 12 }, bodyFont: { family: "'DM Mono', monospace", size: 11 } };
+const axisX = { ticks: TICK, grid: { color: GRID }, border: { color: 'rgba(255,255,255,0.08)' } };
+const axisY = { ticks: TICK, grid: { color: GRID }, border: { color: 'rgba(255,255,255,0.08)' } };
+
+// 01 — Timescale × Brain Region
+const regionTauData = [
+  {r:'PRNr',t:926},{r:'MRN',t:727},{r:'SSs',t:705},{r:'SPVI',t:528},
+  {r:'root',t:403},{r:'PO',t:368},{r:'LP',t:212},{r:'SUB',t:124},
+  {r:'CP',t:117},{r:'SSp-m',t:110},{r:'SSp-bfd',t:103},{r:'DG',t:95},
+  {r:'CA1',t:78},{r:'CA3',t:67},{r:'PAR',t:50}
+];
+new Chart(document.getElementById('regionTauChart'), {
+  type: 'bar',
+  data: {
+    labels: regionTauData.map(d => d.r),
+    datasets: [{
+      data: regionTauData.map(d => d.t),
+      backgroundColor: regionTauData.map(d => d.t > 500 ? '#e07a4d' : d.t > 200 ? '#efc24d' : '#4d9de0'),
+      borderRadius: 2, borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: TOOLTIP },
+    scales: {
+      x: { ...axisX, ticks: { ...TICK, autoSkip: false } },
+      y: { ...axisY, ticks: { ...TICK, callback: v => v + ' ms' } }
+    }
+  }
+});
+
+// 02 — Timescale × Firing Rate
+const frLabels = ['0–1 Hz','1–2 Hz','2–5 Hz','5–10 Hz','10–20 Hz','20–50 Hz','50+ Hz'];
+const frTau    = [183, 301, 365, 328, 288, 432, 328];
+const frCounts = [4493, 2949, 5440, 5210, 3772, 1437, 359];
+new Chart(document.getElementById('frTauChart'), {
+  type: 'bar',
+  data: {
+    labels: frLabels,
+    datasets: [
+      { label: 'Median τ (ms)', data: frTau, backgroundColor: '#4de08a', borderRadius: 2, borderSkipped: false, yAxisID: 'y' },
+      { label: 'Unit count', data: frCounts, backgroundColor: '#1c4a2e', borderRadius: 2, borderSkipped: false, yAxisID: 'y2' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: TOOLTIP },
+    scales: {
+      x: { ...axisX, ticks: { ...TICK, autoSkip: false } },
+      y: { ...axisY, position: 'left', ticks: { ...TICK, callback: v => v + ' ms' }, title: { display: true, text: 'Median τ (ms)', color: '#555', font: { family: "'DM Mono', monospace", size: 10 } } },
+      y2: { ...axisY, position: 'right', grid: { display: false }, ticks: { ...TICK, callback: v => v.toLocaleString() }, title: { display: true, text: 'Unit count', color: '#555', font: { family: "'DM Mono', monospace", size: 10 } } }
+    }
+  }
+});
+
+// 03 — Timescale × Local Variance
+const lvLabels = ['0–0.5','0.5–0.8','0.8–1.0','1.0–1.2','1.2–1.5','1.5–2.0','2.0+'];
+const lvTau    = [844, 788, 663, 378, 124, 38, 9];
+new Chart(document.getElementById('lvTauChart'), {
+  type: 'line',
+  data: {
+    labels: lvLabels,
+    datasets: [{
+      data: lvTau,
+      borderColor: '#c47de0', backgroundColor: 'rgba(196,125,224,0.08)',
+      pointBackgroundColor: '#c47de0', pointBorderColor: '#0b0d0f', pointBorderWidth: 1,
+      pointRadius: 6, pointHoverRadius: 8,
+      borderWidth: 2, tension: 0.35, fill: true
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: TOOLTIP },
+    scales: {
+      x: { ...axisX, title: { display: true, text: 'Local Variance (LV)', color: '#555', font: { family: "'DM Mono', monospace", size: 11 } } },
+      y: { ...axisY, ticks: { ...TICK, callback: v => v + ' ms' } }
+    }
+  }
+});
+
+// 04 — τ Histogram
+const histMids   = [101,301,499,696,893,1091,1288,1486,1683,1881,2078,2275,2473,2670,2868,3065,3263,3460,3657,3855,4052,4250,4447,4645,4842,5039,5237,5434,5632,5829];
+const histCounts = [9817,3561,2368,1684,1267,944,671,546,420,359,288,228,182,168,153,128,116,99,66,93,69,48,54,54,51,57,42,39,36,52];
+new Chart(document.getElementById('tauHistChart'), {
+  type: 'bar',
+  data: {
+    labels: histMids,
+    datasets: [{ data: histCounts, backgroundColor: '#4d9de0', borderRadius: 1, borderSkipped: false, barPercentage: 1.0, categoryPercentage: 1.0 }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...TOOLTIP, callbacks: { title: items => items[0].label + ' ms', label: item => item.raw.toLocaleString() + ' units' } } },
+    scales: {
+      x: { ...axisX, ticks: { ...TICK, maxTicksLimit: 7, callback: v => v + ' ms' } },
+      y: { ...axisY, ticks: { ...TICK, callback: v => v.toLocaleString() } }
+    }
+  }
+});
+
+// 05 — n_timescales donut
+new Chart(document.getElementById('nTimescalesChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['1 timescale — 27%', '2 timescales — 59%', '3 timescales — 13%', '4 timescales — 0.1%'],
+    datasets: [{
+      data: [6457, 14052, 3129, 22],
+      backgroundColor: ['#185fa5','#4d9de0','#85b7eb','#b5d4f4'],
+      borderWidth: 0, hoverOffset: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false, cutout: '58%',
+    plugins: {
+      legend: { display: true, position: 'bottom', labels: { color: '#6b6f77', font: { family: "'DM Mono', monospace", size: 11 }, padding: 14, boxWidth: 10, boxHeight: 10 } },
+      tooltip: TOOLTIP
+    }
+  }
+});
+
+// 06a — Region counts (horizontal bar)
+const rcLabels = ['root','CP','CA1','SPVI','PAR','CA3','SSp-bfd','DG','LP','SSs','PO','MRN','SSp-m','PRNr','SUB'];
+const rcCounts = [2166,1124,680,619,453,428,358,357,291,275,275,274,271,248,235];
+new Chart(document.getElementById('regionCountChart'), {
+  type: 'bar',
+  data: {
+    labels: rcLabels,
+    datasets: [{ data: rcCounts, backgroundColor: '#4d9de0', borderRadius: 2, borderSkipped: false }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: TOOLTIP },
+    scales: {
+      x: { ...axisX },
+      y: { ...axisY, ticks: { ...TICK } }
+    }
+  }
+});
+
+// 06b — Region FR
+const frRegions = ['CA1','CA3','CP','DG','LP','MRN','PAR','PO','PRNr','SPVI','SSp-bfd','SSp-m','SSs','SUB','root'];
+const frMedian  = [5.81,5.75,1.91,7.49,8.63,4.02,5.15,6.80,3.31,1.68,5.31,4.21,5.24,6.04,4.59];
+const frMean    = [7.70,7.84,3.92,9.44,9.55,9.21,8.00,8.03,7.76,3.23,6.17,5.70,6.14,8.92,8.82];
+new Chart(document.getElementById('regionFRChart'), {
+  type: 'bar',
+  data: {
+    labels: frRegions,
+    datasets: [
+      { label: 'Median', data: frMedian, backgroundColor: '#4de08a', borderRadius: 2, borderSkipped: false },
+      { label: 'Mean',   data: frMean,   backgroundColor: '#1c4a2e', borderRadius: 2, borderSkipped: false }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: TOOLTIP },
+    scales: {
+      x: { ...axisX, ticks: { ...TICK, autoSkip: false, maxRotation: 40 } },
+      y: { ...axisY, ticks: { ...TICK, callback: v => v + ' Hz' } }
+    }
+  }
+});
+
+// Active nav
+const allSections = document.querySelectorAll('[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const link = document.querySelector('.nav-links a[href="#' + e.target.id + '"]');
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+allSections.forEach(s => io.observe(s));
+</script>
+</body>
+</html>
