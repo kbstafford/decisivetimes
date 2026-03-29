@@ -120,6 +120,507 @@ footer { padding: 2rem; text-align: center; font-family: var(--mono); font-size:
     <span class="section-num">01</span>
     <div>
       <div class="section-title">Timescale × Brain Region</div>
+      <div class="section-desc">Median effective timescale (τ) for the 15 most-sampled regions, sorted descending.</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>τ &gt; 500 ms</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#efc24d"></span>200–500 ms</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>τ &lt; 200 ms</span>
+    </div>
+    <div class="chart-wrap" style="height:400px;"><canvas id="regionTauChart"></canvas></div>
+  </div>
+</div>
+
+<div class="section" id="timescale-division">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <div>
+      <div class="section-title">Timescale × Major Brain Division</div>
+      <div class="section-desc">Comparing median effective τ across grouped forebrain, midbrain, and hindbrain structures (Top 15 regions mapped).</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Forebrain (Ctx/Hippo/BG/Thal)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>Midbrain (MRN/PRNr)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#efc24d"></span>Hindbrain (SPVI)</span>
+    </div>
+    <div class="chart-wrap" style="height:320px;"><canvas id="divisionTauChart"></canvas></div>
+  </div>
+  <div class="insight">
+    <strong>Hierarchy validated:</strong> Aligning with Shi et al. (2025), there is a ~8× jump in timescale magnitude from the forebrain (110 ms median) to the midbrain complex (868 ms), establishing a massive hierarchical gradient in temporal integration.
+  </div>
+</div>
+
+<div class="section" id="timescale-fr">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <div>
+      <div class="section-title">Timescale × Firing Rate</div>
+      <div class="section-desc">Median τ effective per firing rate bin, with unit count overlay.</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#4de08a"></span>Median τ (left axis)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#1c4a2e"></span>Unit count (right axis)</span>
+    </div>
+    <div class="chart-wrap" style="height:320px;"><canvas id="frTauChart"></canvas></div>
+  </div>
+</div>
+
+<div class="section" id="timescale-lv">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <div>
+      <div class="section-title">Timescale × Local Variance (LV)</div>
+      <div class="section-desc">LV measures inter-spike interval regularity. LV ≈ 1 is Poisson-like; LV &lt; 1 is more regular; LV &gt; 1 is more bursty.</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#c47de0"></span>Median τ effective (ms)</span>
+    </div>
+    <div class="chart-wrap" style="height:320px;"><canvas id="lvTauChart"></canvas></div>
+  </div>
+</div>
+
+<div class="section" id="histogram">
+  <div class="section-header">
+    <span class="section-num">05 — 06</span>
+    <div>
+      <div class="section-title">τ Distribution &amp; N Timescales</div>
+      <div class="section-desc">Left: histogram of τ effective across all 23,660 units. Right: number of exponential components needed to fit the ACF.</div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="chart-card">
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Unit count per τ bin</span>
+      </div>
+      <div class="chart-wrap" style="height:280px;"><canvas id="tauHistChart"></canvas></div>
+    </div>
+    <div class="chart-card" id="n-timescales">
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>n_timescales distribution</span>
+      </div>
+      <div class="chart-wrap" style="height:280px;"><canvas id="nTimescalesChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="tau-components">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <div>
+      <div class="section-title">Timescale Components — τ₁ through τ₄</div>
+      <div class="section-desc">Median value of each fitted timescale component across all neurons.</div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-bottom:1.5rem;">
+    <div style="background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:1.25rem;">
+      <div style="font-family:var(--mono); font-size:10px; color:#4d9de0; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">τ₁ — 1st comp</div>
+      <div style="font-family:var(--mono); font-size:24px; font-weight:400; color:var(--text);">52.4 ms</div>
+      <div style="font-size:11px; color:var(--muted); margin-top:4px;">n = 23,660</div>
+    </div>
+    <div style="background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:1.25rem;">
+      <div style="font-family:var(--mono); font-size:10px; color:#4de08a; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">τ₂ — 2nd comp</div>
+      <div style="font-family:var(--mono); font-size:24px; font-weight:400; color:var(--text);">1,034 ms</div>
+      <div style="font-size:11px; color:var(--muted); margin-top:4px;">n = 17,203</div>
+    </div>
+    <div style="background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:1.25rem;">
+      <div style="font-family:var(--mono); font-size:10px; color:#c47de0; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">τ₃ — 3rd comp</div>
+      <div style="font-family:var(--mono); font-size:24px; font-weight:400; color:var(--text);">2,929 ms</div>
+      <div style="font-size:11px; color:var(--muted); margin-top:4px;">n = 3,151</div>
+    </div>
+    <div style="background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:1.25rem;">
+      <div style="font-family:var(--mono); font-size:10px; color:#e07a4d; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">τ₄ — 4th comp</div>
+      <div style="font-family:var(--mono); font-size:24px; font-weight:400; color:var(--text);">4,489 ms</div>
+      <div style="font-size:11px; color:var(--muted); margin-top:4px;">n = 22</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div style="font-size:13px; color:var(--muted); margin-bottom:14px; font-family:var(--mono);">Median τ₁ and τ₂ per brain region</div>
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Median τ₁</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#4de08a"></span>Median τ₂</span>
+    </div>
+    <div class="chart-wrap" style="height:400px;"><canvas id="tauRegionBreakdownChart"></canvas></div>
+  </div>
+</div>
+
+<div class="section" id="tau-multiscale">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <div>
+      <div class="section-title">Multiscale Architecture: τ₁ vs τ₂ Relationship</div>
+      <div class="section-desc">Testing the hypothesis that fast components (τ₁) drive regional differences while slow components (τ₂) act as universal, state-dependent baseline dynamics.</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#c47de0"></span>Top 15 Regions (Log-Log Scale)</span>
+    </div>
+    <div class="chart-wrap" style="height:350px;"><canvas id="tauScatterChart"></canvas></div>
+  </div>
+  <div class="insight">
+    <strong>Regional vs Universal:</strong> While τ₁ varies widely across regions (from ~19ms in CA1 to ~278ms in V), τ₂ maintains a proportionally higher baseline in regions with long τ₁, demonstrating a coupled multiscale architecture where local circuit properties (τ₁) scale alongside slower network states (τ₂).
+  </div>
+</div>
+
+<div class="section" id="tau-powerlaw">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <div>
+      <div class="section-title">Tau₂ Power-Law Distribution</div>
+      <div class="section-desc">Log-log histogram of τ₂ across the population to test the theoretical claim of scale-free dynamics (exponent ≈ -2).</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>τ₂ Unit Count (Log-Log Scale)</span>
+    </div>
+    <div class="chart-wrap" style="height:350px;"><canvas id="tauPowerLawChart"></canvas></div>
+  </div>
+  <div class="insight">
+    <strong>Deviation from Scale-free Dynamics:</strong> Unlike the theoretical claim of a pure power-law (where the line should descend sharply and linearly), the empirical data shows a <strong>broad plateau between 1,000 and 3,500 ms</strong>. This suggests that slow fluctuations do not follow strict criticality, but rather cluster within a preferred "slow state" frequency band across the brain.
+  </div>
+</div>
+
+<div class="section" id="fit-quality">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <div>
+      <div class="section-title">Fit Reliability & Amplitude Metrics</div>
+      <div class="section-desc">Evaluating model confidence (R² per region, CI width) and coefficient magnitude (c₁ vs τ₁).</div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div class="chart-card">
+      <div style="font-size:13px; color:var(--muted); margin-bottom:14px; font-family:var(--mono);">Median R² per Region (Top 15)</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#4de08a"></span>R² > 0.85</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#1c4a2e"></span>R² < 0.85</span>
+      </div>
+      <div class="chart-wrap" style="height:250px;"><canvas id="r2RegionChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div style="font-size:13px; color:var(--muted); margin-bottom:14px; font-family:var(--mono);">Amplitude (c₁) vs τ₁ (Top 30)</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Median Region Data</span>
+      </div>
+      <div class="chart-wrap" style="height:250px;"><canvas id="c1TauChart"></canvas></div>
+    </div>
+    <div class="chart-card" style="grid-column: 1 / -1;">
+      <div style="font-size:13px; color:var(--muted); margin-bottom:14px; font-family:var(--mono);">Confidence Interval Width (95%) vs Effective τ</div>
+      <div class="chart-wrap" style="height:250px;"><canvas id="ciWidthChart"></canvas></div>
+      <div class="insight" style="margin-top:12px;"><strong>Estimation limits & Amplitude tradeoff:</strong> Uzun timescale tahminleri doğası gereği daha geniş güven aralıklarına (CI) sahiptir. Daha da önemlisi, <strong>c₁ ve τ₁ arasında güçlü bir ters orantı vardır.</strong> Kısa τ₁'e sahip bölgeler (örn. CA1, SSp) otokorelasyonda çok daha yüksek bir başlangıç genliğine (c₁ ≈ 0.20) sahipken, beyinsapı gibi uzun τ₁'li bölgelerde bu genlik zayıflar (c₁ ≈ 0.07).</div>
+    </div>
+  </div>
+</div>
+
+<footer>good_isttc · spontaneous activity · n = 23,660 units · 154 sessions · 199 brain regions · epoch: passivePeriods.spontaneousActivity</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const GRID = 'rgba(255,255,255,0.05)';
+const TICK = { color: '#555', font: { family: "'DM Mono', monospace", size: 11 } };
+const TOOLTIP = { backgroundColor: '#1c2026', titleColor: '#e8e6e0', bodyColor: '#888', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleFont: { family: "'DM Mono', monospace", size: 12 }, bodyFont: { family: "'DM Mono', monospace", size: 11 } };
+const axisX = { ticks: TICK, grid: { color: GRID }, border: { color: 'rgba(255,255,255,0.08)' } };
+const axisY = { ticks: TICK, grid: { color: GRID }, border: { color: 'rgba(255,255,255,0.08)' } };
+
+// 01 — Timescale × Brain Region
+const regionTauData = [
+  {r:'PRNr',t:926},{r:'MRN',t:727},{r:'SSs',t:705},{r:'SPVI',t:528},
+  {r:'root',t:403},{r:'PO',t:368},{r:'LP',t:212},{r:'SUB',t:124},
+  {r:'CP',t:117},{r:'SSp-m',t:110},{r:'SSp-bfd',t:103},{r:'DG',t:95},
+  {r:'CA1',t:78},{r:'CA3',t:67},{r:'PAR',t:50}
+];
+new Chart(document.getElementById('regionTauChart'), {
+  type: 'bar',
+  data: { labels: regionTauData.map(d => d.r), datasets: [{ data: regionTauData.map(d => d.t), backgroundColor: regionTauData.map(d => d.t > 500 ? '#e07a4d' : d.t > 200 ? '#efc24d' : '#4d9de0'), borderRadius: 2 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY, ticks: { ...TICK, callback: v => v + ' ms' } } } }
+});
+
+// 02 — Timescale × Brain Division (REAL DATA)
+const divLabels = ['Forebrain', 'Midbrain', 'Hindbrain'];
+const divTau = [110.0, 867.7, 527.6];
+new Chart(document.getElementById('divisionTauChart'), {
+  type: 'bar',
+  data: { labels: divLabels, datasets: [{ data: divTau, backgroundColor: ['#4d9de0', '#e07a4d', '#efc24d'], borderRadius: 3, barPercentage: 0.6 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY, ticks: { ...TICK, callback: v => v + ' ms' } } } }
+});
+
+// 03 — Timescale × Firing Rate
+const frLabels = ['0–1 Hz','1–2 Hz','2–5 Hz','5–10 Hz','10–20 Hz','20–50 Hz','50+ Hz'];
+const frTau    = [183, 301, 365, 328, 288, 432, 328];
+const frCounts = [4493, 2949, 5440, 5210, 3772, 1437, 359];
+new Chart(document.getElementById('frTauChart'), {
+  type: 'bar',
+  data: { labels: frLabels, datasets: [ { label: 'Median τ (ms)', data: frTau, backgroundColor: '#4de08a', borderRadius: 2, yAxisID: 'y' }, { label: 'Unit count', data: frCounts, backgroundColor: '#1c4a2e', borderRadius: 2, yAxisID: 'y2' } ] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY, position: 'left' }, y2: { ...axisY, position: 'right', grid: { display: false } } } }
+});
+
+// 04 — Timescale × Local Variance
+const lvLabels = ['0–0.5','0.5–0.8','0.8–1.0','1.0–1.2','1.2–1.5','1.5–2.0','2.0+'];
+const lvTau    = [844, 788, 663, 378, 124, 38, 9];
+new Chart(document.getElementById('lvTauChart'), {
+  type: 'line',
+  data: { labels: lvLabels, datasets: [{ data: lvTau, borderColor: '#c47de0', backgroundColor: 'rgba(196,125,224,0.08)', pointBackgroundColor: '#c47de0', borderWidth: 2, fill: true }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY } } }
+});
+
+// 05 — τ Histogram
+const histMids   = [101,301,499,696,893,1091,1288,1486,1683,1881,2078,2275,2473,2670,2868,3065,3263,3460,3657,3855,4052,4250,4447,4645,4842,5039,5237,5434,5632,5829];
+const histCounts = [9817,3561,2368,1684,1267,944,671,546,420,359,288,228,182,168,153,128,116,99,66,93,69,48,54,54,51,57,42,39,36,52];
+new Chart(document.getElementById('tauHistChart'), {
+  type: 'bar',
+  data: { labels: histMids, datasets: [{ data: histCounts, backgroundColor: '#4d9de0', barPercentage: 1.0, categoryPercentage: 1.0 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX, ticks: { ...TICK, maxTicksLimit: 7 } }, y: { ...axisY } } }
+});
+
+// 06 — n_timescales donut
+new Chart(document.getElementById('nTimescalesChart'), {
+  type: 'doughnut',
+  data: { labels: ['1 timescale — 27%', '2 timescales — 59%', '3 timescales — 13%', '4 timescales — 0.1%'], datasets: [{ data: [6457, 14052, 3129, 22], backgroundColor: ['#185fa5','#4d9de0','#85b7eb','#b5d4f4'], borderWidth: 0 }] },
+  options: { responsive: true, maintainAspectRatio: false, cutout: '58%', plugins: { legend: { display: true, position: 'bottom', labels: { color: '#6b6f77', font: { family: "'DM Mono', monospace" } } }, tooltip: TOOLTIP } }
+});
+
+// 07 — tau_1 and tau_2 per region
+const t12Regions = ['PRNr','MRN','SPVI','root','SSs','LP','PO','CP','SUB','SSp-m','CA3','PAR','SSp-bfd','CA1','DG'];
+const t1PerRegion = [262.7,205.4,154.7,80.7,56.1,40.9,34.3,26.7,23.7,23.3,21.6,21.2,20.0,19.4,15.8];
+const t2PerRegion = [1830.4,1453.7,1838.0,1141.8,1575.2,496.9,743.3,799.1,330.4,850.7,563.8,329.0,389.2,586.3,464.4];
+new Chart(document.getElementById('tauRegionBreakdownChart'), {
+  type: 'bar',
+  data: { labels: t12Regions, datasets: [ { label: 'τ₁', data: t1PerRegion, backgroundColor: '#4d9de0', borderRadius: 2 }, { label: 'τ₂', data: t2PerRegion, backgroundColor: '#4de08a', borderRadius: 2 } ] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY } } }
+});
+
+// 08 — Multiscale Scatter (REAL DATA)
+const scatterData = [
+  {x: 19.4, y: 586.3, region: 'CA1'}, {x: 21.6, y: 563.8, region: 'CA3'},
+  {x: 26.7, y: 799.1, region: 'CP'}, {x: 26.4, y: 662.8, region: 'EPd'},
+  {x: 156.8, y: 1997.1, region: 'GRN'}, {x: 40.9, y: 496.9, region: 'LP'},
+  {x: 103.1, y: 855.9, region: 'MB'}, {x: 205.4, y: 1453.7, region: 'MRN'},
+  {x: 21.2, y: 329.0, region: 'PAR'}, {x: 34.3, y: 743.3, region: 'PO'},
+  {x: 262.7, y: 1830.4, region: 'PRNr'}, {x: 154.7, y: 1838.0, region: 'SPVI'},
+  {x: 22.0, y: 856.3, region: 'SSp-m6a'}, {x: 23.7, y: 330.4, region: 'SUB'},
+  {x: 278.8, y: 2605.7, region: 'V'}
+];
+new Chart(document.getElementById('tauScatterChart'), {
+  type: 'scatter',
+  data: { datasets: [{ label: 'Regions', data: scatterData, backgroundColor: '#c47de0', pointRadius: 5, pointHoverRadius: 7 }] },
+  options: { 
+    responsive: true, maintainAspectRatio: false, 
+    plugins: { legend: { display: false }, tooltip: { ...TOOLTIP, callbacks: { label: ctx => `${ctx.raw.region}: τ₁=${ctx.raw.x}ms, τ₂=${ctx.raw.y}ms` } } }, 
+    scales: { x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'Median τ₁ (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, y: { ...axisY, type: 'logarithmic', title: { display: true, text: 'Median τ₂ (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } } 
+  }
+});
+
+// 09 — Power Law Tau 2 (REAL DATA)
+const plBins = [123, 187, 285, 433, 658, 1000, 1520, 2310, 3511, 5337];
+const plCounts = [795, 1285, 1652, 1570, 1634, 2103, 2109, 2114, 2009, 1403];
+new Chart(document.getElementById('tauPowerLawChart'), {
+  type: 'line',
+  data: { labels: plBins, datasets: [{ data: plCounts, borderColor: '#e07a4d', backgroundColor: '#e07a4d', pointRadius: 4, borderWidth: 2, fill: false }] },
+  options: { 
+    responsive: true, maintainAspectRatio: false, 
+    plugins: { legend: { display: false }, tooltip: TOOLTIP }, 
+    scales: { 
+      x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'τ₂ Bin Center (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, 
+      y: { ...axisY, type: 'linear', title: { display: true, text: 'Unit Count', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } 
+    } 
+  }
+});
+
+// 10a — R2 per region (REAL DATA)
+const r2Regions = ['SUB', 'LP', 'CA1', 'CA3', 'PAR', 'SPVI', 'EPd', 'SSp-m6a', 'PO', 'MB', 'CP', 'MRN', 'GRN', 'V', 'PRNr'];
+const r2Data = [0.732, 0.744, 0.753, 0.767, 0.774, 0.775, 0.796, 0.799, 0.801, 0.820, 0.822, 0.849, 0.891, 0.896, 0.900];
+new Chart(document.getElementById('r2RegionChart'), {
+  type: 'bar',
+  data: { labels: r2Regions, datasets: [{ data: r2Data, backgroundColor: r2Data.map(v => v >= 0.85 ? '#4de08a' : '#1c4a2e'), borderRadius: 2 }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX, ticks: { ...TICK, maxRotation: 40 } }, y: { ...axisY, min: 0.6 } } }
+});
+
+// 10b — C1 vs Tau 1 (REAL DATA)
+const c1TauScatter = [
+  {x: 34.1, y: 0.111, region: 'ANcr2'}, {x: 165.3, y: 0.078, region: 'APN'}, {x: 19.4, y: 0.185, region: 'CA1'},
+  {x: 21.6, y: 0.181, region: 'CA3'}, {x: 26.7, y: 0.181, region: 'CP'}, {x: 14.6, y: 0.178, region: 'DG-mo'},
+  {x: 16.5, y: 0.185, region: 'DG-sg'}, {x: 26.4, y: 0.214, region: 'EPd'}, {x: 156.8, y: 0.109, region: 'GRN'},
+  {x: 152.8, y: 0.139, region: 'IRN'}, {x: 40.9, y: 0.079, region: 'LP'}, {x: 103.1, y: 0.099, region: 'MB'},
+  {x: 205.4, y: 0.086, region: 'MRN'}, {x: 197.0, y: 0.090, region: 'MY'}, {x: 205.7, y: 0.071, region: 'P'},
+  {x: 21.2, y: 0.190, region: 'PAR'}, {x: 29.4, y: 0.156, region: 'PIR'}, {x: 34.3, y: 0.109, region: 'PO'},
+  {x: 40.4, y: 0.125, region: 'PRE'}, {x: 54.7, y: 0.110, region: 'PRM'}, {x: 262.7, y: 0.077, region: 'PRNr'},
+  {x: 154.7, y: 0.056, region: 'SPVI'}, {x: 15.8, y: 0.300, region: 'SSp-bfd2/3'}, {x: 22.0, y: 0.166, region: 'SSp-m6a'},
+  {x: 43.6, y: 0.073, region: 'SSs6a'}, {x: 23.7, y: 0.125, region: 'SUB'}, {x: 154.1, y: 0.078, region: 'UVU'},
+  {x: 278.8, y: 0.057, region: 'V'}, {x: 30.5, y: 0.096, region: 'VPM'}, {x: 148.7, y: 0.079, region: 'arb'}
+];
+new Chart(document.getElementById('c1TauChart'), {
+  type: 'scatter',
+  data: { datasets: [{ data: c1TauScatter, backgroundColor: '#4d9de0', pointRadius: 4, pointHoverRadius: 6 }] },
+  options: { 
+    responsive: true, maintainAspectRatio: false, 
+    plugins: { legend: { display: false }, tooltip: { ...TOOLTIP, callbacks: { label: ctx => `${ctx.raw.region}: τ₁=${ctx.raw.x}ms, c₁=${ctx.raw.y}` } } }, 
+    scales: { x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'Median τ₁ (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, y: { ...axisY, title: { display: true, text: 'Median c₁ coefficient', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } } 
+  }
+});
+
+// 10c — CI Width vs Tau (REAL DATA)
+const ciWidthData = [
+  {x: 42, y: 13.8}, {x: 76, y: 23.9}, {x: 138, y: 40.2}, {x: 248, y: 70.3},
+  {x: 447, y: 111.8}, {x: 805, y: 162.9}, {x: 1449, y: 264.3}, {x: 2610, y: 342.3}, {x: 4701, y: 418.6}
+];
+new Chart(document.getElementById('ciWidthChart'), {
+  type: 'line',
+  data: { datasets: [{ data: ciWidthData, borderColor: '#efc24d', pointBackgroundColor: '#efc24d', borderWidth: 2, fill: false }] },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'Estimated τ Effective (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, y: { ...axisY, title: { display: true, text: 'Median CI Width (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } } }
+});
+
+// Active nav
+const allSections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-links a');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const link = document.querySelector('.nav-links a[href="#' + e.target.id + '"]');
+      if (link) {
+        link.classList.add('active');
+        link.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+allSections.forEach(s => io.observe(s));
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Timescales — good_isttc</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0d0f;
+  --bg2: #13161a;
+  --bg3: #1c2026;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #e8e6e0;
+  --muted: #6b6f77;
+  --accent: #4d9de0;
+  --accent2: #e07a4d;
+  --accent3: #4de08a;
+  --accent4: #c47de0;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(11,13,15,0.93); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0; padding: 0 2rem; height: 52px;
+}
+.nav-brand { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: 0.04em; margin-right: 2rem; white-space: nowrap; }
+.nav-links { display: flex; gap: 0; overflow-x: auto; flex: 1; scrollbar-width: none; }
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a { font-size: 12px; color: var(--muted); text-decoration: none; padding: 0 14px; height: 52px; display: flex; align-items: center; border-bottom: 2px solid transparent; white-space: nowrap; transition: color 0.15s, border-color 0.15s; }
+.nav-links a:hover, .nav-links a.active { color: var(--text); border-bottom-color: var(--accent); }
+.nav-badge { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+.hero { padding: 5rem 2rem 3rem; max-width: 900px; margin: 0 auto; border-bottom: 1px solid var(--border); }
+.hero-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 1rem; }
+.hero h1 { font-size: clamp(26px, 5vw, 46px); font-weight: 300; line-height: 1.2; margin-bottom: 1rem; }
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero p { color: var(--muted); font-size: 14px; max-width: 540px; }
+
+.metrics-bar { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--border); }
+.metric-cell { padding: 2rem; border-right: 1px solid var(--border); }
+.metric-cell:last-child { border-right: none; }
+.metric-num { font-family: var(--mono); font-size: 26px; font-weight: 400; color: var(--text); letter-spacing: -0.02em; }
+.metric-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.section { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; border-bottom: 1px solid var(--border); }
+.section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+.section-num { font-family: var(--mono); font-size: 11px; color: var(--accent); flex-shrink: 0; }
+.section-title { font-size: 18px; font-weight: 400; }
+.section-desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+.chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 1.5rem; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 14px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.legend-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.chart-wrap { position: relative; width: 100%; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+.insight { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 1rem 1.25rem; margin-top: 1rem; font-size: 12px; color: var(--muted); font-family: var(--mono); line-height: 1.6; }
+.insight strong { color: var(--accent2); font-weight: 500; }
+
+footer { padding: 2rem; text-align: center; font-family: var(--mono); font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.section { animation: fadeUp 0.45s ease both; }
+
+@media (max-width: 700px) {
+  .metrics-bar { grid-template-columns: repeat(2, 1fr); }
+  .metric-cell { border-right: none; border-bottom: 1px solid var(--border); }
+  .two-col { grid-template-columns: 1fr; }
+  nav { padding: 0 1rem; }
+  .section { padding: 2rem 1rem; }
+  .hero { padding: 3rem 1rem 2rem; }
+  .nav-badge { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-brand">good_isttc</span>
+  <div class="nav-links">
+    <a href="#hero-sec">Overview</a>
+    <a href="#timescale-region">τ × Region</a>
+    <a href="#timescale-division">τ × Division</a>
+    <a href="#timescale-fr">τ × FR</a>
+    <a href="#timescale-lv">τ × LV</a>
+    <a href="#histogram">τ Dist.</a>
+    <a href="#tau-components">τ Components</a>
+    <a href="#tau-multiscale">τ₁ vs τ₂</a>
+    <a href="#tau-powerlaw">Power-Law</a>
+    <a href="#fit-quality">Fit Quality</a>
+  </div>
+  <span class="nav-badge">n = 23,660 units</span>
+</nav>
+
+<div class="hero" id="hero-sec">
+  <div class="hero-label">Neural Timescale Analysis · good_isttc</div>
+  <h1>Intrinsic timescales<br>across <em>brain regions</em></h1>
+  <p>Spontaneous spiking activity from 154 sessions. Autocorrelation decay fitted with 1–4 exponential components. All units passed quality filter (r² &gt; 0.5, CI excludes zero, ACF decline 50–200 ms).</p>
+</div>
+
+<div class="metrics-bar">
+  <div class="metric-cell"><div class="metric-num">23,660</div><div class="metric-lbl">Total units</div></div>
+  <div class="metric-cell"><div class="metric-num">4.3 Hz</div><div class="metric-lbl">Median firing rate</div></div>
+  <div class="metric-cell"><div class="metric-num">300 ms</div><div class="metric-lbl">Median τ effective</div></div>
+  <div class="metric-cell"><div class="metric-num">199</div><div class="metric-lbl">Unique brain regions</div></div>
+</div>
+
+<div class="section" id="timescale-region">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <div>
+      <div class="section-title">Timescale × Brain Region</div>
       <div class="section-desc">Median effective timescale (τ) for the 15 most-sampled regions, sorted descending. <span style="color:#555;font-size:12px;">* "unassigned" = units that could not be mapped to a specific brain region in the Allen Brain Atlas (fiber tracts, white matter, ventricles).</span></div>
     </div>
   </div>
@@ -144,26 +645,16 @@ footer { padding: 2rem; text-align: center; font-family: var(--mono); font-size:
   </div>
   <div class="chart-card">
     <div class="chart-legend">
-<<<<<<< HEAD
-      <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Forebrain (Ctx/Hippo/BG/Thal)</span>
-      <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>Midbrain (MRN/PRNr)</span>
-      <span class="legend-item"><span class="legend-swatch" style="background:#efc24d"></span>Hindbrain (SPVI)</span>
-=======
       <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Forebrain (Ctx/Hippo/BG)</span>
       <span class="legend-item"><span class="legend-swatch" style="background:#c47de0"></span>Thalamus</span>
       <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>Midbrain (MRN)</span>
       <span class="legend-item"><span class="legend-swatch" style="background:#efc24d"></span>Hindbrain (PRNr/SPVI/SSs)</span>
       <span class="legend-item"><span class="legend-swatch" style="background:#3d4048"></span>Unassigned *</span>
->>>>>>> 11c6705 (Updated website to remove root as region)
     </div>
     <div class="chart-wrap" style="height:320px;"><canvas id="divisionTauChart"></canvas></div>
   </div>
   <div class="insight">
-<<<<<<< HEAD
-    <strong>Hierarchy validated:</strong> Aligning with Shi et al. (2025), there is a ~8× jump in timescale magnitude from the forebrain (110 ms median) to the midbrain complex (868 ms), establishing a massive hierarchical gradient in temporal integration.
-=======
     <strong>Hierarchy validated:</strong> Aligning with Shi et al. (2025), there is a ~7× jump in timescale magnitude from forebrain (96 ms median) to midbrain/hindbrain (687–727 ms). Thalamus sits between these extremes at 248 ms. The "unassigned" group (fiber tracts, white matter) falls at 404 ms — mid-range, consistent with its heterogeneous anatomical origins spanning multiple divisions. Excluding it does not alter the core hierarchy.
->>>>>>> 11c6705 (Updated website to remove root as region)
   </div>
 </div>
 
@@ -355,22 +846,6 @@ const regionTauData = [
 ];
 new Chart(document.getElementById('regionTauChart'), {
   type: 'bar',
-<<<<<<< HEAD
-  data: { labels: regionTauData.map(d => d.r), datasets: [{ data: regionTauData.map(d => d.t), backgroundColor: regionTauData.map(d => d.t > 500 ? '#e07a4d' : d.t > 200 ? '#efc24d' : '#4d9de0'), borderRadius: 2 }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY, ticks: { ...TICK, callback: v => v + ' ms' } } } }
-});
-
-// 02 — Timescale × Brain Division (REAL DATA)
-const divLabels = ['Forebrain', 'Midbrain', 'Hindbrain'];
-const divTau = [110.0, 867.7, 527.6];
-new Chart(document.getElementById('divisionTauChart'), {
-  type: 'bar',
-  data: { labels: divLabels, datasets: [{ data: divTau, backgroundColor: ['#4d9de0', '#e07a4d', '#efc24d'], borderRadius: 3, barPercentage: 0.6 }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY, ticks: { ...TICK, callback: v => v + ' ms' } } } }
-});
-
-// 03 — Timescale × Firing Rate
-=======
   data: {
     labels: regionTauData.map(d => d.r),
     datasets: [{
@@ -399,7 +874,6 @@ new Chart(document.getElementById('divisionTauChart'), {
   }
 });
 
->>>>>>> 11c6705 (Updated website to remove root as region)
 const frLabels = ['0–1 Hz','1–2 Hz','2–5 Hz','5–10 Hz','10–20 Hz','20–50 Hz','50+ Hz'];
 const frTau    = [183, 301, 365, 328, 288, 432, 328];
 const frCounts = [4493, 2949, 5440, 5210, 3772, 1437, 359];
@@ -409,10 +883,6 @@ new Chart(document.getElementById('frTauChart'), {
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY, position: 'left' }, y2: { ...axisY, position: 'right', grid: { display: false } } } }
 });
 
-<<<<<<< HEAD
-// 04 — Timescale × Local Variance
-=======
->>>>>>> 11c6705 (Updated website to remove root as region)
 const lvLabels = ['0–0.5','0.5–0.8','0.8–1.0','1.0–1.2','1.2–1.5','1.5–2.0','2.0+'];
 const lvTau    = [844, 788, 663, 378, 124, 38, 9];
 new Chart(document.getElementById('lvTauChart'), {
@@ -421,10 +891,6 @@ new Chart(document.getElementById('lvTauChart'), {
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY } } }
 });
 
-<<<<<<< HEAD
-// 05 — τ Histogram
-=======
->>>>>>> 11c6705 (Updated website to remove root as region)
 const histMids   = [101,301,499,696,893,1091,1288,1486,1683,1881,2078,2275,2473,2670,2868,3065,3263,3460,3657,3855,4052,4250,4447,4645,4842,5039,5237,5434,5632,5829];
 const histCounts = [9817,3561,2368,1684,1267,944,671,546,420,359,288,228,182,168,153,128,116,99,66,93,69,48,54,54,51,57,42,39,36,52];
 new Chart(document.getElementById('tauHistChart'), {
@@ -433,98 +899,10 @@ new Chart(document.getElementById('tauHistChart'), {
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX, ticks: { ...TICK, maxTicksLimit: 7 } }, y: { ...axisY } } }
 });
 
-<<<<<<< HEAD
-// 06 — n_timescales donut
-=======
->>>>>>> 11c6705 (Updated website to remove root as region)
 new Chart(document.getElementById('nTimescalesChart'), {
   type: 'doughnut',
   data: { labels: ['1 timescale — 27%', '2 timescales — 59%', '3 timescales — 13%', '4 timescales — 0.1%'], datasets: [{ data: [6457, 14052, 3129, 22], backgroundColor: ['#185fa5','#4d9de0','#85b7eb','#b5d4f4'], borderWidth: 0 }] },
   options: { responsive: true, maintainAspectRatio: false, cutout: '58%', plugins: { legend: { display: true, position: 'bottom', labels: { color: '#6b6f77', font: { family: "'DM Mono', monospace" } } }, tooltip: TOOLTIP } }
-<<<<<<< HEAD
-});
-
-// 07 — tau_1 and tau_2 per region
-const t12Regions = ['PRNr','MRN','SPVI','root','SSs','LP','PO','CP','SUB','SSp-m','CA3','PAR','SSp-bfd','CA1','DG'];
-const t1PerRegion = [262.7,205.4,154.7,80.7,56.1,40.9,34.3,26.7,23.7,23.3,21.6,21.2,20.0,19.4,15.8];
-const t2PerRegion = [1830.4,1453.7,1838.0,1141.8,1575.2,496.9,743.3,799.1,330.4,850.7,563.8,329.0,389.2,586.3,464.4];
-new Chart(document.getElementById('tauRegionBreakdownChart'), {
-  type: 'bar',
-  data: { labels: t12Regions, datasets: [ { label: 'τ₁', data: t1PerRegion, backgroundColor: '#4d9de0', borderRadius: 2 }, { label: 'τ₂', data: t2PerRegion, backgroundColor: '#4de08a', borderRadius: 2 } ] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY } } }
-});
-
-// 08 — Multiscale Scatter (REAL DATA)
-const scatterData = [
-  {x: 19.4, y: 586.3, region: 'CA1'}, {x: 21.6, y: 563.8, region: 'CA3'},
-  {x: 26.7, y: 799.1, region: 'CP'}, {x: 26.4, y: 662.8, region: 'EPd'},
-  {x: 156.8, y: 1997.1, region: 'GRN'}, {x: 40.9, y: 496.9, region: 'LP'},
-  {x: 103.1, y: 855.9, region: 'MB'}, {x: 205.4, y: 1453.7, region: 'MRN'},
-  {x: 21.2, y: 329.0, region: 'PAR'}, {x: 34.3, y: 743.3, region: 'PO'},
-  {x: 262.7, y: 1830.4, region: 'PRNr'}, {x: 154.7, y: 1838.0, region: 'SPVI'},
-  {x: 22.0, y: 856.3, region: 'SSp-m6a'}, {x: 23.7, y: 330.4, region: 'SUB'},
-  {x: 278.8, y: 2605.7, region: 'V'}
-];
-new Chart(document.getElementById('tauScatterChart'), {
-  type: 'scatter',
-  data: { datasets: [{ label: 'Regions', data: scatterData, backgroundColor: '#c47de0', pointRadius: 5, pointHoverRadius: 7 }] },
-  options: { 
-    responsive: true, maintainAspectRatio: false, 
-    plugins: { legend: { display: false }, tooltip: { ...TOOLTIP, callbacks: { label: ctx => `${ctx.raw.region}: τ₁=${ctx.raw.x}ms, τ₂=${ctx.raw.y}ms` } } }, 
-    scales: { x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'Median τ₁ (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, y: { ...axisY, type: 'logarithmic', title: { display: true, text: 'Median τ₂ (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } } 
-  }
-});
-
-// 09 — Power Law Tau 2 (REAL DATA)
-const plBins = [123, 187, 285, 433, 658, 1000, 1520, 2310, 3511, 5337];
-const plCounts = [795, 1285, 1652, 1570, 1634, 2103, 2109, 2114, 2009, 1403];
-new Chart(document.getElementById('tauPowerLawChart'), {
-  type: 'line',
-  data: { labels: plBins, datasets: [{ data: plCounts, borderColor: '#e07a4d', backgroundColor: '#e07a4d', pointRadius: 4, borderWidth: 2, fill: false }] },
-  options: { 
-    responsive: true, maintainAspectRatio: false, 
-    plugins: { legend: { display: false }, tooltip: TOOLTIP }, 
-    scales: { 
-      x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'τ₂ Bin Center (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, 
-      y: { ...axisY, type: 'linear', title: { display: true, text: 'Unit Count', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } 
-    } 
-  }
-});
-
-// 10a — R2 per region (REAL DATA)
-const r2Regions = ['SUB', 'LP', 'CA1', 'CA3', 'PAR', 'SPVI', 'EPd', 'SSp-m6a', 'PO', 'MB', 'CP', 'MRN', 'GRN', 'V', 'PRNr'];
-const r2Data = [0.732, 0.744, 0.753, 0.767, 0.774, 0.775, 0.796, 0.799, 0.801, 0.820, 0.822, 0.849, 0.891, 0.896, 0.900];
-new Chart(document.getElementById('r2RegionChart'), {
-  type: 'bar',
-  data: { labels: r2Regions, datasets: [{ data: r2Data, backgroundColor: r2Data.map(v => v >= 0.85 ? '#4de08a' : '#1c4a2e'), borderRadius: 2 }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX, ticks: { ...TICK, maxRotation: 40 } }, y: { ...axisY, min: 0.6 } } }
-});
-
-// 10b — C1 vs Tau 1 (REAL DATA)
-const c1TauScatter = [
-  {x: 34.1, y: 0.111, region: 'ANcr2'}, {x: 165.3, y: 0.078, region: 'APN'}, {x: 19.4, y: 0.185, region: 'CA1'},
-  {x: 21.6, y: 0.181, region: 'CA3'}, {x: 26.7, y: 0.181, region: 'CP'}, {x: 14.6, y: 0.178, region: 'DG-mo'},
-  {x: 16.5, y: 0.185, region: 'DG-sg'}, {x: 26.4, y: 0.214, region: 'EPd'}, {x: 156.8, y: 0.109, region: 'GRN'},
-  {x: 152.8, y: 0.139, region: 'IRN'}, {x: 40.9, y: 0.079, region: 'LP'}, {x: 103.1, y: 0.099, region: 'MB'},
-  {x: 205.4, y: 0.086, region: 'MRN'}, {x: 197.0, y: 0.090, region: 'MY'}, {x: 205.7, y: 0.071, region: 'P'},
-  {x: 21.2, y: 0.190, region: 'PAR'}, {x: 29.4, y: 0.156, region: 'PIR'}, {x: 34.3, y: 0.109, region: 'PO'},
-  {x: 40.4, y: 0.125, region: 'PRE'}, {x: 54.7, y: 0.110, region: 'PRM'}, {x: 262.7, y: 0.077, region: 'PRNr'},
-  {x: 154.7, y: 0.056, region: 'SPVI'}, {x: 15.8, y: 0.300, region: 'SSp-bfd2/3'}, {x: 22.0, y: 0.166, region: 'SSp-m6a'},
-  {x: 43.6, y: 0.073, region: 'SSs6a'}, {x: 23.7, y: 0.125, region: 'SUB'}, {x: 154.1, y: 0.078, region: 'UVU'},
-  {x: 278.8, y: 0.057, region: 'V'}, {x: 30.5, y: 0.096, region: 'VPM'}, {x: 148.7, y: 0.079, region: 'arb'}
-];
-new Chart(document.getElementById('c1TauChart'), {
-  type: 'scatter',
-  data: { datasets: [{ data: c1TauScatter, backgroundColor: '#4d9de0', pointRadius: 4, pointHoverRadius: 6 }] },
-  options: { 
-    responsive: true, maintainAspectRatio: false, 
-    plugins: { legend: { display: false }, tooltip: { ...TOOLTIP, callbacks: { label: ctx => `${ctx.raw.region}: τ₁=${ctx.raw.x}ms, c₁=${ctx.raw.y}` } } }, 
-    scales: { x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'Median τ₁ (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, y: { ...axisY, title: { display: true, text: 'Median c₁ coefficient', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } } 
-  }
-});
-
-// 10c — CI Width vs Tau (REAL DATA)
-=======
 });
 
 const t12Regions = ['PRNr','MRN','SPVI','unassigned *','SSs','LP','PO','CP','SUB','SSp-m','CA3','PAR','SSp-bfd','CA1','DG'];
@@ -630,7 +1008,6 @@ new Chart(document.getElementById('c1TauChart'), {
   }
 });
 
->>>>>>> 11c6705 (Updated website to remove root as region)
 const ciWidthData = [
   {x: 42, y: 13.8}, {x: 76, y: 23.9}, {x: 138, y: 40.2}, {x: 248, y: 70.3},
   {x: 447, y: 111.8}, {x: 805, y: 162.9}, {x: 1449, y: 264.3}, {x: 2610, y: 342.3}, {x: 4701, y: 418.6}
@@ -641,10 +1018,6 @@ new Chart(document.getElementById('ciWidthChart'), {
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'Estimated τ Effective (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, y: { ...axisY, title: { display: true, text: 'Median CI Width (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } } }
 });
 
-<<<<<<< HEAD
-// Active nav
-=======
->>>>>>> 11c6705 (Updated website to remove root as region)
 const allSections = document.querySelectorAll('.section');
 const navLinks = document.querySelectorAll('.nav-links a');
 const io = new IntersectionObserver(entries => {
