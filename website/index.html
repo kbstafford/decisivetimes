@@ -120,7 +120,7 @@ footer { padding: 2rem; text-align: center; font-family: var(--mono); font-size:
     <span class="section-num">01</span>
     <div>
       <div class="section-title">Timescale × Brain Region</div>
-      <div class="section-desc">Median effective timescale (τ) for the 15 most-sampled regions, sorted descending.</div>
+      <div class="section-desc">Median effective timescale (τ) for the 15 most-sampled regions, sorted descending. <span style="color:#555;font-size:12px;">* "unassigned" = units that could not be mapped to a specific brain region in the Allen Brain Atlas (fiber tracts, white matter, ventricles).</span></div>
     </div>
   </div>
   <div class="chart-card">
@@ -128,6 +128,7 @@ footer { padding: 2rem; text-align: center; font-family: var(--mono); font-size:
       <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>τ &gt; 500 ms</span>
       <span class="legend-item"><span class="legend-swatch" style="background:#efc24d"></span>200–500 ms</span>
       <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>τ &lt; 200 ms</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#3d4048"></span>unassigned *</span>
     </div>
     <div class="chart-wrap" style="height:400px;"><canvas id="regionTauChart"></canvas></div>
   </div>
@@ -143,14 +144,26 @@ footer { padding: 2rem; text-align: center; font-family: var(--mono); font-size:
   </div>
   <div class="chart-card">
     <div class="chart-legend">
+<<<<<<< HEAD
       <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Forebrain (Ctx/Hippo/BG/Thal)</span>
       <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>Midbrain (MRN/PRNr)</span>
       <span class="legend-item"><span class="legend-swatch" style="background:#efc24d"></span>Hindbrain (SPVI)</span>
+=======
+      <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Forebrain (Ctx/Hippo/BG)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#c47de0"></span>Thalamus</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>Midbrain (MRN)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#efc24d"></span>Hindbrain (PRNr/SPVI/SSs)</span>
+      <span class="legend-item"><span class="legend-swatch" style="background:#3d4048"></span>Unassigned *</span>
+>>>>>>> 11c6705 (Updated website to remove root as region)
     </div>
     <div class="chart-wrap" style="height:320px;"><canvas id="divisionTauChart"></canvas></div>
   </div>
   <div class="insight">
+<<<<<<< HEAD
     <strong>Hierarchy validated:</strong> Aligning with Shi et al. (2025), there is a ~8× jump in timescale magnitude from the forebrain (110 ms median) to the midbrain complex (868 ms), establishing a massive hierarchical gradient in temporal integration.
+=======
+    <strong>Hierarchy validated:</strong> Aligning with Shi et al. (2025), there is a ~7× jump in timescale magnitude from forebrain (96 ms median) to midbrain/hindbrain (687–727 ms). Thalamus sits between these extremes at 248 ms. The "unassigned" group (fiber tracts, white matter) falls at 404 ms — mid-range, consistent with its heterogeneous anatomical origins spanning multiple divisions. Excluding it does not alter the core hierarchy.
+>>>>>>> 11c6705 (Updated website to remove root as region)
   </div>
 </div>
 
@@ -333,15 +346,16 @@ const TOOLTIP = { backgroundColor: '#1c2026', titleColor: '#e8e6e0', bodyColor: 
 const axisX = { ticks: TICK, grid: { color: GRID }, border: { color: 'rgba(255,255,255,0.08)' } };
 const axisY = { ticks: TICK, grid: { color: GRID }, border: { color: 'rgba(255,255,255,0.08)' } };
 
-// 01 — Timescale × Brain Region
+const UNASSIGNED_COLOR = '#3d4048';
 const regionTauData = [
   {r:'PRNr',t:926},{r:'MRN',t:727},{r:'SSs',t:705},{r:'SPVI',t:528},
-  {r:'root',t:403},{r:'PO',t:368},{r:'LP',t:212},{r:'SUB',t:124},
-  {r:'CP',t:117},{r:'SSp-m',t:110},{r:'SSp-bfd',t:103},{r:'DG',t:95},
+  {r:'unassigned *',t:404},{r:'PO',t:368},{r:'LP',t:212},{r:'SUB',t:124},
+  {r:'CP',t:118},{r:'SSp-m',t:110},{r:'SSp-bfd',t:103},{r:'DG',t:95},
   {r:'CA1',t:78},{r:'CA3',t:67},{r:'PAR',t:50}
 ];
 new Chart(document.getElementById('regionTauChart'), {
   type: 'bar',
+<<<<<<< HEAD
   data: { labels: regionTauData.map(d => d.r), datasets: [{ data: regionTauData.map(d => d.t), backgroundColor: regionTauData.map(d => d.t > 500 ? '#e07a4d' : d.t > 200 ? '#efc24d' : '#4d9de0'), borderRadius: 2 }] },
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY, ticks: { ...TICK, callback: v => v + ' ms' } } } }
 });
@@ -356,6 +370,36 @@ new Chart(document.getElementById('divisionTauChart'), {
 });
 
 // 03 — Timescale × Firing Rate
+=======
+  data: {
+    labels: regionTauData.map(d => d.r),
+    datasets: [{
+      data: regionTauData.map(d => d.t),
+      backgroundColor: regionTauData.map(d => d.r.startsWith('unassigned') ? UNASSIGNED_COLOR : d.t > 500 ? '#e07a4d' : d.t > 200 ? '#efc24d' : '#4d9de0'),
+      borderRadius: 2, borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...TOOLTIP, callbacks: { label: ctx => ctx.label.startsWith('unassigned') ? ' τ = ' + ctx.raw + ' ms  ⚠ not a specific brain region' : ' τ = ' + ctx.raw + ' ms' } } },
+    scales: { x: { ...axisX, ticks: { ...TICK, autoSkip: false } }, y: { ...axisY, ticks: { ...TICK, callback: v => v + ' ms' } } }
+  }
+});
+
+const divLabels = ['Forebrain', 'Thalamus', 'Unassigned *', 'Hindbrain', 'Midbrain'];
+const divTau    = [96, 248, 404, 687, 727];
+const divColors = ['#4d9de0', '#c47de0', UNASSIGNED_COLOR, '#efc24d', '#e07a4d'];
+new Chart(document.getElementById('divisionTauChart'), {
+  type: 'bar',
+  data: { labels: divLabels, datasets: [{ data: divTau, backgroundColor: divColors, borderRadius: 3, barPercentage: 0.6 }] },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...TOOLTIP, callbacks: { label: ctx => ctx.label === 'Unassigned *' ? ' τ = ' + ctx.raw + ' ms  ⚠ not a specific brain region' : ' τ = ' + ctx.raw + ' ms' } } },
+    scales: { x: { ...axisX }, y: { ...axisY, ticks: { ...TICK, callback: v => v + ' ms' } } }
+  }
+});
+
+>>>>>>> 11c6705 (Updated website to remove root as region)
 const frLabels = ['0–1 Hz','1–2 Hz','2–5 Hz','5–10 Hz','10–20 Hz','20–50 Hz','50+ Hz'];
 const frTau    = [183, 301, 365, 328, 288, 432, 328];
 const frCounts = [4493, 2949, 5440, 5210, 3772, 1437, 359];
@@ -365,7 +409,10 @@ new Chart(document.getElementById('frTauChart'), {
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY, position: 'left' }, y2: { ...axisY, position: 'right', grid: { display: false } } } }
 });
 
+<<<<<<< HEAD
 // 04 — Timescale × Local Variance
+=======
+>>>>>>> 11c6705 (Updated website to remove root as region)
 const lvLabels = ['0–0.5','0.5–0.8','0.8–1.0','1.0–1.2','1.2–1.5','1.5–2.0','2.0+'];
 const lvTau    = [844, 788, 663, 378, 124, 38, 9];
 new Chart(document.getElementById('lvTauChart'), {
@@ -374,7 +421,10 @@ new Chart(document.getElementById('lvTauChart'), {
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX }, y: { ...axisY } } }
 });
 
+<<<<<<< HEAD
 // 05 — τ Histogram
+=======
+>>>>>>> 11c6705 (Updated website to remove root as region)
 const histMids   = [101,301,499,696,893,1091,1288,1486,1683,1881,2078,2275,2473,2670,2868,3065,3263,3460,3657,3855,4052,4250,4447,4645,4842,5039,5237,5434,5632,5829];
 const histCounts = [9817,3561,2368,1684,1267,944,671,546,420,359,288,228,182,168,153,128,116,99,66,93,69,48,54,54,51,57,42,39,36,52];
 new Chart(document.getElementById('tauHistChart'), {
@@ -383,11 +433,15 @@ new Chart(document.getElementById('tauHistChart'), {
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX, ticks: { ...TICK, maxTicksLimit: 7 } }, y: { ...axisY } } }
 });
 
+<<<<<<< HEAD
 // 06 — n_timescales donut
+=======
+>>>>>>> 11c6705 (Updated website to remove root as region)
 new Chart(document.getElementById('nTimescalesChart'), {
   type: 'doughnut',
   data: { labels: ['1 timescale — 27%', '2 timescales — 59%', '3 timescales — 13%', '4 timescales — 0.1%'], datasets: [{ data: [6457, 14052, 3129, 22], backgroundColor: ['#185fa5','#4d9de0','#85b7eb','#b5d4f4'], borderWidth: 0 }] },
   options: { responsive: true, maintainAspectRatio: false, cutout: '58%', plugins: { legend: { display: true, position: 'bottom', labels: { color: '#6b6f77', font: { family: "'DM Mono', monospace" } } }, tooltip: TOOLTIP } }
+<<<<<<< HEAD
 });
 
 // 07 — tau_1 and tau_2 per region
@@ -470,6 +524,113 @@ new Chart(document.getElementById('c1TauChart'), {
 });
 
 // 10c — CI Width vs Tau (REAL DATA)
+=======
+});
+
+const t12Regions = ['PRNr','MRN','SPVI','unassigned *','SSs','LP','PO','CP','SUB','SSp-m','CA3','PAR','SSp-bfd','CA1','DG'];
+const t1PerRegion = [262.7,205.4,154.7,80.7,56.1,40.9,34.3,26.7,23.7,23.3,21.6,21.2,20.0,19.4,15.8];
+const t2PerRegion = [1830.4,1453.7,1838.0,1141.8,1575.2,496.9,743.3,799.1,330.4,850.7,563.8,329.0,389.2,586.3,464.4];
+new Chart(document.getElementById('tauRegionBreakdownChart'), {
+  type: 'bar',
+  data: {
+    labels: t12Regions,
+    datasets: [
+      { label: 'τ₁', data: t1PerRegion, backgroundColor: t12Regions.map(r => r.startsWith('unassigned') ? UNASSIGNED_COLOR : '#4d9de0'), borderRadius: 2 },
+      { label: 'τ₂', data: t2PerRegion, backgroundColor: t12Regions.map(r => r.startsWith('unassigned') ? '#2a2d33' : '#4de08a'), borderRadius: 2 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX, ticks: { ...TICK, autoSkip: false } }, y: { ...axisY } } }
+});
+
+const scatterAssigned = [
+  {x: 19.4, y: 586.3, region: 'CA1'}, {x: 21.6, y: 563.8, region: 'CA3'},
+  {x: 26.7, y: 799.1, region: 'CP'}, {x: 26.4, y: 662.8, region: 'EPd'},
+  {x: 156.8, y: 1997.1, region: 'GRN'}, {x: 40.9, y: 496.9, region: 'LP'},
+  {x: 103.1, y: 855.9, region: 'MB'}, {x: 205.4, y: 1453.7, region: 'MRN'},
+  {x: 21.2, y: 329.0, region: 'PAR'}, {x: 34.3, y: 743.3, region: 'PO'},
+  {x: 262.7, y: 1830.4, region: 'PRNr'}, {x: 154.7, y: 1838.0, region: 'SPVI'},
+  {x: 22.0, y: 856.3, region: 'SSp-m6a'}, {x: 23.7, y: 330.4, region: 'SUB'},
+  {x: 278.8, y: 2605.7, region: 'V'}
+];
+const scatterUnassigned = [{x: 80.7, y: 1141.8, region: 'unassigned *'}];
+new Chart(document.getElementById('tauScatterChart'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      { label: 'Regions', data: scatterAssigned, backgroundColor: '#c47de0', pointRadius: 5, pointHoverRadius: 7 },
+      { label: 'Unassigned', data: scatterUnassigned, backgroundColor: UNASSIGNED_COLOR, pointRadius: 6, pointHoverRadius: 8, pointStyle: 'triangle' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...TOOLTIP, callbacks: { label: ctx => ctx.raw.region.startsWith('unassigned') ? `${ctx.raw.region}: τ₁=${ctx.raw.x}ms, τ₂=${ctx.raw.y}ms  ⚠ not a specific brain region` : `${ctx.raw.region}: τ₁=${ctx.raw.x}ms, τ₂=${ctx.raw.y}ms` } } },
+    scales: { x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'Median τ₁ (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, y: { ...axisY, type: 'logarithmic', title: { display: true, text: 'Median τ₂ (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } }
+  }
+});
+
+const plBins = [123, 187, 285, 433, 658, 1000, 1520, 2310, 3511, 5337];
+const plCounts = [795, 1285, 1652, 1570, 1634, 2103, 2109, 2114, 2009, 1403];
+new Chart(document.getElementById('tauPowerLawChart'), {
+  type: 'line',
+  data: { labels: plBins, datasets: [{ data: plCounts, borderColor: '#e07a4d', backgroundColor: '#e07a4d', pointRadius: 4, borderWidth: 2, fill: false }] },
+  options: { 
+    responsive: true, maintainAspectRatio: false, 
+    plugins: { legend: { display: false }, tooltip: TOOLTIP }, 
+    scales: { 
+      x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'τ₂ Bin Center (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, 
+      y: { ...axisY, type: 'linear', title: { display: true, text: 'Unit Count', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } 
+    } 
+  }
+});
+
+const r2Regions = ['DG','SUB','LP','CA1','CA3','PAR','SPVI','SSp-m','SSp-bfd','PO','CP','unassigned *','SSs','MRN','PRNr'];
+const r2Data    = [0.716,0.728,0.736,0.743,0.755,0.758,0.763,0.775,0.785,0.787,0.794,0.794,0.813,0.814,0.853];
+new Chart(document.getElementById('r2RegionChart'), {
+  type: 'bar',
+  data: {
+    labels: r2Regions,
+    datasets: [{
+      data: r2Data,
+      backgroundColor: r2Regions.map((r,i) => r.startsWith('unassigned') ? UNASSIGNED_COLOR : r2Data[i] >= 0.85 ? '#4de08a' : '#1c4a2e'),
+      borderRadius: 2
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...TOOLTIP, callbacks: { label: ctx => ctx.label.startsWith('unassigned') ? ' r² = ' + ctx.raw.toFixed(3) + '  ⚠ not a specific brain region' : ' r² = ' + ctx.raw.toFixed(3) } } },
+    scales: { x: { ...axisX, ticks: { ...TICK, maxRotation: 40, autoSkip: false } }, y: { ...axisY, min: 0.6 } }
+  }
+});
+
+const c1TauAssigned = [
+  {x: 34.1, y: 0.111, region: 'ANcr2'}, {x: 165.3, y: 0.078, region: 'APN'}, {x: 19.4, y: 0.185, region: 'CA1'},
+  {x: 21.6, y: 0.181, region: 'CA3'}, {x: 26.7, y: 0.181, region: 'CP'}, {x: 14.6, y: 0.178, region: 'DG-mo'},
+  {x: 16.5, y: 0.185, region: 'DG-sg'}, {x: 26.4, y: 0.214, region: 'EPd'}, {x: 156.8, y: 0.109, region: 'GRN'},
+  {x: 152.8, y: 0.139, region: 'IRN'}, {x: 40.9, y: 0.079, region: 'LP'}, {x: 103.1, y: 0.099, region: 'MB'},
+  {x: 205.4, y: 0.086, region: 'MRN'}, {x: 197.0, y: 0.090, region: 'MY'}, {x: 205.7, y: 0.071, region: 'P'},
+  {x: 21.2, y: 0.190, region: 'PAR'}, {x: 29.4, y: 0.156, region: 'PIR'}, {x: 34.3, y: 0.109, region: 'PO'},
+  {x: 40.4, y: 0.125, region: 'PRE'}, {x: 54.7, y: 0.110, region: 'PRM'}, {x: 262.7, y: 0.077, region: 'PRNr'},
+  {x: 154.7, y: 0.056, region: 'SPVI'}, {x: 15.8, y: 0.300, region: 'SSp-bfd2/3'}, {x: 22.0, y: 0.166, region: 'SSp-m6a'},
+  {x: 43.6, y: 0.073, region: 'SSs6a'}, {x: 23.7, y: 0.125, region: 'SUB'}, {x: 154.1, y: 0.078, region: 'UVU'},
+  {x: 278.8, y: 0.057, region: 'V'}, {x: 30.5, y: 0.096, region: 'VPM'}, {x: 148.7, y: 0.079, region: 'arb'}
+];
+const c1TauUnassigned = [{x: 80.7, y: 0.103, region: 'unassigned *'}];
+new Chart(document.getElementById('c1TauChart'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      { data: c1TauAssigned, backgroundColor: '#4d9de0', pointRadius: 4, pointHoverRadius: 6 },
+      { data: c1TauUnassigned, backgroundColor: UNASSIGNED_COLOR, pointRadius: 7, pointHoverRadius: 9, pointStyle: 'triangle' }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...TOOLTIP, callbacks: { label: ctx => ctx.raw.region.startsWith('unassigned') ? `${ctx.raw.region}: τ₁=${ctx.raw.x}ms, c₁=${ctx.raw.y}  ⚠ not a specific brain region` : `${ctx.raw.region}: τ₁=${ctx.raw.x}ms, c₁=${ctx.raw.y}` } } },
+    scales: { x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'Median τ₁ (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, y: { ...axisY, title: { display: true, text: 'Median c₁ coefficient', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } }
+  }
+});
+
+>>>>>>> 11c6705 (Updated website to remove root as region)
 const ciWidthData = [
   {x: 42, y: 13.8}, {x: 76, y: 23.9}, {x: 138, y: 40.2}, {x: 248, y: 70.3},
   {x: 447, y: 111.8}, {x: 805, y: 162.9}, {x: 1449, y: 264.3}, {x: 2610, y: 342.3}, {x: 4701, y: 418.6}
@@ -480,7 +641,10 @@ new Chart(document.getElementById('ciWidthChart'), {
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: TOOLTIP }, scales: { x: { ...axisX, type: 'logarithmic', title: { display: true, text: 'Estimated τ Effective (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } }, y: { ...axisY, title: { display: true, text: 'Median CI Width (ms)', color: '#6b6f77', font: { family: "'DM Mono', monospace"} } } } }
 });
 
+<<<<<<< HEAD
 // Active nav
+=======
+>>>>>>> 11c6705 (Updated website to remove root as region)
 const allSections = document.querySelectorAll('.section');
 const navLinks = document.querySelectorAll('.nav-links a');
 const io = new IntersectionObserver(entries => {
