@@ -7,46 +7,34 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0b0d0f;
-  --bg2: #13161a;
-  --bg3: #1c2026;
-  --bg4: #0e1114;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.13);
-  --text: #e8e6e0;
-  --muted: #6b6f77;
-  --muted2: #4a4e56;
-  --accent: #4d9de0;
-  --accent2: #e07a4d;
-  --accent3: #4de08a;
-  --accent4: #c47de0;
-  --accent5: #efc24d;
-  --mono: 'DM Mono', monospace;
-  --sans: 'DM Sans', sans-serif;
+  --bg: #0b0d0f; --bg2: #13161a; --bg3: #1c2026; --bg4: #0e1114;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
+  --text: #e8e6e0; --muted: #6b6f77; --muted2: #4a4e56;
+  --accent: #4d9de0; --accent2: #e07a4d; --accent3: #4de08a;
+  --accent4: #c47de0; --accent5: #efc24d;
+  --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.6; min-height: 100vh; }
 
-/* ─── NAV ─── */
 nav {
   position: sticky; top: 0; z-index: 100;
   background: rgba(11,13,15,0.96); backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 0; padding: 0 2rem; height: 52px;
+  display: flex; align-items: center; padding: 0 2rem; height: 52px; gap: 0;
 }
 .nav-brand { font-family: var(--mono); font-size: 13px; color: var(--accent); letter-spacing: 0.04em; margin-right: 2rem; white-space: nowrap; }
 .nav-section-tabs { display: flex; border-right: 1px solid var(--border); margin-right: 1.5rem; padding-right: 1.5rem; gap: 2px; }
-.nav-tab { font-family: var(--mono); font-size: 11px; color: var(--muted); text-decoration: none; padding: 5px 12px; border-radius: 3px; cursor: pointer; border: none; background: none; transition: all 0.15s; white-space: nowrap; }
+.nav-tab { font-family: var(--mono); font-size: 11px; color: var(--muted); padding: 5px 12px; border-radius: 3px; cursor: pointer; border: none; background: none; transition: all 0.15s; white-space: nowrap; }
 .nav-tab:hover { color: var(--text); background: rgba(255,255,255,0.05); }
 .nav-tab.active { color: var(--accent); background: rgba(77,157,224,0.1); }
-.nav-links { display: flex; gap: 0; overflow-x: auto; flex: 1; scrollbar-width: none; }
+.nav-links { display: flex; overflow-x: auto; flex: 1; scrollbar-width: none; }
 .nav-links::-webkit-scrollbar { display: none; }
 .nav-links a { font-size: 12px; color: var(--muted); text-decoration: none; padding: 0 12px; height: 52px; display: flex; align-items: center; border-bottom: 2px solid transparent; white-space: nowrap; transition: color 0.15s, border-color 0.15s; }
 .nav-links a:hover, .nav-links a.active { color: var(--text); border-bottom-color: var(--accent); }
 .nav-badge { font-family: var(--mono); font-size: 11px; color: var(--muted2); white-space: nowrap; }
 
-/* ─── HERO ─── */
 .hero { padding: 5rem 2rem 3rem; max-width: 980px; margin: 0 auto; border-bottom: 1px solid var(--border); }
 .hero-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 1rem; }
 .hero h1 { font-size: clamp(26px, 5vw, 48px); font-weight: 300; line-height: 1.15; margin-bottom: 1.2rem; }
@@ -60,18 +48,15 @@ nav {
 .pill.orange { border-color: rgba(224,122,77,0.35); color: var(--accent2); background: rgba(224,122,77,0.06); }
 .pill.purple { border-color: rgba(196,125,224,0.35); color: var(--accent4); background: rgba(196,125,224,0.06); }
 
-/* ─── METRICS BAR ─── */
 .metrics-bar { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--border); }
 .metric-cell { padding: 2rem; border-right: 1px solid var(--border); }
 .metric-cell:last-child { border-right: none; }
-.metric-num { font-family: var(--mono); font-size: 26px; font-weight: 400; color: var(--text); letter-spacing: -0.02em; }
+.metric-num { font-family: var(--mono); font-size: 26px; color: var(--text); letter-spacing: -0.02em; }
 .metric-lbl { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
 
-/* ─── TABS CONTENT ─── */
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-/* ─── SECTIONS (Charts) ─── */
 .section { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; border-bottom: 1px solid var(--border); }
 .section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
 .section-num { font-family: var(--mono); font-size: 11px; color: var(--accent); flex-shrink: 0; }
@@ -83,8 +68,15 @@ nav {
 .legend-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
 .chart-wrap { position: relative; width: 100%; }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-.insight { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 1rem 1.25rem; margin-top: 1rem; font-size: 12px; color: var(--muted); font-family: var(--mono); line-height: 1.6; }
+
+/* ─── INSIGHT BOXES ─── */
+.insight { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 1rem 1.25rem; margin-top: 1rem; font-size: 12.5px; color: var(--muted); font-family: var(--mono); line-height: 1.65; }
 .insight strong { color: var(--accent2); font-weight: 500; }
+.insight.green strong { color: var(--accent3); }
+.insight.blue strong { color: var(--accent); }
+.insight.purple strong { color: var(--accent4); }
+.insight.yellow strong { color: var(--accent5); }
+.insight-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; opacity: 0.7; }
 
 /* ─── DOCS LAYOUT ─── */
 .docs-layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 52px); }
@@ -96,19 +88,14 @@ nav {
 .sidebar-link { display: block; font-size: 12.5px; color: var(--muted); text-decoration: none; padding: 5px 1.5rem; transition: all 0.12s; border-left: 2px solid transparent; }
 .sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
 .sidebar-link.active { color: var(--accent); border-left-color: var(--accent); background: rgba(77,157,224,0.05); }
-
 .docs-content { padding: 3rem 3.5rem; max-width: 820px; }
-
-/* ─── DOC SECTIONS ─── */
 .doc-section { margin-bottom: 3.5rem; padding-bottom: 3.5rem; border-bottom: 1px solid var(--border); }
 .doc-section:last-child { border-bottom: none; }
 .doc-section-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.75rem; }
-.doc-section h2 { font-size: 22px; font-weight: 400; margin-bottom: 0.75rem; line-height: 1.3; }
+.doc-section h2 { font-size: 22px; font-weight: 400; margin-bottom: 0.75rem; }
 .doc-section h3 { font-size: 15px; font-weight: 500; margin: 1.75rem 0 0.6rem; color: var(--text); }
 .doc-section p { font-size: 14px; color: var(--muted); line-height: 1.75; margin-bottom: 1rem; }
 .doc-section p:last-child { margin-bottom: 0; }
-
-/* ─── FUNCTION BLOCK ─── */
 .fn-block { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 2rem; overflow: hidden; }
 .fn-header { display: flex; align-items: center; gap: 12px; padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
 .fn-num { font-family: var(--mono); font-size: 11px; color: var(--muted2); }
@@ -120,13 +107,9 @@ nav {
 .fn-body ul { padding-left: 1.5rem; margin: 0.5rem 0; }
 .fn-body li { font-size: 13.5px; color: var(--muted); line-height: 1.7; margin-bottom: 4px; }
 .fn-body li strong { color: var(--text); font-weight: 500; }
-
-/* ─── FORMULA BLOCK ─── */
 .formula-block { background: var(--bg3); border: 1px solid var(--border2); border-radius: 4px; padding: 1.5rem; margin: 1.25rem 0; text-align: center; overflow-x: auto; }
-.formula-block .formula { font-family: var(--mono); font-size: 14px; color: var(--text); letter-spacing: 0.01em; }
+.formula-block .formula { font-family: var(--mono); font-size: 14px; color: var(--text); }
 .formula-caption { font-family: var(--mono); font-size: 11px; color: var(--muted2); margin-top: 10px; }
-
-/* ─── CRITERIA BLOCK ─── */
 .criteria-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 1rem 0; }
 .criteria-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 1rem; }
 .criteria-tag { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
@@ -135,8 +118,6 @@ nav {
 .criteria-tag.orange { color: var(--accent2); }
 .criteria-tag.purple { color: var(--accent4); }
 .criteria-item p { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin: 0; }
-
-/* ─── PARAM TABLE ─── */
 .param-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
 .param-table th { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted2); font-weight: 400; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border2); }
 .param-table td { font-size: 13px; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
@@ -145,44 +126,24 @@ nav {
 .param-table td:nth-child(2) { font-family: var(--mono); font-size: 13px; color: var(--accent3); }
 .param-table td:last-child { font-size: 12px; color: var(--muted); }
 code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--border2); padding: 1px 6px; border-radius: 3px; color: var(--accent2); }
-
-/* ─── OVERVIEW CARDS ─── */
 .overview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 1.5rem 0; }
 .overview-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 1.25rem; }
 .overview-card-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted2); margin-bottom: 8px; }
 .overview-card p { font-size: 13px; color: var(--muted); line-height: 1.65; margin: 0; }
-
-/* ─── REF LIST ─── */
 .ref-list { list-style: none; padding: 0; }
 .ref-list li { font-size: 13px; color: var(--muted); line-height: 1.7; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .ref-list li:last-child { border-bottom: none; }
 .ref-list a { color: var(--accent); text-decoration: none; font-size: 12px; font-family: var(--mono); }
 .ref-list a:hover { text-decoration: underline; }
 .ref-list em { color: var(--text); font-style: italic; }
-
-/* ─── ANIMATIONS ─── */
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-.section { animation: fadeUp 0.4s ease both; }
-.fn-block { animation: fadeUp 0.35s ease both; }
+.section, .fn-block { animation: fadeUp 0.4s ease both; }
 
-/* ─── RESPONSIVE ─── */
-@media (max-width: 900px) {
-  .docs-layout { grid-template-columns: 1fr; }
-  .docs-sidebar { display: none; }
-  .docs-content { padding: 2rem 1.5rem; }
-}
-@media (max-width: 700px) {
-  .metrics-bar { grid-template-columns: repeat(2, 1fr); }
-  .metric-cell { border-right: none; border-bottom: 1px solid var(--border); }
-  .two-col { grid-template-columns: 1fr; }
-  .criteria-grid { grid-template-columns: 1fr; }
-  .overview-grid { grid-template-columns: 1fr; }
-  nav { padding: 0 1rem; }
-  .section { padding: 2rem 1rem; }
-  .hero { padding: 3rem 1rem 2rem; }
-  .nav-badge { display: none; }
-  .nav-section-tabs { display: none; }
-}
+/* ─── DISTRIBUTION NOTE ─── */
+.dist-note { font-family: var(--mono); font-size: 10.5px; color: var(--muted2); margin-bottom: 10px; padding: 6px 10px; border-left: 2px solid var(--border2); }
+
+@media (max-width: 900px) { .docs-layout { grid-template-columns: 1fr; } .docs-sidebar { display: none; } .docs-content { padding: 2rem 1.5rem; } }
+@media (max-width: 700px) { .metrics-bar { grid-template-columns: repeat(2, 1fr); } .metric-cell { border-right: none; border-bottom: 1px solid var(--border); } .two-col, .criteria-grid, .overview-grid { grid-template-columns: 1fr; } nav { padding: 0 1rem; } .section { padding: 2rem 1rem; } .hero { padding: 3rem 1rem 2rem; } .nav-badge, .nav-section-tabs { display: none; } }
 </style>
 </head>
 <body>
@@ -219,9 +180,7 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
   <span class="nav-badge">n = 23,660 units</span>
 </nav>
 
-<!-- ════════════════════════════════════════════
-     DASHBOARD TAB
-════════════════════════════════════════════ -->
+<!-- ═══ DASHBOARD ═══ -->
 <div id="tab-dashboard" class="tab-content active">
 
   <div class="hero" id="hero-sec">
@@ -245,145 +204,246 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
     <div class="metric-cell"><div class="metric-num">199</div><div class="metric-lbl">Unique brain regions</div></div>
   </div>
 
-  <!-- 01 -->
+  <!-- 01 — τ × REGION -->
   <div class="section" id="timescale-region">
-    <div class="section-header"><span class="section-num">01</span><div><div class="section-title">Timescale × Brain Region</div><div class="section-desc">Median effective timescale (τ) for the 15 most-sampled regions, sorted descending.</div></div></div>
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <div>
+        <div class="section-title">Timescale × Brain Region</div>
+        <div class="section-desc">Distribution of τ_eff for the 15 most-sampled regions. Box = IQR, whiskers = 5th–95th percentile. Sorted by median (descending).</div>
+      </div>
+    </div>
     <div class="chart-card">
+      <div class="dist-note">⚠ Box plot data derived from log-normal fit to population distributions per region. Within-region spread is substantial — note overlap between many adjacent regions.</div>
       <div class="chart-legend">
-        <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>τ &gt; 500 ms</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>Median τ &gt; 500 ms</span>
         <span class="legend-item"><span class="legend-swatch" style="background:#efc24d"></span>200–500 ms</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>τ &lt; 200 ms</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Median τ &lt; 200 ms</span>
       </div>
-      <div class="chart-wrap" style="height:400px;"><canvas id="regionTauChart"></canvas></div>
+      <div class="chart-wrap" style="height:460px;"><canvas id="regionBoxChart"></canvas></div>
+    </div>
+    <div class="insight">
+      <div class="insight-label">Main takeaway</div>
+      <strong>Within-region spread rivals between-region differences for most pairs.</strong> Brainstem regions (PRNr, MRN) have medians ~10× higher than hippocampal regions (CA1, CA3), but their IQRs overlap substantially with mid-hierarchy areas like LP or PO. The ordering is robust at the extremes — brainstem vs. hippocampus is a clear, real gradient — but adjacent ranks in the middle should not be over-interpreted as distinct timescale "classes."
     </div>
   </div>
 
-  <!-- 02 -->
+  <!-- 02 — τ × DIVISION -->
   <div class="section" id="timescale-division">
-    <div class="section-header"><span class="section-num">02</span><div><div class="section-title">Timescale × Major Brain Division</div><div class="section-desc">Comparing median effective τ across grouped forebrain, midbrain, and hindbrain structures.</div></div></div>
-    <div class="chart-card">
-      <div class="chart-legend">
-        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Forebrain (Ctx/Hippo/BG/Thal)</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>Midbrain (MRN/PRNr)</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#efc24d"></span>Hindbrain (SPVI)</span>
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <div>
+        <div class="section-title">Timescale × Major Brain Division</div>
+        <div class="section-desc">Distribution of τ_eff across grouped forebrain, midbrain, and hindbrain. Box = IQR; whiskers = 5th–95th percentile. Key question: do these divisions actually separate in τ space?</div>
       </div>
-      <div class="chart-wrap" style="height:320px;"><canvas id="divisionTauChart"></canvas></div>
     </div>
-    <div class="insight"><strong>Hierarchy validated:</strong> Aligning with Shi et al. (2025), there is a ~8× jump in timescale magnitude from the forebrain (110 ms median) to the midbrain complex (868 ms), establishing a massive hierarchical gradient in temporal integration.</div>
+    <div class="chart-card">
+      <div class="dist-note">⚠ Approximate distributions. Forebrain pool contains many heterogeneous regions (Ctx, Hippo, BG, Thal) — its wide spread reflects this pooling, not noise.</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Forebrain</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>Midbrain</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#efc24d"></span>Hindbrain</span>
+      </div>
+      <div class="chart-wrap" style="height:340px;"><canvas id="divisionBoxChart"></canvas></div>
+    </div>
+    <div class="insight">
+      <div class="insight-label">Hierarchy validated</div>
+      <strong>Aligning with Shi et al. (2025), there is a real ~8× jump in median τ from forebrain (110 ms) to midbrain (868 ms).</strong> Critically, the forebrain IQR (≈28–320 ms) barely overlaps with the midbrain IQR (≈320–1,700 ms), indicating this is a genuine population-level difference, not an artefact of medians. The forebrain's own wide spread (~5–2,000 ms whiskers) underscores that it encompasses a diverse hierarchy within itself — from 50 ms PAR to 700 ms SSs.
+    </div>
   </div>
 
-  <!-- 03 -->
+  <!-- 03 — τ × FIRING RATE -->
   <div class="section" id="timescale-fr">
-    <div class="section-header"><span class="section-num">03</span><div><div class="section-title">Timescale × Firing Rate</div><div class="section-desc">Median τ effective per firing rate bin, with unit count overlay.</div></div></div>
-    <div class="chart-card">
-      <div class="chart-legend">
-        <span class="legend-item"><span class="legend-swatch" style="background:#4de08a"></span>Median τ (left axis)</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#1c4a2e"></span>Unit count (right axis)</span>
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <div>
+        <div class="section-title">Timescale × Firing Rate</div>
+        <div class="section-desc">Distribution of τ_eff per firing rate bin. Firing rate and timescale are often assumed to be inversely linked — this plot tests that assumption.</div>
       </div>
-      <div class="chart-wrap" style="height:320px;"><canvas id="frTauChart"></canvas></div>
     </div>
-  </div>
-
-  <!-- 04 -->
-  <div class="section" id="timescale-lv">
-    <div class="section-header"><span class="section-num">04</span><div><div class="section-title">Timescale × Local Variance (L<sub>v</sub>)</div><div class="section-desc">L<sub>v</sub> measures inter-spike interval regularity. L<sub>v</sub> ≈ 1 is Poisson-like; L<sub>v</sub> &lt; 1 is more regular; L<sub>v</sub> &gt; 1 is more bursty.</div></div></div>
     <div class="chart-card">
-      <div class="chart-legend"><span class="legend-item"><span class="legend-swatch" style="background:#c47de0"></span>Median τ effective (ms)</span></div>
-      <div class="chart-wrap" style="height:320px;"><canvas id="lvTauChart"></canvas></div>
+      <div class="dist-note">⚠ Approximate quartile distributions per FR bin derived from within-bin log-normal fits.</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#4de08a"></span>τ distribution per FR bin</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:rgba(77,224,138,0.3)"></span>IQR</span>
+      </div>
+      <div class="chart-wrap" style="height:340px;"><canvas id="frBoxChart"></canvas></div>
+    </div>
+    <div class="insight">
+      <div class="insight-label">Sanity check — weak and non-monotonic</div>
+      <strong>There is no simple inverse relationship between firing rate and timescale.</strong> The 2–5 Hz bin has the highest median τ (~365 ms) and the widest spread, driven by bursty low-rate neurons in deeper structures. The 20–50 Hz bin shows a secondary peak (~432 ms median) — unexpectedly long — which likely reflects fast-firing neurons in brainstem regions. Within each FR bin, τ distributions overlap almost completely. Firing rate alone is a poor predictor of a neuron's timescale; <strong>brain region explains far more variance.</strong>
     </div>
   </div>
 
-  <!-- 05-06 -->
+  <!-- 04 — τ × LOCAL VARIANCE -->
+  <div class="section" id="timescale-lv">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <div>
+        <div class="section-title">Timescale × Local Variance (L<sub>v</sub>)</div>
+        <div class="section-desc">L<sub>v</sub> measures ISI regularity. L<sub>v</sub> ≈ 1 = Poisson; L<sub>v</sub> &lt; 1 = regular; L<sub>v</sub> &gt; 1 = bursty. Distribution of τ per L<sub>v</sub> bin.</div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="dist-note">⚠ Approximate quartile distributions per Lv bin.</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#c47de0"></span>τ distribution per Lv bin</span>
+      </div>
+      <div class="chart-wrap" style="height:340px;"><canvas id="lvBoxChart"></canvas></div>
+    </div>
+    <div class="insight">
+      <div class="insight-label">Key finding — burstiness ≠ long timescale</div>
+      <strong>Bursty neurons (L<sub>v</sub> &gt; 1) have dramatically shorter effective timescales.</strong> The median τ drops from ~844 ms at Lv &lt; 0.5 (regular firing) to just ~9 ms at Lv &gt; 2 (highly bursty). Regular-firing neurons — typical of deep cortical layers and thalamus — integrate information over long windows. Bursty neocortical neurons have short autocorrelation despite high instantaneous rates within bursts, because the long inter-burst silences break the temporal continuity measured by the ACF. This also explains why iSTTC outperforms PearsonR: it is specifically designed for the Lv &gt; 1 regime where binned ACF estimates are most biased.
+    </div>
+  </div>
+
+  <!-- 05–06 — DISTRIBUTION + N TIMESCALES -->
   <div class="section" id="histogram">
-    <div class="section-header"><span class="section-num">05 — 06</span><div><div class="section-title">τ Distribution &amp; N Timescales</div><div class="section-desc">Left: histogram of τ effective across all 23,660 units. Right: number of exponential components needed to fit the ACF.</div></div></div>
+    <div class="section-header">
+      <span class="section-num">05 — 06</span>
+      <div>
+        <div class="section-title">τ Population Distribution &amp; N Components</div>
+        <div class="section-desc">Left: marginal distribution of τ_eff across all 23,660 units. Right: fraction of neurons best described by 1–4 exponential components.</div>
+      </div>
+    </div>
     <div class="two-col">
       <div class="chart-card">
         <div class="chart-legend"><span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Unit count per τ bin</span></div>
         <div class="chart-wrap" style="height:280px;"><canvas id="tauHistChart"></canvas></div>
+        <div class="insight" style="margin-top:12px;">
+          <div class="insight-label">Distribution shape</div>
+          <strong>Heavily right-skewed with a mode near 100 ms.</strong> The majority of neurons (n ≈ 9,800 in the first bin) have short timescales, consistent with hippocampal and cortical units dominating the dataset. The long right tail (τ &gt; 1,000 ms) is populated by brainstem and deep-thalamus units. The log-scale structure suggests a roughly log-normal population — no single "characteristic" timescale for the brain as a whole.
+        </div>
       </div>
       <div class="chart-card">
         <div class="chart-legend"><span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>n_timescales distribution</span></div>
         <div class="chart-wrap" style="height:280px;"><canvas id="nTimescalesChart"></canvas></div>
+        <div class="insight" style="margin-top:12px;">
+          <div class="insight-label">Multi-timescale prevalence</div>
+          <strong>72% of neurons require ≥ 2 timescale components.</strong> A single exponential is insufficient for most cells, consistent with Shi et al. (2025) who report 51% two-component in primates. The 59% two-component rate here, with an additional 13% needing three, confirms that single-τ summaries discard real structure. This justifies the BIC-based multi-exponential fitting approach used throughout.
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 07 -->
+  <!-- 07 — TAU COMPONENTS -->
   <div class="section" id="tau-components">
-    <div class="section-header"><span class="section-num">07</span><div><div class="section-title">Timescale Components — τ₁ through τ₄</div><div class="section-desc">Median value of each fitted timescale component across all neurons.</div></div></div>
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <div>
+        <div class="section-title">Timescale Components — τ₁ through τ₄</div>
+        <div class="section-desc">Distribution of each fitted timescale component across all neurons that have that component. Do the components occupy distinct timescale bands?</div>
+      </div>
+    </div>
     <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-bottom:1.5rem;">
-      <div style="background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:1.25rem;">
-        <div style="font-family:var(--mono); font-size:10px; color:#4d9de0; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">τ₁ — 1st comp</div>
-        <div style="font-family:var(--mono); font-size:24px; color:var(--text);">52.4 ms</div>
-        <div style="font-size:11px; color:var(--muted); margin-top:4px;">n = 23,660</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1.25rem;">
+        <div style="font-family:var(--mono);font-size:10px;color:#4d9de0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">τ₁ — fast</div>
+        <div style="font-family:var(--mono);font-size:24px;color:var(--text);">52 ms</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">median · n = 23,660</div>
       </div>
-      <div style="background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:1.25rem;">
-        <div style="font-family:var(--mono); font-size:10px; color:#4de08a; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">τ₂ — 2nd comp</div>
-        <div style="font-family:var(--mono); font-size:24px; color:var(--text);">1,034 ms</div>
-        <div style="font-size:11px; color:var(--muted); margin-top:4px;">n = 17,203</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1.25rem;">
+        <div style="font-family:var(--mono);font-size:10px;color:#4de08a;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">τ₂ — slow</div>
+        <div style="font-family:var(--mono);font-size:24px;color:var(--text);">1,034 ms</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">median · n = 17,203</div>
       </div>
-      <div style="background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:1.25rem;">
-        <div style="font-family:var(--mono); font-size:10px; color:#c47de0; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">τ₃ — 3rd comp</div>
-        <div style="font-family:var(--mono); font-size:24px; color:var(--text);">2,929 ms</div>
-        <div style="font-size:11px; color:var(--muted); margin-top:4px;">n = 3,151</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1.25rem;">
+        <div style="font-family:var(--mono);font-size:10px;color:#c47de0;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">τ₃ — very slow</div>
+        <div style="font-family:var(--mono);font-size:24px;color:var(--text);">2,929 ms</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">median · n = 3,151</div>
       </div>
-      <div style="background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:1.25rem;">
-        <div style="font-family:var(--mono); font-size:10px; color:#e07a4d; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">τ₄ — 4th comp</div>
-        <div style="font-family:var(--mono); font-size:24px; color:var(--text);">4,489 ms</div>
-        <div style="font-size:11px; color:var(--muted); margin-top:4px;">n = 22</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:1.25rem;">
+        <div style="font-family:var(--mono);font-size:10px;color:#e07a4d;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">τ₄ — ultra</div>
+        <div style="font-family:var(--mono);font-size:24px;color:var(--text);">4,489 ms</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">median · n = 22</div>
       </div>
     </div>
     <div class="chart-card">
-      <div style="font-size:13px; color:var(--muted); margin-bottom:14px; font-family:var(--mono);">Median τ₁ and τ₂ per brain region</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px;font-family:var(--mono);">Median τ₁ and τ₂ per brain region — components occupy distinct timescale bands</div>
       <div class="chart-legend">
-        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Median τ₁</span>
-        <span class="legend-item"><span class="legend-swatch" style="background:#4de08a"></span>Median τ₂</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>τ₁ (fast)</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#4de08a"></span>τ₂ (slow)</span>
       </div>
       <div class="chart-wrap" style="height:400px;"><canvas id="tauRegionBreakdownChart"></canvas></div>
     </div>
+    <div class="insight">
+      <div class="insight-label">Two-band structure</div>
+      <strong>τ₁ and τ₂ occupy clearly separate timescale bands (~10–280 ms vs ~330–2,600 ms) with no overlap in region-level medians.</strong> The gap is approximately one order of magnitude. τ₁ is tightly linked to local circuit properties (see Section 08), while τ₂ appears to reflect a network-level slow fluctuation that is more uniformly distributed. The ~20× range in τ₁ across regions (15 ms in DG → 263 ms in PRNr) is the primary driver of effective timescale differences reported in Section 01.
+    </div>
   </div>
 
-  <!-- 08 -->
+  <!-- 08 — MULTISCALE SCATTER -->
   <div class="section" id="tau-multiscale">
-    <div class="section-header"><span class="section-num">08</span><div><div class="section-title">Multiscale Architecture: τ₁ vs τ₂</div><div class="section-desc">Testing the hypothesis that fast components (τ₁) drive regional differences while slow components (τ₂) act as universal baseline dynamics.</div></div></div>
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <div>
+        <div class="section-title">Multiscale Architecture: τ₁ vs τ₂</div>
+        <div class="section-desc">Do regions with long fast components also have long slow components? Testing for coupled vs. independent multiscale dynamics.</div>
+      </div>
+    </div>
     <div class="chart-card">
       <div class="chart-legend"><span class="legend-item"><span class="legend-swatch" style="background:#c47de0"></span>Top 15 Regions (Log-Log Scale)</span></div>
-      <div class="chart-wrap" style="height:350px;"><canvas id="tauScatterChart"></canvas></div>
+      <div class="chart-wrap" style="height:360px;"><canvas id="tauScatterChart"></canvas></div>
     </div>
-    <div class="insight"><strong>Regional vs Universal:</strong> While τ₁ varies widely across regions (from ~19ms in CA1 to ~278ms in V), τ₂ maintains a proportionally higher baseline in regions with long τ₁, demonstrating a coupled multiscale architecture where local circuit properties (τ₁) scale alongside slower network states (τ₂).</div>
+    <div class="insight">
+      <div class="insight-label">Coupled multiscale architecture</div>
+      <strong>τ₁ and τ₂ are positively correlated across regions (log-log), ruling out the "universal slow baseline" hypothesis.</strong> If τ₂ were a region-independent network state (e.g. global up/down oscillations), we'd expect a flat horizontal scatter. Instead, regions with long τ₁ (PRNr, SPVI, V) consistently show long τ₂ too. This means both fast and slow temporal structure are shaped by local circuit properties — the brain doesn't simply impose one slow timescale on top of region-specific fast dynamics. The exception is CA1, which has short τ₁ (~19 ms) but disproportionately long τ₂ (~586 ms), consistent with hippocampal-specific theta/sharp-wave ripple dynamics.
+    </div>
   </div>
 
-  <!-- 09 -->
+  <!-- 09 — POWER LAW -->
   <div class="section" id="tau-powerlaw">
-    <div class="section-header"><span class="section-num">09</span><div><div class="section-title">τ₂ Power-Law Distribution</div><div class="section-desc">Log-log histogram of τ₂ across the population to test scale-free dynamics (theoretical exponent ≈ −2).</div></div></div>
-    <div class="chart-card">
-      <div class="chart-legend"><span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>τ₂ Unit Count (Log-Log Scale)</span></div>
-      <div class="chart-wrap" style="height:350px;"><canvas id="tauPowerLawChart"></canvas></div>
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <div>
+        <div class="section-title">τ₂ Power-Law Distribution</div>
+        <div class="section-desc">Log-log histogram of τ₂ across the population. Scale-free ("critical") dynamics would predict a straight-line descent with exponent ≈ −2.</div>
+      </div>
     </div>
-    <div class="insight"><strong>Deviation from Scale-free Dynamics:</strong> Unlike a pure power-law (linear descent on log-log), the empirical data shows a <strong>broad plateau between 1,000 and 3,500 ms</strong>. Slow fluctuations cluster in a preferred "slow state" frequency band — inconsistent with strict neural criticality.</div>
+    <div class="chart-card">
+      <div class="chart-legend"><span class="legend-item"><span class="legend-swatch" style="background:#e07a4d"></span>τ₂ Unit Count</span></div>
+      <div class="chart-wrap" style="height:360px;"><canvas id="tauPowerLawChart"></canvas></div>
+    </div>
+    <div class="insight">
+      <div class="insight-label">Against strict neural criticality</div>
+      <strong>The τ₂ distribution shows a broad plateau from ~1,000–3,500 ms rather than the monotonic decay predicted by a power-law.</strong> A pure power-law (scale-free dynamics at a critical point) would appear as a straight descending line on these log-linear axes. Instead, the flat plateau suggests that slow timescales cluster preferentially in a "slow-state band" that may reflect shared network-level oscillatory dynamics (e.g., infraslow fluctuations, sleep-wake cycling in the passive recording window). This is a falsification of the strong form of neural criticality for τ₂, though it doesn't rule out criticality as a contributing factor.
+    </div>
   </div>
 
-  <!-- 10 -->
+  <!-- 10 — FIT QUALITY -->
   <div class="section" id="fit-quality">
-    <div class="section-header"><span class="section-num">10</span><div><div class="section-title">Fit Reliability &amp; Amplitude Metrics</div><div class="section-desc">Evaluating model confidence (R² per region, CI width) and coefficient magnitude (c₁ vs τ₁).</div></div></div>
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <div>
+        <div class="section-title">Fit Reliability &amp; Amplitude Metrics</div>
+        <div class="section-desc">QC check: are model fits trustworthy? R² by region (left), c₁ vs τ₁ amplitude tradeoff (right), CI width growth with τ (bottom).</div>
+      </div>
+    </div>
     <div class="two-col">
       <div class="chart-card">
-        <div style="font-size:13px; color:var(--muted); margin-bottom:14px; font-family:var(--mono);">Median R² per Region (Top 15)</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:14px;font-family:var(--mono);">Median R² per Region (Top 15)</div>
         <div class="chart-legend">
           <span class="legend-item"><span class="legend-swatch" style="background:#4de08a"></span>R² ≥ 0.85</span>
           <span class="legend-item"><span class="legend-swatch" style="background:#1c4a2e"></span>R² &lt; 0.85</span>
         </div>
         <div class="chart-wrap" style="height:250px;"><canvas id="r2RegionChart"></canvas></div>
+        <div class="insight" style="margin-top:10px;">
+          <strong>Fits are uniformly acceptable (R² 0.73–0.90) but not uniformly excellent.</strong> Hippocampal regions (SUB, CA1) have lower R² — likely because their complex θ-modulated autocorrelations are not well captured by sum-of-exponentials. Brainstem regions (V, PRNr) fit best, consistent with their smoother, slowly-decaying ACF profiles.
+        </div>
       </div>
       <div class="chart-card">
-        <div style="font-size:13px; color:var(--muted); margin-bottom:14px; font-family:var(--mono);">Amplitude (c₁) vs τ₁ (Top 30 regions)</div>
-        <div class="chart-legend"><span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Median Region Data</span></div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:14px;font-family:var(--mono);">Amplitude (c₁) vs τ₁ (Top 30 regions)</div>
+        <div class="chart-legend"><span class="legend-item"><span class="legend-swatch" style="background:#4d9de0"></span>Median region data</span></div>
         <div class="chart-wrap" style="height:250px;"><canvas id="c1TauChart"></canvas></div>
+        <div class="insight" style="margin-top:10px;">
+          <strong>Strong inverse tradeoff: short-τ₁ regions show large initial ACF amplitude (c₁ ≈ 0.20–0.30) while long-τ₁ brainstem regions are attenuated (c₁ ≈ 0.06–0.09).</strong> This makes sense: fast-decaying regions have high initial correlation that drops quickly; slow-decaying regions have smaller but more persistent correlation. This tradeoff is intrinsic to the exponential model, not a fitting artefact.
+        </div>
       </div>
       <div class="chart-card" style="grid-column: 1 / -1;">
-        <div style="font-size:13px; color:var(--muted); margin-bottom:14px; font-family:var(--mono);">Confidence Interval Width (95%) vs Effective τ</div>
-        <div class="chart-wrap" style="height:250px;"><canvas id="ciWidthChart"></canvas></div>
-        <div class="insight" style="margin-top:12px;"><strong>Estimation limits &amp; Amplitude tradeoff:</strong> Long τ estimates carry proportionally wider CIs. There is also a strong inverse relationship between c₁ and τ₁ — regions with short τ₁ (e.g. CA1, SSp) show high initial autocorrelation amplitude (c₁ ≈ 0.20), while long-τ₁ regions (brainstem) show attenuated amplitudes (c₁ ≈ 0.07).</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:14px;font-family:var(--mono);">95% Confidence Interval Width vs Estimated τ_eff</div>
+        <div class="chart-wrap" style="height:240px;"><canvas id="ciWidthChart"></canvas></div>
+        <div class="insight" style="margin-top:12px;">
+          <strong>Estimation uncertainty scales with τ: long-timescale estimates (τ &gt; 2,000 ms) have CIs exceeding 300 ms.</strong> This is an intrinsic limitation — you need many data points to accurately estimate a slow decay. This means Section 01 differences between neighboring mid-hierarchy regions should be interpreted cautiously: the overlap in CI is comparable to the difference in medians for e.g. LP (212 ms) vs. PO (368 ms). The brainstem–hippocampus split is robust to this uncertainty; fine-grained rank ordering within the middle of the hierarchy is not.
+        </div>
       </div>
     </div>
   </div>
@@ -391,13 +451,9 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
 </div><!-- /tab-dashboard -->
 
 
-<!-- ════════════════════════════════════════════
-     METHODS TAB
-════════════════════════════════════════════ -->
+<!-- ═══ METHODS TAB ═══ -->
 <div id="tab-methods" class="tab-content">
   <div class="docs-layout">
-
-    <!-- Sidebar -->
     <aside class="docs-sidebar">
       <div class="sidebar-group">
         <div class="sidebar-group-label">Introduction</div>
@@ -407,16 +463,16 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
       <div class="sidebar-group">
         <div class="sidebar-group-label">iSTTC Core (Cell 2)</div>
         <a href="#doc-isttc" class="sidebar-link">Core Functions</a>
-        <a href="#fn-tiling" class="sidebar-link" style="padding-left:2.2rem; font-size:12px;">_tiling_proportion_nb</a>
-        <a href="#fn-spikes" class="sidebar-link" style="padding-left:2.2rem; font-size:12px;">_spikes_in_tiling_nb</a>
-        <a href="#fn-isttc" class="sidebar-link" style="padding-left:2.2rem; font-size:12px;">_isttc_nb</a>
-        <a href="#fn-calc" class="sidebar-link" style="padding-left:2.2rem; font-size:12px;">calculate_isttc</a>
+        <a href="#fn-tiling" class="sidebar-link" style="padding-left:2.2rem;font-size:12px;">_tiling_proportion_nb</a>
+        <a href="#fn-spikes" class="sidebar-link" style="padding-left:2.2rem;font-size:12px;">_spikes_in_tiling_nb</a>
+        <a href="#fn-isttc" class="sidebar-link" style="padding-left:2.2rem;font-size:12px;">_isttc_nb</a>
+        <a href="#fn-calc" class="sidebar-link" style="padding-left:2.2rem;font-size:12px;">calculate_isttc</a>
       </div>
       <div class="sidebar-group">
         <div class="sidebar-group-label">Multi-τ Model (Cell 2)</div>
         <a href="#doc-model" class="sidebar-link">Model Fitting</a>
-        <a href="#fn-multiexp" class="sidebar-link" style="padding-left:2.2rem; font-size:12px;">_multi_exp</a>
-        <a href="#fn-fitmodel" class="sidebar-link" style="padding-left:2.2rem; font-size:12px;">fit_multi_exponential</a>
+        <a href="#fn-multiexp" class="sidebar-link" style="padding-left:2.2rem;font-size:12px;">_multi_exp</a>
+        <a href="#fn-fitmodel" class="sidebar-link" style="padding-left:2.2rem;font-size:12px;">fit_multi_exponential</a>
       </div>
       <div class="sidebar-group">
         <div class="sidebar-group-label">Spiking Metrics</div>
@@ -437,355 +493,174 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
         <a href="#doc-refs" class="sidebar-link">References</a>
       </div>
     </aside>
-
-    <!-- Content -->
     <main class="docs-content">
-
-      <!-- OVERVIEW -->
       <div class="doc-section" id="doc-overview">
         <div class="doc-section-label">Introduction</div>
         <h2>iSTTC Notebook: Function &amp; Code Documentation</h2>
-        <p>This notebook was developed to estimate intrinsic neural timescales (ITs) from single-unit recordings spanning the entire mouse brain. Timescales are defined as the decay time constant of the autocorrelation function of spontaneous neural activity, and reflect how neural circuits integrate information over time (Murray et al., 2014; Pochinok et al., 2025).</p>
-        <p>The notebook integrates two complementary approaches: (1) computation of the autocorrelation function using the <strong>iSTTC method</strong> developed by Pochinok et al. (2025), and (2) <strong>multi-exponential model fitting</strong> as defined by Shi et al. (2025).</p>
+        <p>This notebook estimates intrinsic neural timescales (ITs) from single-unit recordings spanning the entire mouse brain. Timescales are defined as the decay time constant of the autocorrelation function of spontaneous neural activity, reflecting how neural circuits integrate information over time.</p>
+        <p>Two complementary approaches are integrated: (1) the <strong>iSTTC method</strong> (Pochinok et al., 2025) for unbiased ACF estimation, and (2) <strong>multi-exponential BIC model fitting</strong> (Shi et al., 2025).</p>
         <div class="overview-grid">
-          <div class="overview-card">
-            <div class="overview-card-label">iSTTC Method</div>
-            <p>Spike Train Tiling Coefficient adapted for intrinsic timescales. Reduces systematic bias in ACF estimation — particularly under low firing rates and bursty dynamics.</p>
-          </div>
-          <div class="overview-card">
-            <div class="overview-card-label">Multi-Exponential Fitting</div>
-            <p>ACF modeled as a sum of M exponential components (M = 1–4) selected by BIC. Captures multiple linear slopes in single-neuron autocorrelations that single-exponential models miss.</p>
-          </div>
-          <div class="overview-card">
-            <div class="overview-card-label">Dataset</div>
-            <p>IBL Neuropixels dataset — 115 mice, 223 brain regions. The same brain-wide recording dataset used in Shi et al. (2025) (IBL, 2023).</p>
-          </div>
-          <div class="overview-card">
-            <div class="overview-card-label">Environment</div>
-            <p>Designed to run in Google Colab. Mounts Google Drive, installs <code class="inline">ONE-api</code>, <code class="inline">numpy</code>, <code class="inline">scipy</code>, <code class="inline">numba</code>, <code class="inline">joblib</code>.</p>
-          </div>
+          <div class="overview-card"><div class="overview-card-label">iSTTC Method</div><p>Spike Train Tiling Coefficient adapted for ITs. Reduces systematic bias under low firing rates and bursty dynamics.</p></div>
+          <div class="overview-card"><div class="overview-card-label">Multi-Exponential Fitting</div><p>ACF modeled as sum of M exponentials (M = 1–4) by BIC. Captures multiple slopes single-exponential models miss.</p></div>
+          <div class="overview-card"><div class="overview-card-label">Dataset</div><p>IBL Neuropixels — 115 mice, 223 brain regions. Same dataset as Shi et al. (2025) (IBL, 2023).</p></div>
+          <div class="overview-card"><div class="overview-card-label">Environment</div><p>Google Colab. Dependencies: <code class="inline">ONE-api</code>, <code class="inline">numpy</code>, <code class="inline">scipy</code>, <code class="inline">numba</code>, <code class="inline">joblib</code>.</p></div>
         </div>
       </div>
-
-      <!-- SETUP -->
       <div class="doc-section" id="doc-setup">
         <div class="doc-section-label">Cell 1</div>
         <h2>Setup &amp; Dependencies</h2>
-        <p>The first cell mounts Google Drive and installs all required packages. The working directory is set to the shared drive hosting the IBL dataset. Dependencies include:</p>
-        <ul style="padding-left:1.5rem; margin-top:0.5rem;">
-          <li style="font-size:13.5px; color:var(--muted); line-height:1.7; margin-bottom:4px;"><code class="inline">ONE-api</code> — IBL's open data access library</li>
-          <li style="font-size:13.5px; color:var(--muted); line-height:1.7; margin-bottom:4px;"><code class="inline">numpy</code>, <code class="inline">scipy</code> — numerical and optimization routines</li>
-          <li style="font-size:13.5px; color:var(--muted); line-height:1.7; margin-bottom:4px;"><code class="inline">numba</code> — JIT compilation for the iSTTC kernel</li>
-          <li style="font-size:13.5px; color:var(--muted); line-height:1.7; margin-bottom:4px;"><code class="inline">joblib</code> — parallelized session-level processing</li>
-          <li style="font-size:13.5px; color:var(--muted); line-height:1.7; margin-bottom:4px;"><code class="inline">matplotlib</code> — single-neuron visualization</li>
-        </ul>
+        <p>The first cell mounts Google Drive and installs all required packages. Dependencies include <code class="inline">ONE-api</code> (IBL data access), <code class="inline">numpy</code> / <code class="inline">scipy</code> (numerical routines), <code class="inline">numba</code> (JIT compilation for the iSTTC kernel), <code class="inline">joblib</code> (parallelized session processing), and <code class="inline">matplotlib</code> (single-neuron visualization).</p>
       </div>
-
-      <!-- iSTTC CORE -->
       <div class="doc-section" id="doc-isttc">
         <div class="doc-section-label">Cell 2 — Core iSTTC Functions</div>
         <h2>iSTTC Implementation</h2>
-        <p>The iSTTC computes the autocorrelation-like function directly on spike times, avoiding binary representations or binning. All inner functions are JIT-compiled via Numba's <code class="inline">@njit</code> decorator for maximum efficiency.</p>
-
+        <p>The iSTTC computes the ACF directly on spike times, avoiding binning. All inner functions are JIT-compiled via Numba's <code class="inline">@njit</code>.</p>
         <div class="fn-block" id="fn-tiling">
-          <div class="fn-header">
-            <span class="fn-num">1</span>
-            <span class="fn-name">_tiling_proportion_nb</span>
-            <span class="fn-title">Computing T_A</span>
-          </div>
+          <div class="fn-header"><span class="fn-num">1</span><span class="fn-name">_tiling_proportion_nb</span><span class="fn-title">Computing T_A</span></div>
           <div class="fn-body">
-            <p>Computes the tiling proportion term (T_A) from the STTC formula: the fraction of the total recording duration that falls within Δt of any spike in the spike train. Following Pochinok et al. (2025), Equation 5:</p>
-            <div class="formula-block">
-              <div class="formula">T_A = (duration within Δt of any spike) / (total duration)</div>
-              <div class="formula-caption">Eq. 5 — Pochinok et al. (2025)</div>
-            </div>
-            <p>The function accepts spike times array, valid window boundaries (<code class="inline">start</code>, <code class="inline">end</code>), the Δt window width, total recording duration, and a time shift. Critically, this implementation operates <strong>directly on spike times without requiring binary representation or binning</strong> — a key distinction from conventional ACF approaches.</p>
+            <p>Computes T_A: the fraction of total recording duration within Δt of any spike.</p>
+            <div class="formula-block"><div class="formula">T_A = (duration within Δt of any spike) / (total duration)</div><div class="formula-caption">Eq. 5 — Pochinok et al. (2025)</div></div>
+            <p>Operates <strong>directly on spike times without binning</strong> — a key distinction from conventional ACF.</p>
           </div>
         </div>
-
         <div class="fn-block" id="fn-spikes">
-          <div class="fn-header">
-            <span class="fn-num">2</span>
-            <span class="fn-name">_spikes_in_tiling_nb</span>
-            <span class="fn-title">Computing P_A|B</span>
-          </div>
+          <div class="fn-header"><span class="fn-num">2</span><span class="fn-name">_spikes_in_tiling_nb</span><span class="fn-title">Computing P_A|B</span></div>
           <div class="fn-body">
-            <p>Computes the P_A|B term: the fraction of spikes in train A that fall within Δt of any spike in train B. A <strong>binary search algorithm</strong> is used for efficient neighborhood queries over the reference spike train for each test spike.</p>
-            <p>As demonstrated by Pochinok et al. (2025), this approach yields substantially lower relative estimation error (REE) compared to binned ACF methods, particularly under <strong>low firing rate</strong> and <strong>high excitation strength</strong> conditions (Figure 2 of that paper).</p>
+            <p>Computes P_A|B: fraction of spikes in train A within Δt of any spike in train B. Uses <strong>binary search</strong> for efficient neighborhood queries. Yields substantially lower REE than binned ACF, especially under low firing rate and high L<sub>v</sub>.</p>
           </div>
         </div>
-
         <div class="fn-block" id="fn-isttc">
-          <div class="fn-header">
-            <span class="fn-num">3</span>
-            <span class="fn-name">_isttc_nb</span>
-            <span class="fn-title">iSTTC Lag Loop</span>
-          </div>
+          <div class="fn-header"><span class="fn-num">3</span><span class="fn-name">_isttc_nb</span><span class="fn-title">iSTTC Lag Loop</span></div>
           <div class="fn-body">
-            <p>The core iSTTC computation function. Following Pochinok et al. (2025), Equation 6, the original spike train is split into two segments for each lag k:</p>
-            <ul>
-              <li><strong>Spike train A:</strong> spikes occurring after lag k (shifted)</li>
-              <li><strong>Spike train B:</strong> spikes occurring before lag k (unshifted)</li>
-            </ul>
-            <p>The STTC formula is then applied using the computed T_A, T_B, P_A|B, and P_B|A terms at each lag:</p>
-            <div class="formula-block">
-              <div class="formula">iSTTC_lag=k = ½ · ( (P_k:T − T_1:T-k) / (1 − P_k:T · T_1:T-k) + (P_1:T-k − T_k:T) / (1 − P_1:T-k · T_k:T) )</div>
-              <div class="formula-caption">Eq. 6 — Pochinok et al. (2025)</div>
-            </div>
-            <p>A critical implementation detail: <strong>zero-padded intervals are excluded</strong> when computing the T term. This allows iSTTC to be applied without bias to epoched data — overcoming a fundamental limitation of PearsonR-based approaches.</p>
+            <p>Core computation. For each lag k, the spike train is split into two segments (A: shifted; B: unshifted). STTC formula applied at each lag:</p>
+            <div class="formula-block"><div class="formula">iSTTC_k = ½ · ( (P_k:T − T_1:T-k)/(1 − P_k:T·T_1:T-k) + (P_1:T-k − T_k:T)/(1 − P_1:T-k·T_k:T) )</div><div class="formula-caption">Eq. 6 — Pochinok et al. (2025)</div></div>
+            <p><strong>Zero-padded intervals are excluded</strong> from T computation, enabling unbiased application to epoched data — overcoming a key PearsonR limitation.</p>
           </div>
         </div>
-
         <div class="fn-block" id="fn-calc">
-          <div class="fn-header">
-            <span class="fn-num">4</span>
-            <span class="fn-name">calculate_isttc</span>
-            <span class="fn-title">Main Wrapper Function</span>
-          </div>
+          <div class="fn-header"><span class="fn-num">4</span><span class="fn-name">calculate_isttc</span><span class="fn-title">Main Wrapper</span></div>
           <div class="fn-body">
-            <p>The user-facing interface function. Sorts spike times and casts them to <code class="inline">np.float64</code> before calling the JIT-compiled kernel. Default parameters are:</p>
-            <ul>
-              <li><strong>Δt = 5 ms</strong> — tiling window width</li>
-              <li><strong>n_lags = 1200</strong> — number of lags computed</li>
-              <li><strong>lag_shift = 5 ms</strong> — consistent with Pochinok et al. (2025), Section 7.4</li>
-            </ul>
+            <p>User-facing interface. Sorts spike times, casts to <code class="inline">np.float64</code>. Defaults: <strong>Δt = 5 ms</strong>, <strong>n_lags = 1200</strong>, <strong>lag_shift = 5 ms</strong> (Pochinok et al., 2025, §7.4).</p>
           </div>
         </div>
       </div>
-
-      <!-- MULTI-TIMESCALE MODEL -->
       <div class="doc-section" id="doc-model">
         <div class="doc-section-label">Cell 2 — Multi-Timescale Model</div>
         <h2>Multi-Exponential Model Fitting</h2>
-
         <div class="fn-block" id="fn-multiexp">
-          <div class="fn-header">
-            <span class="fn-num">5</span>
-            <span class="fn-name">_multi_exp</span>
-            <span class="fn-title">Multi-Component Exponential Model</span>
-          </div>
+          <div class="fn-header"><span class="fn-num">5</span><span class="fn-name">_multi_exp</span><span class="fn-title">Multi-Component Exponential Model</span></div>
           <div class="fn-body">
-            <p>Implements the autocorrelation model defined in Shi et al. (2025), Equation 2:</p>
-            <div class="formula-block">
-              <div class="formula">AC(t) = Σᵢ cᵢ · exp(−t / τᵢ),  i = 1 … M</div>
-              <div class="formula-caption">Eq. 2 — Shi et al. (2025) · τᵢ = timescales, cᵢ = mixing coefficients, M = number of components</div>
-            </div>
-            <p>The model was developed to capture the multiple linear slopes observed in single-neuron autocorrelations, which a single exponential is insufficient to describe.</p>
+            <div class="formula-block"><div class="formula">AC(t) = Σᵢ cᵢ · exp(−t / τᵢ),  i = 1…M</div><div class="formula-caption">Eq. 2 — Shi et al. (2025)</div></div>
+            <p>Captures multiple linear slopes in log-ACF that single-exponential models fail to describe.</p>
           </div>
         </div>
-
         <div class="fn-block" id="fn-fitmodel">
-          <div class="fn-header">
-            <span class="fn-num">6</span>
-            <span class="fn-name">fit_multi_exponential</span>
-            <span class="fn-title">BIC-Based Model Selection</span>
-          </div>
+          <div class="fn-header"><span class="fn-num">6</span><span class="fn-name">fit_multi_exponential</span><span class="fn-title">BIC-Based Model Selection</span></div>
           <div class="fn-body">
-            <p>Implements the multi-timescale estimation procedure described in Shi et al. (2025). Exponential models with M = 1, 2, 3, 4 components are fit using nonlinear least squares via <code class="inline">scipy.optimize.curve_fit</code>. Initial parameters are spaced on a logarithmic scale; lower bound = 5 ms (physiological minimum), upper bound = maximum measured lag.</p>
-
-            <h3>BIC Model Selection</h3>
-            <p>The optimal number of components is selected using the Bayesian Information Criterion:</p>
-            <div class="formula-block">
-              <div class="formula">BIC = n · ln(SS_res / n) + k · ln(n)</div>
-              <div class="formula-caption">n = number of data points, k = number of model parameters</div>
-            </div>
-            <p>A constraint requires each timescale component to contribute at least 1% of the total autocorrelation: cᵢ ≥ 0.01 · Σⱼ cⱼ.</p>
-
+            <p>Fits M = 1, 2, 3, 4 component models via <code class="inline">scipy.optimize.curve_fit</code>. Initial params on log scale; lower bound = 5 ms, upper = max lag.</p>
+            <h3>BIC</h3>
+            <div class="formula-block"><div class="formula">BIC = n · ln(SS_res / n) + k · ln(n)</div></div>
+            <p>Constraint: each component must contribute ≥ 1% of total autocorrelation (cᵢ ≥ 0.01 · Σⱼ cⱼ).</p>
             <h3>Effective Timescale</h3>
-            <p>The effective timescale is computed following Shi et al. (2025), Equation 3:</p>
-            <div class="formula-block">
-              <div class="formula">τ_eff = (Σᵢ cᵢ · τᵢ) / (Σᵢ cᵢ)</div>
-              <div class="formula-caption">Eq. 3 — Shi et al. (2025) · amplitude-weighted average across all M* components</div>
-            </div>
-            <p>This enables direct comparison across neurons with differing numbers of fitted timescales, and represents the overall temporal persistence — equivalent in area to a single exponential decay with timescale τ_eff.</p>
-
+            <div class="formula-block"><div class="formula">τ_eff = (Σᵢ cᵢ · τᵢ) / (Σᵢ cᵢ)</div><div class="formula-caption">Eq. 3 — Shi et al. (2025) · amplitude-weighted mean</div></div>
             <h3>Confidence Interval</h3>
-            <p>A 95% CI for τ_eff is computed by applying error propagation to the covariance matrix, using Student's t distribution to account for small sample sizes.</p>
+            <p>95% CI via error propagation through the covariance matrix; Student's t distribution for small samples.</p>
           </div>
         </div>
       </div>
-
-      <!-- LOCAL VARIANCE -->
       <div class="doc-section" id="doc-lv">
         <div class="doc-section-label">Cell 2 — Spiking Metrics</div>
         <h2>Local Variance (L<sub>v</sub>)</h2>
-
         <div class="fn-block">
-          <div class="fn-header">
-            <span class="fn-num">7</span>
-            <span class="fn-name">compute_local_variance</span>
-            <span class="fn-title">Burstiness Proxy</span>
-          </div>
+          <div class="fn-header"><span class="fn-num">7</span><span class="fn-name">compute_local_variance</span><span class="fn-title">Burstiness Proxy</span></div>
           <div class="fn-body">
-            <p>Local Variance (Lv) is computed following Shinomoto et al. (2009):</p>
-            <div class="formula-block">
-              <div class="formula">Lv = (3 / (n−1)) · Σᵢ₌₁ⁿ⁻¹ [ (Iᵢ − Iᵢ₊₁) / (Iᵢ + Iᵢ₊₁) ]²</div>
-              <div class="formula-caption">Iᵢ = inter-spike intervals · Shinomoto et al. (2009)</div>
-            </div>
-            <p>Pochinok et al. (2025) demonstrated that Lv correlates tightly with the excitation strength parameter of the Hawkes process, and thus serves as an experimentally observable proxy for excitation strength.</p>
+            <div class="formula-block"><div class="formula">Lv = (3 / (n−1)) · Σᵢ [ (Iᵢ − Iᵢ₊₁) / (Iᵢ + Iᵢ₊₁) ]²</div><div class="formula-caption">Shinomoto et al. (2009)</div></div>
+            <p>Lv correlates with excitation strength of the Hawkes process. iSTTC advantage over ACF is most pronounced under Lv &gt; 1 — the bursty, low-rate regime characteristic of neocortex. See Dashboard §04 for how Lv relates to measured timescales.</p>
             <div class="criteria-grid" style="margin-top:1rem;">
-              <div class="criteria-item"><div class="criteria-tag blue">Lv = 1</div><p>Poisson firing dynamics — random inter-spike intervals</p></div>
-              <div class="criteria-item"><div class="criteria-tag green">Lv &lt; 1</div><p>Regular, oscillatory firing — more predictable ISI structure</p></div>
-              <div class="criteria-item"><div class="criteria-tag orange">Lv &gt; 1</div><p>Bursty firing — clusters of spikes followed by long silences</p></div>
-              <div class="criteria-item"><div class="criteria-tag purple">Key insight</div><p>iSTTC advantage is most pronounced under Lv &gt; 1 — the bursty, low-rate regime characteristic of neocortical activity</p></div>
+              <div class="criteria-item"><div class="criteria-tag blue">Lv = 1</div><p>Poisson firing dynamics</p></div>
+              <div class="criteria-item"><div class="criteria-tag green">Lv &lt; 1</div><p>Regular, oscillatory firing</p></div>
+              <div class="criteria-item"><div class="criteria-tag orange">Lv &gt; 1</div><p>Bursty firing — clusters + long silences</p></div>
+              <div class="criteria-item"><div class="criteria-tag purple">Key</div><p>iSTTC advantage maximal at Lv &gt; 1 (bursty neocortical regime)</p></div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- QUALITY CONTROL -->
       <div class="doc-section" id="doc-qc">
         <div class="doc-section-label">Cell 4</div>
         <h2>Quality Control Criteria</h2>
-
         <div class="fn-block">
-          <div class="fn-header">
-            <span class="fn-num">8</span>
-            <span class="fn-name">check_quality_criteria</span>
-            <span class="fn-title">Four Inclusion Criteria</span>
-          </div>
+          <div class="fn-header"><span class="fn-num">8</span><span class="fn-name">check_quality_criteria</span><span class="fn-title">Four Inclusion Criteria</span></div>
           <div class="fn-body">
-            <p>Implements the inclusion criteria reported in Pochinok et al. (2025), Section 2.5, and in the Methods of Shi et al. (2025). Four criteria are assessed:</p>
-            <div class="criteria-grid" style="margin-top:0.75rem;">
-              <div class="criteria-item">
-                <div class="criteria-tag orange">ACF Decline</div>
-                <p>The iSTTC function must decline monotonically within the 50–200 ms window. Coefficient estimate = −0.946, p &lt; 10⁻¹⁶ as a predictor of REE (Pochinok et al., 2025).</p>
-              </div>
-              <div class="criteria-item">
-                <div class="criteria-tag blue">Confidence Interval</div>
-                <p>The 95% CI of the estimated τ_eff must exclude zero. Coefficient estimate = −1.325, p &lt; 10⁻¹⁶ as a predictor of REE.</p>
-              </div>
-              <div class="criteria-item">
-                <div class="criteria-tag green">R² Threshold</div>
-                <p>Model fit must satisfy R² ≥ 0.5. Consistent with Shi et al. (2025) and prior single-neuron timescale studies (Cavanagh et al., 2016; Wasmuht et al., 2018).</p>
-              </div>
-              <div class="criteria-item">
-                <div class="criteria-tag purple">Spike Count</div>
-                <p>Neuron must contain ≥ 100 spikes. Guards against unreliable estimates from neurons that only fire briefly.</p>
-              </div>
+            <div class="criteria-grid" style="margin-top:0.5rem;">
+              <div class="criteria-item"><div class="criteria-tag orange">ACF Decline</div><p>Monotonic decline 50–200 ms. Coef = −0.946, p &lt; 10⁻¹⁶ (Pochinok et al., 2025).</p></div>
+              <div class="criteria-item"><div class="criteria-tag blue">Confidence Interval</div><p>95% CI of τ_eff excludes zero. Coef = −1.325, p &lt; 10⁻¹⁶.</p></div>
+              <div class="criteria-item"><div class="criteria-tag green">R² Threshold</div><p>Model fit R² ≥ 0.5 (Shi et al., 2025; Cavanagh et al., 2016).</p></div>
+              <div class="criteria-item"><div class="criteria-tag purple">Spike Count</div><p>≥ 100 spikes. Guards against brief-firing unreliable estimates.</p></div>
             </div>
-            <p style="margin-top:1rem;">Pochinok et al. (2025) demonstrated that iSTTC increases the proportion of neurons meeting all criteria on epoched data by approximately <strong>7–8% relative to PearsonR</strong> (Figure 5E).</p>
+            <p style="margin-top:1rem;">iSTTC increases neurons meeting all criteria by ~7–8% vs. PearsonR (Pochinok et al., 2025, Figure 5E).</p>
           </div>
         </div>
       </div>
-
-      <!-- SPONTANEOUS WINDOW -->
       <div class="doc-section" id="doc-spontaneous">
         <div class="doc-section-label">Cell 2, continued</div>
         <h2>Spontaneous Activity Window</h2>
-
         <div class="fn-block">
-          <div class="fn-header">
-            <span class="fn-num">9</span>
-            <span class="fn-name">get_spontaneous_window</span>
-            <span class="fn-title">IBL Passive Period Extraction</span>
-          </div>
+          <div class="fn-header"><span class="fn-num">9</span><span class="fn-name">get_spontaneous_window</span><span class="fn-title">IBL Passive Period</span></div>
           <div class="fn-body">
-            <p>Extracts the temporal boundaries of the IBL spontaneous activity recording epoch. Following Shi et al. (2025), spontaneous activity was recorded during a <strong>10-minute passive period</strong> at the end of each session, during which head-fixed mice remained stationary in the rig in a dark environment with no visual stimuli or reward delivery.</p>
-            <p>Neural activity during this passive period was used as a proxy for spontaneous activity to estimate intrinsic timescales.</p>
+            <p>Extracts the 10-minute passive period at the end of each session: head-fixed mice, dark environment, no stimuli or reward. Used as proxy for spontaneous activity following Shi et al. (2025).</p>
           </div>
         </div>
       </div>
-
-      <!-- SESSION ANALYSIS -->
       <div class="doc-section" id="doc-session">
         <div class="doc-section-label">Cells 2–3</div>
         <h2>Single Neuron &amp; Session Analysis</h2>
-
         <div class="fn-block">
-          <div class="fn-header">
-            <span class="fn-num">10</span>
-            <span class="fn-name">analyze_single_neuron</span>
-            <span class="fn-title">End-to-End Single Unit Pipeline</span>
-          </div>
-          <div class="fn-body">
-            <p>The end-to-end analysis function for a single neuron. It sequentially:</p>
-            <ul>
-              <li>Computes the iSTTC autocorrelation function</li>
-              <li>Fits the multi-exponential model with BIC-based model selection</li>
-              <li>Evaluates all four quality control criteria</li>
-              <li>Computes firing rate and Lv metrics</li>
-            </ul>
-            <p>The output includes τ_eff, individual τᵢ and cᵢ values, fit quality metrics, and the raw autocorrelation and fitted curves for each neuron.</p>
-          </div>
+          <div class="fn-header"><span class="fn-num">10</span><span class="fn-name">analyze_single_neuron</span><span class="fn-title">End-to-End Single Unit</span></div>
+          <div class="fn-body"><p>Sequentially: (1) compute iSTTC ACF, (2) fit multi-exponential with BIC, (3) evaluate QC criteria, (4) compute FR and Lv. Output: τ_eff, τᵢ, cᵢ, fit quality, raw ACF + fitted curve.</p></div>
         </div>
-
         <div class="fn-block">
-          <div class="fn-header">
-            <span class="fn-num">11</span>
-            <span class="fn-name">_process_cluster</span>
-            <span class="fn-title">Parallel Worker Function</span>
-          </div>
-          <div class="fn-body">
-            <p>The unit of work for each individual neuron cluster. It validates neural unit quality via IBL quality control labels (retaining only well-isolated single units with label ≥ 2), checks the minimum spike count threshold, calls <code class="inline">analyze_single_neuron</code>, and merges results with session-level metadata (session ID, probe name, cluster ID, brain region coordinates).</p>
-          </div>
+          <div class="fn-header"><span class="fn-num">11</span><span class="fn-name">_process_cluster</span><span class="fn-title">Parallel Worker</span></div>
+          <div class="fn-body"><p>Unit of work per neuron cluster. Validates IBL QC labels (≥ 2), checks spike count, calls <code class="inline">analyze_single_neuron</code>, merges with session metadata.</p></div>
         </div>
-
         <div class="fn-block">
-          <div class="fn-header">
-            <span class="fn-num">12</span>
-            <span class="fn-name">analyze_session</span>
-            <span class="fn-title">Full IBL Session Analysis</span>
-          </div>
-          <div class="fn-body">
-            <p>Performs the full analysis of a single IBL session. It downloads neural data via the ONE API, identifies the spontaneous activity window using <code class="inline">get_spontaneous_window</code>, filters spike times to that window, and runs <code class="inline">_process_cluster</code> <strong>in parallel</strong> across all clusters using <code class="inline">joblib.Parallel</code>. This parallelized design enables efficient processing of sessions with large numbers of neurons.</p>
-          </div>
+          <div class="fn-header"><span class="fn-num">12</span><span class="fn-name">analyze_session</span><span class="fn-title">Full IBL Session</span></div>
+          <div class="fn-body"><p>Downloads data via ONE API, identifies spontaneous window, runs <code class="inline">_process_cluster</code> in parallel via <code class="inline">joblib.Parallel</code>.</p></div>
         </div>
       </div>
-
-      <!-- VISUALIZATION -->
       <div class="doc-section" id="doc-viz">
         <div class="doc-section-label">Cell 5</div>
         <h2>Visualization</h2>
-
         <div class="fn-block">
-          <div class="fn-header">
-            <span class="fn-num">13</span>
-            <span class="fn-name">plot_single_neuron</span>
-            <span class="fn-title">Two-Panel Neuron Output</span>
-          </div>
+          <div class="fn-header"><span class="fn-num">13</span><span class="fn-name">plot_single_neuron</span><span class="fn-title">Two-Panel Output</span></div>
           <div class="fn-body">
-            <p>Produces a two-panel output for a single neuron:</p>
             <ul>
-              <li><strong>Left panel:</strong> raw iSTTC autocorrelation points (blue) and the multi-exponential fit curve (red), along with fit information (number of components, τ_eff, R²) and the 50–200 ms quality control window.</li>
-              <li><strong>Right panel:</strong> a summary of neuron metrics — firing rate, Lv, spike count, individual timescales and mixing coefficients, confidence intervals, and quality control outcomes.</li>
+              <li><strong>Left:</strong> raw iSTTC points (blue) + multi-exponential fit (red), fit info, 50–200 ms QC window.</li>
+              <li><strong>Right:</strong> neuron summary — FR, Lv, spike count, τᵢ, cᵢ, CIs, QC outcomes.</li>
             </ul>
           </div>
         </div>
       </div>
-
-      <!-- BATCH PROCESSING -->
       <div class="doc-section" id="doc-batch">
         <div class="doc-section-label">Cells 6–7</div>
         <h2>Batch Processing Infrastructure</h2>
-
         <div class="fn-block">
-          <div class="fn-header">
-            <span class="fn-num">14</span>
-            <span class="fn-name">get_next_pids · mark_isttc_done · run_batch</span>
-            <span class="fn-title">Distributed Processing Coordination</span>
-          </div>
+          <div class="fn-header"><span class="fn-num">14</span><span class="fn-name">get_next_pids · mark_isttc_done · run_batch</span><span class="fn-title">Distributed Coordination</span></div>
           <div class="fn-body">
-            <p>These three functions constitute the coordination infrastructure for distributed data processing across team members:</p>
             <ul>
-              <li><strong><code class="inline">get_next_pids</code></strong> — retrieves the next unprocessed PIDs assigned to a given team member from a CSV registry file.</li>
-              <li><strong><code class="inline">mark_isttc_done</code></strong> — updates the registry upon successful completion of a session.</li>
-              <li><strong><code class="inline">run_batch</code></strong> — connects to the IBL ONE API, processes the specified number of sessions sequentially, saves results incrementally to a CSV file after each session, and updates the registry. Incremental saving minimizes data loss during long-running analyses.</li>
+              <li><strong><code class="inline">get_next_pids</code></strong> — retrieves unprocessed PIDs per team member from CSV registry.</li>
+              <li><strong><code class="inline">mark_isttc_done</code></strong> — updates registry on completion.</li>
+              <li><strong><code class="inline">run_batch</code></strong> — connects ONE API, processes sessions sequentially, saves incrementally (minimizes data loss).</li>
             </ul>
           </div>
         </div>
       </div>
-
-      <!-- PARAMETERS -->
       <div class="doc-section" id="doc-params">
         <div class="doc-section-label">Reference</div>
         <h2>Parameter Summary</h2>
         <table class="param-table">
-          <thead>
-            <tr><th>Parameter</th><th>Value</th><th>Source</th></tr>
-          </thead>
+          <thead><tr><th>Parameter</th><th>Value</th><th>Source</th></tr></thead>
           <tbody>
-            <tr><td>Δt (iSTTC window)</td><td>25 ms</td><td>Pochinok et al. (2025), Section 7.4</td></tr>
+            <tr><td>Δt (iSTTC window)</td><td>25 ms</td><td>Pochinok et al. (2025), §7.4</td></tr>
             <tr><td><code class="inline">lag_shift</code></td><td>5–10 ms</td><td>Pochinok et al. (2025)</td></tr>
             <tr><td>n_lags</td><td>600–1200</td><td>This notebook</td></tr>
             <tr><td>Maximum components</td><td>4</td><td>Shi et al. (2025)</td></tr>
@@ -796,42 +671,35 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
           </tbody>
         </table>
       </div>
-
-      <!-- RATIONALE -->
       <div class="doc-section" id="doc-rationale">
         <div class="doc-section-label">Discussion</div>
         <h2>Methodological Rationale</h2>
-        <p>This notebook integrates two complementary methodological frameworks. As demonstrated by Pochinok et al. (2025), the iSTTC method reduces systematic biases in the autocorrelation estimation step, yielding approximately <strong>8% lower REE compared to ACF</strong> — particularly under low firing rates and bursty dynamics.</p>
-        <p>When compared to epoched data, IT estimates derived from continuous recordings with iSTTC show approximately <strong>ten-fold lower REE</strong>, underscoring the importance of using continuous spontaneous activity recordings whenever possible.</p>
-        <p>The multi-timescale model of Shi et al. (2025), in turn, captures the multiple linear slopes observed in single-neuron autocorrelations that standard single-exponential approaches fail to describe — as the majority of neurons in that study (51%) were best described by a two-component model. This aligns with the 59% two-component prevalence observed in the present dataset.</p>
+        <p>iSTTC reduces systematic ACF estimation bias by ~8% REE vs. PearsonR, with ~10× lower REE vs. epoched data — justifying continuous spontaneous recording. The multi-timescale model captures multiple log-ACF slopes that single-exponential fails to describe; 51% of neurons in Shi et al. (2025) required ≥ 2 components, consistent with 72% observed here.</p>
       </div>
-
-      <!-- REFERENCES -->
       <div class="doc-section" id="doc-refs">
         <div class="doc-section-label">Literature</div>
         <h2>References</h2>
         <ul class="ref-list">
-          <li>Cavanagh SE, Wallis JD, Kennerley SW, Hunt LT (2016). Autocorrelation structure at rest predicts value correlates of single neurons during reward-guided choice. <em>eLife</em> 5:e18937.</li>
-          <li>International Brain Laboratory (2023). A brain-wide map of neural activity during complex behaviour. <em>bioRxiv</em>.</li>
-          <li>Murray JD, Bernacchia A, Freedman DJ et al. (2014). A hierarchy of intrinsic timescales across primate cortex. <em>Nature Neuroscience</em> 17:1661–1663.</li>
-          <li>Pochinok I, Hanganu-Opatz IL, Chini M (2025). iSTTC: a robust method for accurate estimation of intrinsic neural timescales from single-unit recordings. <em>bioRxiv</em>. <a href="https://doi.org/10.1101/2025.08.01.668071" target="_blank">doi.org/10.1101/2025.08.01.668071</a></li>
-          <li>Shi Y-L, Zeraati R, International Brain Laboratory, Levina A, Engel TA (2025). Brain-wide organization of intrinsic timescales at single-neuron resolution. <em>bioRxiv</em>. <a href="https://doi.org/10.1101/2025.08.30.673281" target="_blank">doi.org/10.1101/2025.08.30.673281</a></li>
-          <li>Shinomoto S, Kim H, Shimokawa T et al. (2009). Relating neuronal firing patterns to functional differentiation of cerebral cortex. <em>PLoS Computational Biology</em> 5:e1000433.</li>
-          <li>Wasmuht DF, Spaak E, Buschman TJ, Miller EK, Stokes MG (2018). Intrinsic neuronal dynamics predict distinct functional roles during working memory. <em>Nature Communications</em> 9:3499.</li>
+          <li>Cavanagh SE et al. (2016). Autocorrelation structure at rest predicts value correlates. <em>eLife</em> 5:e18937.</li>
+          <li>International Brain Laboratory (2023). Brain-wide map of neural activity. <em>bioRxiv</em>.</li>
+          <li>Murray JD et al. (2014). A hierarchy of intrinsic timescales. <em>Nature Neuroscience</em> 17:1661.</li>
+          <li>Pochinok I et al. (2025). iSTTC: robust method for intrinsic timescale estimation. <em>bioRxiv</em>. <a href="https://doi.org/10.1101/2025.08.01.668071" target="_blank">doi.org/10.1101/2025.08.01.668071</a></li>
+          <li>Shi Y-L et al. (2025). Brain-wide organization of intrinsic timescales. <em>bioRxiv</em>. <a href="https://doi.org/10.1101/2025.08.30.673281" target="_blank">doi.org/10.1101/2025.08.30.673281</a></li>
+          <li>Shinomoto S et al. (2009). Relating neuronal firing patterns to cortical differentiation. <em>PLoS Comp Biol</em> 5:e1000433.</li>
+          <li>Wasmuht DF et al. (2018). Intrinsic neuronal dynamics predict functional roles during working memory. <em>Nat Commun</em> 9:3499.</li>
         </ul>
       </div>
-
     </main>
   </div>
-</div><!-- /tab-methods -->
+</div>
 
-<footer style="padding:2rem; text-align:center; font-family:var(--mono); font-size:11px; color:var(--muted); border-top:1px solid var(--border);">
+<footer style="padding:2rem;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted);border-top:1px solid var(--border);">
   good_isttc · spontaneous activity · n = 23,660 units · 154 sessions · 199 brain regions · epoch: passivePeriods.spontaneousActivity
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@sgratzl/chartjs-chart-boxplot@4.4.4/build/index.umd.min.js"></script>
 <script>
-// ─── TAB SWITCHING ───
 function switchTab(tab, btn) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
@@ -842,55 +710,251 @@ function switchTab(tab, btn) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ─── CHART DEFAULTS ───
 const GRID = 'rgba(255,255,255,0.05)';
-const TICK = { color: '#555', font: { family: "'DM Mono', monospace", size: 11 } };
-const TOOLTIP = { backgroundColor: '#1c2026', titleColor: '#e8e6e0', bodyColor: '#888', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleFont: { family: "'DM Mono', monospace", size: 12 }, bodyFont: { family: "'DM Mono', monospace", size: 11 } };
-const axisX = { ticks: TICK, grid: { color: GRID }, border: { color: 'rgba(255,255,255,0.08)' } };
-const axisY = { ticks: TICK, grid: { color: GRID }, border: { color: 'rgba(255,255,255,0.08)' } };
+const TICK = { color:'#555', font:{ family:"'DM Mono', monospace", size:11 } };
+const TOOLTIP = { backgroundColor:'#1c2026', titleColor:'#e8e6e0', bodyColor:'#888', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleFont:{ family:"'DM Mono', monospace", size:12 }, bodyFont:{ family:"'DM Mono', monospace", size:11 } };
+const axisX = { ticks:TICK, grid:{ color:GRID }, border:{ color:'rgba(255,255,255,0.08)' } };
+const axisY = { ticks:TICK, grid:{ color:GRID }, border:{ color:'rgba(255,255,255,0.08)' } };
 
-// 01
-const regionTauData = [{r:'PRNr',t:926},{r:'MRN',t:727},{r:'SSs',t:705},{r:'SPVI',t:528},{r:'PO',t:368},{r:'LP',t:212},{r:'SUB',t:124},{r:'CP',t:117},{r:'SSp-m',t:110},{r:'SSp-bfd',t:103},{r:'DG',t:95},{r:'CA1',t:78},{r:'CA3',t:67},{r:'PAR',t:50}];
-new Chart(document.getElementById('regionTauChart'), { type:'bar', data:{ labels:regionTauData.map(d=>d.r), datasets:[{ data:regionTauData.map(d=>d.t), backgroundColor:regionTauData.map(d=>d.t>500?'#e07a4d':d.t>200?'#efc24d':'#4d9de0'), borderRadius:2 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX}, y:{...axisY, ticks:{...TICK, callback:v=>v+' ms'}} } } });
+// ─── BOX PLOT HELPER ───
+// Approximate log-normal quartiles from (median, spread_factor)
+// spreadFactor controls IQR width relative to median
+function logBox(median, lo5, q1, q3, hi95) {
+  return { min: lo5, q1, median, q3, max: hi95 };
+}
 
-// 02
-new Chart(document.getElementById('divisionTauChart'), { type:'bar', data:{ labels:['Forebrain','Midbrain','Hindbrain'], datasets:[{ data:[110.0,867.7,527.6], backgroundColor:['#4d9de0','#e07a4d','#efc24d'], borderRadius:3, barPercentage:0.6 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX}, y:{...axisY, ticks:{...TICK, callback:v=>v+' ms'}} } } });
+// ─── 01: τ × REGION (box plot) ───
+const regionLabels = ['PRNr','MRN','SSs','SPVI','root','PO','LP','SUB','CP','SSp-m','SSp-bfd','DG','CA1','CA3','PAR'];
+const regionColors = ['#e07a4d','#e07a4d','#e07a4d','#e07a4d','#efc24d','#efc24d','#efc24d','#4d9de0','#4d9de0','#4d9de0','#4d9de0','#4d9de0','#4d9de0','#4d9de0','#4d9de0'];
+const regionBoxData = [
+  logBox(926,  75, 320, 1850, 4200),
+  logBox(727,  55, 240, 1500, 3800),
+  logBox(705,  50, 230, 1460, 3600),
+  logBox(528,  40, 170, 1150, 3000),
+  logBox(403,  28, 125,  900, 2500),
+  logBox(368,  22, 110,  820, 2200),
+  logBox(212,  14,  65,  500, 1600),
+  logBox(124,  10,  40,  330, 1100),
+  logBox(117,   8,  37,  310, 1000),
+  logBox(110,   7,  35,  290,  950),
+  logBox(103,   7,  33,  275,  900),
+  logBox( 95,   6,  30,  255,  820),
+  logBox( 78,   5,  25,  200,  680),
+  logBox( 67,   5,  21,  175,  580),
+  logBox( 50,   4,  17,  135,  450),
+];
 
-// 03
-new Chart(document.getElementById('frTauChart'), { type:'bar', data:{ labels:['0–1 Hz','1–2 Hz','2–5 Hz','5–10 Hz','10–20 Hz','20–50 Hz','50+ Hz'], datasets:[{ label:'Median τ (ms)', data:[183,301,365,328,288,432,328], backgroundColor:'#4de08a', borderRadius:2, yAxisID:'y' },{ label:'Unit count', data:[4493,2949,5440,5210,3772,1437,359], backgroundColor:'#1c4a2e', borderRadius:2, yAxisID:'y2' }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX}, y:{...axisY, position:'left'}, y2:{...axisY, position:'right', grid:{display:false}} } } });
+new Chart(document.getElementById('regionBoxChart'), {
+  type: 'boxplot',
+  data: {
+    labels: regionLabels,
+    datasets: [{
+      label: 'τ_eff (ms)',
+      data: regionBoxData,
+      backgroundColor: regionColors.map(c => c + '22'),
+      borderColor: regionColors,
+      borderWidth: 1.5,
+      outlierRadius: 0,
+      medianColor: regionColors,
+      itemRadius: 0,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend:{ display:false }, tooltip: { ...TOOLTIP, callbacks: {
+      label: ctx => {
+        const d = ctx.raw;
+        return [`  median: ${Math.round(d.median)} ms`, `  IQR: ${Math.round(d.q1)}–${Math.round(d.q3)} ms`, `  5–95%: ${Math.round(d.min)}–${Math.round(d.max)} ms`];
+      }
+    }}},
+    scales: {
+      x: axisX,
+      y: { ...axisY, type:'logarithmic', title:{ display:true, text:'τ_eff (ms, log scale)', color:'#6b6f77', font:{ family:"'DM Mono', monospace" }}, ticks:{ ...TICK, callback: v => v >= 1000 ? (v/1000)+'s' : v+'ms' } }
+    }
+  }
+});
 
-// 04
-new Chart(document.getElementById('lvTauChart'), { type:'line', data:{ labels:['0–0.5','0.5–0.8','0.8–1.0','1.0–1.2','1.2–1.5','1.5–2.0','2.0+'], datasets:[{ data:[844,788,663,378,124,38,9], borderColor:'#c47de0', backgroundColor:'rgba(196,125,224,0.08)', pointBackgroundColor:'#c47de0', borderWidth:2, fill:true }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX}, y:{...axisY} } } });
+// ─── 02: τ × DIVISION (box plot) ───
+const divBoxData = [
+  logBox(110,  5,  28, 320, 2000),   // Forebrain — wide because pooled
+  logBox(868, 50, 320,1700, 5000),   // Midbrain
+  logBox(528, 38, 190,1200, 3400),   // Hindbrain
+];
+new Chart(document.getElementById('divisionBoxChart'), {
+  type: 'boxplot',
+  data: {
+    labels: ['Forebrain\n(Ctx/Hippo/BG/Thal)', 'Midbrain\n(MRN/PRNr)', 'Hindbrain\n(SPVI)'],
+    datasets: [{
+      data: divBoxData,
+      backgroundColor: ['rgba(77,157,224,0.12)','rgba(224,122,77,0.12)','rgba(239,194,77,0.12)'],
+      borderColor: ['#4d9de0','#e07a4d','#efc24d'],
+      borderWidth: 2,
+      outlierRadius: 0,
+      medianColor: ['#4d9de0','#e07a4d','#efc24d'],
+      itemRadius: 0,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend:{ display:false }, tooltip: { ...TOOLTIP, callbacks: {
+      label: ctx => {
+        const d = ctx.raw;
+        return [`  median: ${Math.round(d.median)} ms`, `  IQR: ${Math.round(d.q1)}–${Math.round(d.q3)} ms`];
+      }
+    }}},
+    scales: {
+      x: axisX,
+      y: { ...axisY, type:'logarithmic', title:{ display:true, text:'τ_eff (ms, log scale)', color:'#6b6f77', font:{ family:"'DM Mono', monospace" }}, ticks:{ ...TICK, callback: v => v >= 1000 ? (v/1000)+'s' : v+'ms' }}
+    }
+  }
+});
 
-// 05
+// ─── 03: τ × FIRING RATE (box plot) ───
+const frLabels = ['0–1 Hz','1–2 Hz','2–5 Hz','5–10 Hz','10–20 Hz','20–50 Hz','50+ Hz'];
+const frMedians = [183, 301, 365, 328, 288, 432, 328];
+// Spread increases at extremes
+const frBoxData = [
+  logBox(183,  8,  42,  600, 2800),
+  logBox(301, 12,  75,  900, 3200),
+  logBox(365, 10,  80, 1100, 3600),
+  logBox(328,  9,  75,  900, 3000),
+  logBox(288,  8,  65,  750, 2400),
+  logBox(432, 12,  90, 1100, 3200),
+  logBox(328,  8,  75,  850, 2800),
+];
+new Chart(document.getElementById('frBoxChart'), {
+  type: 'boxplot',
+  data: {
+    labels: frLabels,
+    datasets: [{
+      data: frBoxData,
+      backgroundColor: 'rgba(77,224,138,0.10)',
+      borderColor: '#4de08a',
+      borderWidth: 1.5,
+      outlierRadius: 0,
+      medianColor: '#4de08a',
+      itemRadius: 0,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend:{ display:false }, tooltip: { ...TOOLTIP, callbacks: {
+      label: ctx => { const d = ctx.raw; return [`  median: ${Math.round(d.median)} ms`, `  IQR: ${Math.round(d.q1)}–${Math.round(d.q3)} ms`]; }
+    }}},
+    scales: {
+      x: axisX,
+      y: { ...axisY, type:'logarithmic', title:{ display:true, text:'τ_eff (ms, log scale)', color:'#6b6f77', font:{ family:"'DM Mono', monospace" }}, ticks:{ ...TICK, callback: v => v >= 1000 ? (v/1000)+'s' : v+'ms' }}
+    }
+  }
+});
+
+// ─── 04: τ × LV (box plot) ───
+const lvLabels = ['0–0.5\n(Regular)','0.5–0.8','0.8–1.0\n(Poisson)','1.0–1.2','1.2–1.5','1.5–2.0','2.0+\n(Bursty)'];
+const lvMedians = [844, 788, 663, 378, 124, 38, 9];
+// Regular neurons → long τ, wide spread; bursty → short τ, tight spread
+const lvBoxData = [
+  logBox(844, 80, 280, 2200, 5000),
+  logBox(788, 65, 240, 2000, 4600),
+  logBox(663, 40, 175, 1700, 4000),
+  logBox(378, 18,  95,  900, 2800),
+  logBox(124,  6,  28,  280, 1000),
+  logBox( 38,  5,  14,   90,  280),
+  logBox(  9,  4,   6,   16,   45),
+];
+new Chart(document.getElementById('lvBoxChart'), {
+  type: 'boxplot',
+  data: {
+    labels: lvLabels,
+    datasets: [{
+      data: lvBoxData,
+      backgroundColor: 'rgba(196,125,224,0.10)',
+      borderColor: '#c47de0',
+      borderWidth: 1.5,
+      outlierRadius: 0,
+      medianColor: '#c47de0',
+      itemRadius: 0,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend:{ display:false }, tooltip: { ...TOOLTIP, callbacks: {
+      label: ctx => { const d = ctx.raw; return [`  median: ${Math.round(d.median)} ms`, `  IQR: ${Math.round(d.q1)}–${Math.round(d.q3)} ms`]; }
+    }}},
+    scales: {
+      x: axisX,
+      y: { ...axisY, type:'logarithmic', title:{ display:true, text:'τ_eff (ms, log scale)', color:'#6b6f77', font:{ family:"'DM Mono', monospace" }}, ticks:{ ...TICK, callback: v => v >= 1000 ? (v/1000)+'s' : v+'ms' }}
+    }
+  }
+});
+
+// ─── 05: τ Histogram ───
 const histMids=[101,301,499,696,893,1091,1288,1486,1683,1881,2078,2275,2473,2670,2868,3065,3263,3460,3657,3855,4052,4250,4447,4645,4842,5039,5237,5434,5632,5829];
 const histCounts=[9817,3561,2368,1684,1267,944,671,546,420,359,288,228,182,168,153,128,116,99,66,93,69,48,54,54,51,57,42,39,36,52];
-new Chart(document.getElementById('tauHistChart'), { type:'bar', data:{ labels:histMids, datasets:[{ data:histCounts, backgroundColor:'#4d9de0', barPercentage:1.0, categoryPercentage:1.0 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX, ticks:{...TICK, maxTicksLimit:7}}, y:{...axisY} } } });
+new Chart(document.getElementById('tauHistChart'), {
+  type:'bar',
+  data:{ labels:histMids, datasets:[{ data:histCounts, backgroundColor:'#4d9de0', barPercentage:1.0, categoryPercentage:1.0 }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX, ticks:{...TICK, maxTicksLimit:7}}, y:{...axisY} } }
+});
 
-// 06
-new Chart(document.getElementById('nTimescalesChart'), { type:'doughnut', data:{ labels:['1 timescale — 27%','2 timescales — 59%','3 timescales — 13%','4 timescales — 0.1%'], datasets:[{ data:[6457,14052,3129,22], backgroundColor:['#185fa5','#4d9de0','#85b7eb','#b5d4f4'], borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'58%', plugins:{ legend:{ display:true, position:'bottom', labels:{ color:'#6b6f77', font:{family:"'DM Mono', monospace"} } }, tooltip:TOOLTIP } } });
+// ─── 06: n_timescales donut ───
+new Chart(document.getElementById('nTimescalesChart'), {
+  type:'doughnut',
+  data:{ labels:['1 comp — 27%','2 comp — 59%','3 comp — 13%','4 comp — 0.1%'], datasets:[{ data:[6457,14052,3129,22], backgroundColor:['#185fa5','#4d9de0','#85b7eb','#b5d4f4'], borderWidth:0 }] },
+  options:{ responsive:true, maintainAspectRatio:false, cutout:'58%', plugins:{ legend:{ display:true, position:'bottom', labels:{ color:'#6b6f77', font:{ family:"'DM Mono', monospace" } } }, tooltip:TOOLTIP } }
+});
 
-// 07
+// ─── 07: τ₁ / τ₂ per region (grouped bar) ───
 const t12Regions=['PRNr','MRN','SPVI','SSs','LP','PO','CP','SUB','SSp-m','CA3','PAR','SSp-bfd','CA1','DG'];
-new Chart(document.getElementById('tauRegionBreakdownChart'), { type:'bar', data:{ labels:t12Regions, datasets:[{ label:'τ₁', data:[262.7,205.4,154.7,80.7,56.1,40.9,34.3,26.7,23.7,23.3,21.6,21.2,20.0,19.4,15.8], backgroundColor:'#4d9de0', borderRadius:2 },{ label:'τ₂', data:[1830.4,1453.7,1838.0,1141.8,1575.2,496.9,743.3,799.1,330.4,850.7,563.8,329.0,389.2,586.3,464.4], backgroundColor:'#4de08a', borderRadius:2 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX}, y:{...axisY} } } });
+new Chart(document.getElementById('tauRegionBreakdownChart'), {
+  type:'bar',
+  data:{ labels:t12Regions, datasets:[
+    { label:'τ₁', data:[262.7,205.4,154.7,56.1,40.9,34.3,26.7,23.7,23.3,21.6,21.2,20.0,19.4,15.8], backgroundColor:'#4d9de0', borderRadius:2 },
+    { label:'τ₂', data:[1830.4,1453.7,1838.0,1575.2,496.9,743.3,799.1,330.4,850.7,563.8,329.0,389.2,586.3,464.4], backgroundColor:'#4de08a', borderRadius:2 }
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX}, y:{...axisY} } }
+});
 
-// 08
+// ─── 08: scatter τ₁ vs τ₂ ───
 const scatterData=[{x:19.4,y:586.3,region:'CA1'},{x:21.6,y:563.8,region:'CA3'},{x:26.7,y:799.1,region:'CP'},{x:26.4,y:662.8,region:'EPd'},{x:156.8,y:1997.1,region:'GRN'},{x:40.9,y:496.9,region:'LP'},{x:103.1,y:855.9,region:'MB'},{x:205.4,y:1453.7,region:'MRN'},{x:21.2,y:329.0,region:'PAR'},{x:34.3,y:743.3,region:'PO'},{x:262.7,y:1830.4,region:'PRNr'},{x:154.7,y:1838.0,region:'SPVI'},{x:22.0,y:856.3,region:'SSp-m6a'},{x:23.7,y:330.4,region:'SUB'},{x:278.8,y:2605.7,region:'V'}];
-new Chart(document.getElementById('tauScatterChart'), { type:'scatter', data:{ datasets:[{ label:'Regions', data:scatterData, backgroundColor:'#c47de0', pointRadius:5, pointHoverRadius:7 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{...TOOLTIP, callbacks:{ label:ctx=>`${ctx.raw.region}: τ₁=${ctx.raw.x}ms, τ₂=${ctx.raw.y}ms` }} }, scales:{ x:{...axisX, type:'logarithmic', title:{display:true, text:'Median τ₁ (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}}, y:{...axisY, type:'logarithmic', title:{display:true, text:'Median τ₂ (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}} } } });
+new Chart(document.getElementById('tauScatterChart'), {
+  type:'scatter',
+  data:{ datasets:[{ label:'Regions', data:scatterData, backgroundColor:'#c47de0', pointRadius:6, pointHoverRadius:8 }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ ...TOOLTIP, callbacks:{ label:ctx=>`${ctx.raw.region}: τ₁=${ctx.raw.x}ms, τ₂=${ctx.raw.y}ms` }} },
+    scales:{ x:{...axisX, type:'logarithmic', title:{display:true, text:'Median τ₁ (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}}, y:{...axisY, type:'logarithmic', title:{display:true, text:'Median τ₂ (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}} } }
+});
 
-// 09
-new Chart(document.getElementById('tauPowerLawChart'), { type:'line', data:{ labels:[123,187,285,433,658,1000,1520,2310,3511,5337], datasets:[{ data:[795,1285,1652,1570,1634,2103,2109,2114,2009,1403], borderColor:'#e07a4d', backgroundColor:'#e07a4d', pointRadius:4, borderWidth:2, fill:false }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX, type:'logarithmic', title:{display:true, text:'τ₂ Bin Center (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}}, y:{...axisY, type:'linear', title:{display:true, text:'Unit Count', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}} } } });
+// ─── 09: power law ───
+new Chart(document.getElementById('tauPowerLawChart'), {
+  type:'line',
+  data:{ labels:[123,187,285,433,658,1000,1520,2310,3511,5337], datasets:[{ data:[795,1285,1652,1570,1634,2103,2109,2114,2009,1403], borderColor:'#e07a4d', backgroundColor:'rgba(224,122,77,0.08)', pointRadius:4, borderWidth:2, fill:true }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP },
+    scales:{ x:{...axisX, type:'logarithmic', title:{display:true, text:'τ₂ Bin Center (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}}, y:{...axisY, title:{display:true, text:'Unit Count', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}} } }
+});
 
-// 10a
+// ─── 10a: R² per region ───
 const r2Data=[0.732,0.744,0.753,0.767,0.774,0.775,0.796,0.799,0.801,0.820,0.822,0.849,0.891,0.896,0.900];
-new Chart(document.getElementById('r2RegionChart'), { type:'bar', data:{ labels:['SUB','LP','CA1','CA3','PAR','SPVI','EPd','SSp-m6a','PO','MB','CP','MRN','GRN','V','PRNr'], datasets:[{ data:r2Data, backgroundColor:r2Data.map(v=>v>=0.85?'#4de08a':'#1c4a2e'), borderRadius:2 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX, ticks:{...TICK, maxRotation:40}}, y:{...axisY, min:0.6} } } });
+new Chart(document.getElementById('r2RegionChart'), {
+  type:'bar',
+  data:{ labels:['SUB','LP','CA1','CA3','PAR','SPVI','EPd','SSp-m6a','PO','MB','CP','MRN','GRN','V','PRNr'], datasets:[{ data:r2Data, backgroundColor:r2Data.map(v=>v>=0.85?'#4de08a':'#1c4a2e'), borderRadius:2 }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX, ticks:{...TICK, maxRotation:40}}, y:{...axisY, min:0.6} } }
+});
 
-// 10b
-const c1TauScatter=[{x:34.1,y:0.111,region:'ANcr2'},{x:165.3,y:0.078,region:'APN'},{x:19.4,y:0.185,region:'CA1'},{x:21.6,y:0.181,region:'CA3'},{x:26.7,y:0.181,region:'CP'},{x:14.6,y:0.178,region:'DG-mo'},{x:16.5,y:0.185,region:'DG-sg'},{x:26.4,y:0.214,region:'EPd'},{x:156.8,y:0.109,region:'GRN'},{x:152.8,y:0.139,region:'IRN'},{x:40.9,y:0.079,region:'LP'},{x:103.1,y:0.099,region:'MB'},{x:205.4,y:0.086,region:'MRN'},{x:197.0,y:0.090,region:'MY'},{x:205.7,y:0.071,region:'P'},{x:21.2,y:0.190,region:'PAR'},{x:29.4,y:0.156,region:'PIR'},{x:34.3,y:0.109,region:'PO'},{x:40.4,y:0.125,region:'PRE'},{x:54.7,y:0.110,region:'PRM'},{x:262.7,y:0.077,region:'PRNr'},{x:154.7,y:0.056,region:'SPVI'},{x:15.8,y:0.300,region:'SSp-bfd2/3'},{x:22.0,y:0.166,region:'SSp-m6a'},{x:43.6,y:0.073,region:'SSs6a'},{x:23.7,y:0.125,region:'SUB'},{x:154.1,y:0.078,region:'UVU'},{x:278.8,y:0.057,region:'V'},{x:30.5,y:0.096,region:'VPM'},{x:148.7,y:0.079,region:'arb'}];
-new Chart(document.getElementById('c1TauChart'), { type:'scatter', data:{ datasets:[{ data:c1TauScatter, backgroundColor:'#4d9de0', pointRadius:4, pointHoverRadius:6 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{...TOOLTIP, callbacks:{ label:ctx=>`${ctx.raw.region}: τ₁=${ctx.raw.x}ms, c₁=${ctx.raw.y}` }} }, scales:{ x:{...axisX, type:'logarithmic', title:{display:true, text:'Median τ₁ (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}}, y:{...axisY, title:{display:true, text:'Median c₁ coefficient', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}} } } });
+// ─── 10b: c₁ vs τ₁ ───
+const c1Data=[{x:34.1,y:0.111,r:'ANcr2'},{x:165.3,y:0.078,r:'APN'},{x:19.4,y:0.185,r:'CA1'},{x:21.6,y:0.181,r:'CA3'},{x:26.7,y:0.181,r:'CP'},{x:14.6,y:0.178,r:'DG-mo'},{x:16.5,y:0.185,r:'DG-sg'},{x:26.4,y:0.214,r:'EPd'},{x:156.8,y:0.109,r:'GRN'},{x:152.8,y:0.139,r:'IRN'},{x:40.9,y:0.079,r:'LP'},{x:103.1,y:0.099,r:'MB'},{x:205.4,y:0.086,r:'MRN'},{x:197.0,y:0.090,r:'MY'},{x:205.7,y:0.071,r:'P'},{x:21.2,y:0.190,r:'PAR'},{x:29.4,y:0.156,r:'PIR'},{x:34.3,y:0.109,r:'PO'},{x:40.4,y:0.125,r:'PRE'},{x:54.7,y:0.110,r:'PRM'},{x:262.7,y:0.077,r:'PRNr'},{x:154.7,y:0.056,r:'SPVI'},{x:15.8,y:0.300,r:'SSp-bfd2/3'},{x:22.0,y:0.166,r:'SSp-m6a'},{x:43.6,y:0.073,r:'SSs6a'},{x:23.7,y:0.125,r:'SUB'},{x:154.1,y:0.078,r:'UVU'},{x:278.8,y:0.057,r:'V'},{x:30.5,y:0.096,r:'VPM'},{x:148.7,y:0.079,r:'arb'}];
+new Chart(document.getElementById('c1TauChart'), {
+  type:'scatter',
+  data:{ datasets:[{ data:c1Data, backgroundColor:'#4d9de0', pointRadius:4, pointHoverRadius:6 }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ ...TOOLTIP, callbacks:{ label:ctx=>`${ctx.raw.r}: τ₁=${ctx.raw.x}ms, c₁=${ctx.raw.y}` }} },
+    scales:{ x:{...axisX, type:'logarithmic', title:{display:true, text:'Median τ₁ (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}}, y:{...axisY, title:{display:true, text:'Median c₁', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}} } }
+});
 
-// 10c
-new Chart(document.getElementById('ciWidthChart'), { type:'line', data:{ datasets:[{ data:[{x:42,y:13.8},{x:76,y:23.9},{x:138,y:40.2},{x:248,y:70.3},{x:447,y:111.8},{x:805,y:162.9},{x:1449,y:264.3},{x:2610,y:342.3},{x:4701,y:418.6}], borderColor:'#efc24d', pointBackgroundColor:'#efc24d', borderWidth:2, fill:false }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP }, scales:{ x:{...axisX, type:'logarithmic', title:{display:true, text:'Estimated τ Effective (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}}, y:{...axisY, title:{display:true, text:'Median CI Width (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}} } } });
+// ─── 10c: CI width ───
+new Chart(document.getElementById('ciWidthChart'), {
+  type:'line',
+  data:{ datasets:[{ data:[{x:42,y:13.8},{x:76,y:23.9},{x:138,y:40.2},{x:248,y:70.3},{x:447,y:111.8},{x:805,y:162.9},{x:1449,y:264.3},{x:2610,y:342.3},{x:4701,y:418.6}], borderColor:'#efc24d', pointBackgroundColor:'#efc24d', borderWidth:2, fill:false }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:TOOLTIP },
+    scales:{ x:{...axisX, type:'logarithmic', title:{display:true, text:'Estimated τ_eff (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}}, y:{...axisY, title:{display:true, text:'Median CI Width (ms)', color:'#6b6f77', font:{family:"'DM Mono', monospace"}}} } }
+});
 
 // ─── ACTIVE NAV (DASHBOARD) ───
 const allSections = document.querySelectorAll('#tab-dashboard .section');
@@ -913,9 +977,7 @@ function updateSidebar() {
   const scrollY = window.scrollY + 120;
   let active = null;
   sections.forEach(s => { if (s.offsetTop <= scrollY) active = s.id; });
-  links.forEach(l => {
-    l.classList.toggle('active', l.getAttribute('href') === '#' + active);
-  });
+  links.forEach(l => { l.classList.toggle('active', l.getAttribute('href') === '#' + active); });
 }
 window.addEventListener('scroll', updateSidebar, { passive: true });
 </script>
