@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>iSTTC · Neural Timescales — good_isttc</title>
+<title>iSTTC · Brain-wide Intrinsic Timescales</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -139,6 +139,14 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 .section, .fn-block { animation: fadeUp 0.4s ease both; }
 
+
+.result-img { width: 100%; border-radius: 4px; border: 1px solid var(--border2); background: #0b0d0f; display: block; }
+.result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 1rem; }
+.result-stat { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 0.9rem; }
+.result-stat .num { font-family: var(--mono); font-size: 18px; color: var(--text); }
+.result-stat .lbl { font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-top: 4px; }
+@media (max-width: 700px) { .result-grid { grid-template-columns: repeat(2, 1fr); } }
+
 /* ─── DISTRIBUTION NOTE ─── */
 .dist-note { font-family: var(--mono); font-size: 10.5px; color: var(--muted2); margin-bottom: 10px; padding: 6px 10px; border-left: 2px solid var(--border2); }
 
@@ -158,6 +166,7 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
     <a href="#hero-sec">Overview</a>
     <a href="#timescale-region">τ × Region</a>
     <a href="#timescale-division">τ × Division</a>
+    <a href="#timescale-cosmos">τ × COSMOS</a>
     <a href="#timescale-fr">τ × FR</a>
     <a href="#timescale-lv">τ × LV</a>
     <a href="#histogram">τ Dist.</a>
@@ -177,17 +186,17 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
     <a href="#doc-params">Parameters</a>
     <a href="#doc-refs">References</a>
   </div>
-  <span class="nav-badge">n = 23,660 units</span>
+  <span class="nav-badge">n = 89,139 QC units · 580,598 pre-QC units</span>
 </nav>
 
 <!-- ═══ DASHBOARD ═══ -->
 <div id="tab-dashboard" class="tab-content active">
 
   <div class="hero" id="hero-sec">
-    <div class="hero-label">Neural Timescale Analysis · iSTTC Method · good_isttc</div>
+    <div class="hero-label">Neural Timescale Analysis · iSTTC Method · IBL Brain-wide Map</div>
     <h1>Intrinsic timescales<br>across <em>brain regions</em></h1>
     <div class="hero-meta">
-      <p>Spontaneous spiking activity from 154 sessions. Autocorrelation decay fitted with 1–4 exponential components via iSTTC (Pochinok et al., 2025) + BIC model selection (Shi et al., 2025). All units passed quality filter.</p>
+      <p>Spontaneous spiking activity across the IBL brain-wide dataset. We counted 580,598 spike-sorted units before QC across 647 scanned probe insertions; 89,139 QC-passed units were retained in the uploaded good_isttc table. Timescales were estimated with iSTTC and 1–4 exponential components with BIC model selection.</p>
       <div class="hero-pills">
         <span class="pill blue">r² ≥ 0.5</span>
         <span class="pill green">CI excludes zero</span>
@@ -198,13 +207,13 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
   </div>
 
   <div class="metrics-bar">
-    <div class="metric-cell"><div class="metric-num">23,660</div><div class="metric-lbl">Total units</div></div>
-    <div class="metric-cell"><div class="metric-num">4.3 Hz</div><div class="metric-lbl">Median firing rate</div></div>
-    <div class="metric-cell"><div class="metric-num">300 ms</div><div class="metric-lbl">Median τ effective</div></div>
-    <div class="metric-cell"><div class="metric-num">199</div><div class="metric-lbl">Unique brain regions</div></div>
+    <div class="metric-cell"><div class="metric-num">89,139</div><div class="metric-lbl">QC-passed units</div></div>
+    <div class="metric-cell"><div class="metric-num">580,598</div><div class="metric-lbl">Units before QC</div></div>
+    <div class="metric-cell"><div class="metric-num">15.3%</div><div class="metric-lbl">QC retention</div></div>
+    <div class="metric-cell"><div class="metric-num">267</div><div class="metric-lbl">Beryl regions</div></div>
   </div>
 
-  <!-- 01 — τ × REGION -->
+  <!-- 00 — COSMOS RESULT --><!-- 01 — τ × REGION -->
   <div class="section" id="timescale-region">
     <div class="section-header">
       <span class="section-num">01</span>
@@ -502,7 +511,7 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
         <div class="overview-grid">
           <div class="overview-card"><div class="overview-card-label">iSTTC Method</div><p>Spike Train Tiling Coefficient adapted for ITs. Reduces systematic bias under low firing rates and bursty dynamics.</p></div>
           <div class="overview-card"><div class="overview-card-label">Multi-Exponential Fitting</div><p>ACF modeled as sum of M exponentials (M = 1–4) by BIC. Captures multiple slopes single-exponential models miss.</p></div>
-          <div class="overview-card"><div class="overview-card-label">Dataset</div><p>IBL Neuropixels — 115 mice, 223 brain regions. Same dataset as Shi et al. (2025) (IBL, 2023).</p></div>
+          <div class="overview-card"><div class="overview-card-label">Dataset</div><p>IBL Neuropixels spontaneous activity. Current processed table contains 89,139 QC-passed units across 267 Beryl regions; 580,598 pre-QC units were counted across scanned probe insertions.</p></div>
           <div class="overview-card"><div class="overview-card-label">Environment</div><p>Google Colab. Dependencies: <code class="inline">ONE-api</code>, <code class="inline">numpy</code>, <code class="inline">scipy</code>, <code class="inline">numba</code>, <code class="inline">joblib</code>.</p></div>
         </div>
       </div>
@@ -694,7 +703,7 @@ code.inline { font-family: var(--mono); font-size: 12px; background: rgba(255,25
 </div>
 
 <footer style="padding:2rem;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted);border-top:1px solid var(--border);">
-  good_isttc · spontaneous activity · n = 23,660 units · 154 sessions · 199 brain regions · epoch: passivePeriods.spontaneousActivity
+  good_isttc · spontaneous activity · n = 89,139 QC-passed units · 580,598 pre-QC units · 267 Beryl regions · epoch: passivePeriods.spontaneousActivity
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
